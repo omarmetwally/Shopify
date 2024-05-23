@@ -15,25 +15,13 @@ class RegistrationViewModel(private val repository: ShopifyRepository) : ViewMod
 
     fun registerUser(email: String, password: String, firstName: String) {
         viewModelScope.launch {
-            _apiState.value = ApiState.Loading
-            try {
-                repository.registerUser(email, password, firstName).collect { response ->
-                    if (response.isSuccessful) {
-                        val responseBody = response.body()
-                        responseBody?.let {
-                            if (it.data.customerCreate.customer != null) {
-                                _apiState.value = ApiState.Success(it)
-                            } else {
-                                val errorMessage = it.data.customerCreate.customerUserErrors.joinToString { error -> error.message }
-                                _apiState.value = ApiState.Failure(Throwable(errorMessage))
-                            }
-                        }
-                    } else {
-                        _apiState.value = ApiState.Failure(Throwable(response.errorBody()?.string()))
-                    }
+            repository.registerUser(email, password, firstName).collect { response ->
+                if (response.customerCreate.customer != null) {
+                    _apiState.value = ApiState.Success(response)
+                } else {
+                    val errorMessage = response.customerCreate.customerUserErrors.joinToString { it.message }
+                    _apiState.value = ApiState.Failure(Throwable(errorMessage))
                 }
-            } catch (e: Exception) {
-                _apiState.value = ApiState.Failure(e)
             }
         }
     }

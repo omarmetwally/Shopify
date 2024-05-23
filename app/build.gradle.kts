@@ -4,7 +4,15 @@ plugins {
     id("kotlin-kapt")
     id("androidx.navigation.safeargs")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("com.apollographql.apollo3").version("3.7.3")
 }
+
+apollo {
+    service("service") {
+        packageName.set("com.omarinc.shopify")
+    }
+}
+
 
 android {
     namespace = "com.omarinc.shopify"
@@ -63,6 +71,9 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.2")
+
+    //Apollo
+    implementation("com.apollographql.apollo3:apollo-runtime:3.7.3")
 
     // Image loading
     implementation ("com.github.bumptech.glide:glide:4.11.0")
