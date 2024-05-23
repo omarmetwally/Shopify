@@ -46,6 +46,7 @@
                     android:background="@drawable/ic_login_hero"
                     app:lottie_autoPlay="true"
                     app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/login_animation"
 
                     app:lottie_speed="1" />
             </LinearLayout>

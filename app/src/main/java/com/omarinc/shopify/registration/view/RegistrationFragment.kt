@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentRegistrationBinding
 import com.omarinc.shopify.registration.viewmodel.RegistrationViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
@@ -39,6 +41,11 @@ class RegistrationFragment : Fragment() {
         )
         val factory = RegistrationViewModelFactory(repository, requireContext())
         viewModel = ViewModelProvider(this, factory).get(RegistrationViewModel::class.java)
+
+        binding.imgBackInRegister.setOnClickListener {
+            findNavController().navigate(R.id.action_registrationFragment_to_loginFragment)
+
+        }
 
         binding.btnRegister.setOnClickListener {
             val fullName = binding.nameRegisterEditText.text.toString().trim()
