@@ -15,4 +15,9 @@
         android:name="com.omarinc.shopify.home.view.TestFragment"
         android:label="fragment_test"
         tools:layout="@layout/fragment_test" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.omarinc.shopify.profile.view.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>

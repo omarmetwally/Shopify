@@ -39,5 +39,12 @@
     <string name="haveAccount">Already \nhave an \nAccount?\n</string>
     <string name="anotherMethod">Another Methods</string>
     <string name="ForgetPassword">Forget Password</string>
+    <string name="customerName">Customer Name</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="my_orders">My Orders</string>
+    <string name="my_wishlist">My Wishlist</string>
+    <string name="my_delivery_address">Delivery Address</string>
+    <string name="logout">Log Out</string>
+
 
 </resources>
