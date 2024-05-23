@@ -37,10 +37,10 @@
         app:elevation="16dp"
         app:itemIconSize="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent" 
         app:itemIconTint="@drawable/icon_tint_selector"
         app:itemRippleColor="@color/primaryColor"
         app:itemTextColor="@drawable/icon_tint_selector"
         app:menu="@menu/menu"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout> -->

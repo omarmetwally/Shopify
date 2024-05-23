@@ -7,7 +7,28 @@
     <string name="me">Me</string>
     <string name="search">Search</string>
 
+  
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="brands">Brands</string>
+    <string name="settings_text_view">Settings</string>
+    <string name="language_text_view">Language</string>
+    <string name="about_us_text_view">About us</string>
+    <string name="privacy_policy"><![CDATA[Privacy & Policy]]></string>
+
+    <string name="checkout_button">Checkout</string>
+    <string name="address">Adress</string>
+    <string name="payment_text_view">Payment</string>
+    <string name="shipping_to_text_view">Shipping to</string>
+    <string name="add_address_text_view">Add Address</string>
+
+
+    <!--strings for authentication screens-->
+    <string name="register">Register</string>
+    <string name="firstTime">Here\'s\nyour first\nstep with\nus!</string>
+    <string name="register_name_hint">Name</string>
+    <string name="register_email_hint">Email</string>
+    <string name="register_password_hint">Password</string>
+    <string name="register_confirm_password_hint">Confirm Password *</string>
+    <string name="full_name_hint">Full Name</string>
 </resources>
