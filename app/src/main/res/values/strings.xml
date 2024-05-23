@@ -6,4 +6,5 @@
     <string name="language_text_view">Language</string>
     <string name="about_us_text_view">About us</string>
     <string name="privacy_policy"><![CDATA[Privacy & Policy]]></string>
+    <string name="checkout_button">Checkout</string>
 </resources>
