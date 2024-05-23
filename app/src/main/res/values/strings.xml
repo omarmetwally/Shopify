@@ -7,4 +7,8 @@
     <string name="about_us_text_view">About us</string>
     <string name="privacy_policy"><![CDATA[Privacy & Policy]]></string>
     <string name="checkout_button">Checkout</string>
+    <string name="address">Adress</string>
+    <string name="payment_text_view">Payment</string>
+    <string name="shipping_to_text_view">Shipping to</string>
+    <string name="add_address_text_view">Add Address</string>
 </resources>
