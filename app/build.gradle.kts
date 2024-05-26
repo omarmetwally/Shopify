@@ -160,4 +160,10 @@ dependencies {
     implementation ("com.google.android.material:material:1.6.0")
 
 
+    // circular image
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+
+    //OkHttp
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
+
 }
