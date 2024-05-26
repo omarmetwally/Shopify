@@ -2,16 +2,24 @@ package com.omarinc.shopify.login.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentLoginBinding
 import com.omarinc.shopify.home.view.MainActivity
-import com.omarinc.shopify.login.viewModel.LoginViewModel
+import com.omarinc.shopify.login.viewmodel.LoginViewModel
+import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.network.ApiState
+import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment() {
 
@@ -32,19 +40,64 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
-        binding.btnSkip.setOnClickListener {
-            val intent = Intent(activity, MainActivity::class.java)
-            startActivity(intent)
-            activity?.finish()
+        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
+        val repository = ShopifyRepositoryImpl.getInstance(
+            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+            sharedPreferences
+        )
+        val factory = LoginViewModelFactory(repository, requireContext())
+        viewModel = ViewModelProvider(this, factory).get(LoginViewModel::class.java)
 
+        binding.btnSkip.setOnClickListener {
+
+            lifecycleScope.launch {
+                viewModel.onSkipButtonPressed()
+                viewModel.skipButtonState.collect { skipPressed ->
+                    if (skipPressed) {
+                        startActivity(Intent(requireActivity(), MainActivity::class.java))
+                        requireActivity().finish()
+                    }
+                }
+            }
         }
 
-        binding.txtRegisterNow.setOnClickListener{
+
+
+        binding.txtRegisterNow.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registrationFragment)
 
         }
+
+        binding.btnLogin.setOnClickListener {
+            val email = binding.emailLoginEditTetx.text.toString().trim()
+            val password = binding.passwordLoginEditText.text.toString().trim()
+
+            viewModel.loginUser(email, password)
+        }
+
+        lifecycleScope.launch {
+            viewModel.apiState.collect { state ->
+                when (state) {
+                    is ApiState.Success -> {
+                        Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(requireActivity(), MainActivity::class.java))
+                        requireActivity().finish()
+                    }
+
+                    is ApiState.Failure -> {
+                        Log.e("LoginFragment", "Login Failed", state.msg)
+                        Toast.makeText(
+                            context,
+                            "Login Failed: ${state.msg.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    ApiState.Loading -> {
+                        Toast.makeText(context, "Loading", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+        }
     }
-
-
 }

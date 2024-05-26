@@ -8,5 +8,8 @@ object Constants {
     const val BASE_URL_GRAPHQL = "https://mad44-sv-and.myshopify.com/api/2024-04/graphql.json"
     const val ACCESS_TOKEN_KEY = "X-Shopify-Storefront-Access-Token"
     const val ACCESS_TOKEN_VALUE = "65f84d333f129d7c15a111db0b1a824f"
+    const val SETTINGS = "shopify_settings"
+    const val USER_TOKEN = "user_token"
+    const val USER_SKIPPED = "skip_button_pressed"
 
 }
