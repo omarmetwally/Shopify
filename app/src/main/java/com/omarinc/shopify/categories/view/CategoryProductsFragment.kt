@@ -1,73 +1,46 @@
-package com.omarinc.shopify.home.view
+package com.omarinc.shopify.categories.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weatherforecastapplication.favouritesFeature.view.AdsAdapter
 import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapter
+import com.example.weatherforecastapplication.favouritesFeature.view.CategoryProductsAdapter
 import com.omarinc.shopify.R
-import com.omarinc.shopify.databinding.FragmentHomeBinding
+import com.omarinc.shopify.databinding.FragmentCategoryProductsBinding
 import com.omarinc.shopify.models.Brand
 
-class HomeFragment : Fragment() {
+class CategoryProductsFragment : Fragment() {
 
-
-    private lateinit var binding: FragmentHomeBinding
-    private lateinit var brandsManager: GridLayoutManager
-    private lateinit var brandsAdapter: BrandsAdapter
-    private lateinit var adsAdapter: AdsAdapter
-
+    private lateinit var binding: FragmentCategoryProductsBinding
+    private lateinit var productsManager: GridLayoutManager
+    private lateinit var productsAdapter: CategoryProductsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
-        return binding.root
-    }
+        // Inflate the layout for this fragment
+        binding = FragmentCategoryProductsBinding.inflate(layoutInflater, container, false)
+        return binding.root    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-
-        adsAdapter = AdsAdapter(requireContext())
-
-        binding.adsVP.adapter = adsAdapter
-        val images = listOf(
-            R.drawable.shoe,
-            R.drawable.discount,
-            R.drawable.shoe,
-            R.drawable.discount,
-        )
-
-        adsAdapter.submitList(images)
-        binding.adsVP.setPageTransformer(ZoomOutPageTransformer())
-
-        val onBrandClick = { id : Int ->
-            val action = HomeFragmentDirections
-                .actionHomeFragmentToProductsFragment(
-                    id
-                )
-            Navigation.findNavController(requireView()).navigate(action)
-        }
-        brandsAdapter = BrandsAdapter(
+        productsAdapter = CategoryProductsAdapter(
             requireContext(),
-            onBrandClick
         )
 
-        brandsManager = GridLayoutManager(requireContext(),2)
-        brandsManager.orientation = LinearLayoutManager.VERTICAL
-        binding.brandsRV.layoutManager = brandsManager
-        binding.brandsRV.adapter = brandsAdapter
+        productsManager = GridLayoutManager(requireContext(),2)
+        productsManager.orientation = LinearLayoutManager.VERTICAL
+        binding.categoryProductsRV.layoutManager = productsManager
+        binding.categoryProductsRV.adapter = productsAdapter
 
         val dummyBrands = listOf(
             Brand(R.drawable.shoe, "Brand 1"),
@@ -95,8 +68,8 @@ class HomeFragment : Fragment() {
             Brand(R.drawable.shoe, "Brand 3"),
             Brand(R.drawable.shoe, "Brand 4"),
 
-        )
+            )
 
-        brandsAdapter.submitList(dummyBrands)
+        productsAdapter.submitList(dummyBrands)
     }
 }
