@@ -65,8 +65,8 @@ class SettingsFragment : Fragment() {
                             TAG,
                             "onViewCreated: Success code=${currency?.code} value=${currency?.value} last update ${result.response.meta.last_updated_at}"
                         )
-                        currency?.value?.let {value->
-                            currency?.code?.let { unit ->
+                        currency?.value?.let { value ->
+                            currency.code.let { unit ->
                                 settingsViewModel.setCurrency(
                                     value,
                                     unit
