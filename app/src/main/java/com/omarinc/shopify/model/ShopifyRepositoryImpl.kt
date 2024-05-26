@@ -1,7 +1,10 @@
 package com.omarinc.shopify.model
 
+import com.omarinc.shopify.models.Currencies
+import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.network.ShopifyRemoteDataSource
 import com.omarinc.shopify.network.ApiState
+import com.omarinc.shopify.network.currency.CurrencyRemoteDataSource
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +12,8 @@ import kotlinx.coroutines.flow.map
 
 class ShopifyRepositoryImpl(
     private val shopifyRemoteDataSource: ShopifyRemoteDataSource,
-    private val sharedPreferences: ISharedPreferences
+    private val sharedPreferences: ISharedPreferences,
+    private val currencyRemoteDataSource: CurrencyRemoteDataSource
 ) : ShopifyRepository {
 
     companion object {
@@ -18,12 +22,14 @@ class ShopifyRepositoryImpl(
 
         fun getInstance(
             shopifyRemoteDataSource: ShopifyRemoteDataSource,
-            sharedPreferences: ISharedPreferences
+            sharedPreferences: ISharedPreferences,
+            currencyRemoteDataSource: CurrencyRemoteDataSource
         ): ShopifyRepositoryImpl {
             return instance ?: synchronized(this) {
                 instance ?: ShopifyRepositoryImpl(
                     shopifyRemoteDataSource,
-                    sharedPreferences
+                    sharedPreferences,
+                    currencyRemoteDataSource
                 ).also { instance = it }
             }
         }
@@ -58,5 +64,9 @@ class ShopifyRepositoryImpl(
 
     override suspend fun readUserToken(): String {
         return sharedPreferences.readStringFromSharedPreferences(Constants.USER_TOKEN)
+    }
+
+    override suspend fun getCurrencyRate(requiredCurrency: Currencies):Flow<ApiState<CurrencyResponse>> {
+        return currencyRemoteDataSource.getCurrencyRate(requiredCurrency)
     }
 }

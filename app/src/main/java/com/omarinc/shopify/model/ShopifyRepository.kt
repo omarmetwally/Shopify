@@ -1,5 +1,7 @@
 package com.omarinc.shopify.model
 
+import com.omarinc.shopify.models.Currencies
+import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
@@ -17,4 +19,7 @@ interface ShopifyRepository {
     suspend fun writeBooleanToSharedPreferences(key: String, value: Boolean)
     suspend fun readBooleanFromSharedPreferences(key: String): Boolean
     suspend fun readUserToken(): String
+
+    suspend fun getCurrencyRate(requiredCurrency: Currencies): Flow<ApiState<CurrencyResponse>>
+
 }

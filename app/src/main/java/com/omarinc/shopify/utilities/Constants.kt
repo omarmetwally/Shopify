@@ -11,5 +11,7 @@ object Constants {
     const val SETTINGS = "shopify_settings"
     const val USER_TOKEN = "user_token"
     const val USER_SKIPPED = "skip_button_pressed"
+    const val CURRENCY_API_BASE_URL = "https://api.currencyapi.com/"
+    const val CURRENCY_API_KEY = "cur_live_usLMp14VDCAQTXO0bfD3JzCtTo4S5WRz585BvJ5E"
 
 }
