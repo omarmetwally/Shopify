@@ -1,16 +1,14 @@
 package com.omarinc.shopify.model
 
-data class RegisterUserResponse(
-    val data: CustomerCreateContainer
-)
+import com.omarinc.shopify.CreateCustomerMutation
 
-data class CustomerCreateContainer(
+data class RegisterUserResponse(
     val customerCreate: CustomerCreateData
 )
 
 data class CustomerCreateData(
-    val customer: Customer?,
-    val customerUserErrors: List<CustomerUserError>
+    val customer: CreateCustomerMutation.Customer?,
+    val customerUserErrors: List<CreateCustomerMutation.CustomerUserError>
 )
 
 data class Customer(

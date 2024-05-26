@@ -39,7 +39,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" 
         app:itemIconTint="@drawable/icon_tint_selector"
-        app:itemRippleColor="@color/primaryColor"
+        app:itemRippleColor="@color/primary_color"
         app:itemTextColor="@drawable/icon_tint_selector"
         app:menu="@menu/menu"/>
 

@@ -9,18 +9,18 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
     <style name="viewParent.headerText">
-        <item name="android:textColor">@color/contentTextColor</item>
+        <item name="android:textColor">@color/content_text_color</item>
         <item name="android:textSize">@dimen/headerTextSize</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="viewParent.headerText.NoMode">
-        <item name="android:textColor">@color/darkTextColor</item>
+        <item name="android:textColor">@color/dark_text_color</item>
     </style>
 
     <style name="authenticationButton" parent="viewParent">
         <item name="android:background">@drawable/button_background</item>
-        <item name="android:textColor">@color/whiteTextColor</item>
+        <item name="android:textColor">@color/white_text_color</item>
         <item name="android:textStyle">bold</item>
     </style>
 

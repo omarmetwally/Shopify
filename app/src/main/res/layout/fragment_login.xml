@@ -37,7 +37,7 @@
                 android:layout_marginBottom="12dp"
                 android:gravity="center_horizontal|center_vertical"
                 android:text="@string/skip"
-                android:textColor="@color/primaryColor"
+                android:textColor="@color/primary_color"
                 />
 
             <LinearLayout
@@ -52,7 +52,7 @@
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:text="@string/haveAccount" />
+                    android:text="@string/have_account" />
 
                 <!--                <ImageView-->
                 <!--                    android:layout_width="wrap_content"-->
@@ -133,8 +133,8 @@
                 style="@style/viewParent"
                 android:layout_gravity="end"
                 android:layout_marginTop="10dp"
-                android:text="@string/ForgetPassword"
-                android:textColor="@color/primaryTextColor"
+                android:text="@string/forget_password"
+                android:textColor="@color/primary_text_color"
                 android:textSize="@dimen/newsMoreTextSize"
                 android:visibility="gone" />
 
@@ -156,9 +156,9 @@
                 android:id="@+id/txtRegisterNow"
                 style="@style/parent"
                 android:layout_marginTop="@dimen/loginViewsMargin"
-                android:text="@string/registerNow"
+                android:text="@string/register_now"
                 android:textAlignment="center"
-                android:textColor="@color/primaryColor"
+                android:textColor="@color/primary_color"
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
@@ -181,7 +181,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="6"
-                    android:text="@string/anotherMethod"
+                    android:text="@string/another_method"
                     android:textAlignment="center"
                     android:textSize="12sp" />
 

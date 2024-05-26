@@ -28,7 +28,7 @@ class ShopifyRepositoryImpl(
         email: String,
         password: String,
         firstName: String
-    ): Flow<Response<RegisterUserResponse>> {
+    ): Flow<RegisterUserResponse> {
         return withContext(Dispatchers.IO) {
             shopifyRemoteDataSource.registerUser(email, password, firstName)
         }
