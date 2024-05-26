@@ -28,8 +28,8 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
 
     init {
         apolloClient = ApolloClient.Builder()
-            .serverUrl("https://mad44-sv-and.myshopify.com/api/2024-04/graphql.json")
-            .addHttpHeader("X-Shopify-Storefront-Access-Token", Constants.ACCESS_TOKEN)
+            .serverUrl(Constants.BASE_URL_GRAPHQL)
+            .addHttpHeader(Constants.ACCESS_TOKEN_KEY, Constants.ACCESS_TOKEN_VALUE)
             .build()
     }
 

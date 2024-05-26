@@ -10,7 +10,7 @@ import retrofit2.http.POST
 interface ShopifyApiService {
     @Headers(
         "Content-Type: application/json",
-        "X-Shopify-Storefront-Access-Token: ${Constants.ACCESS_TOKEN}"
+        "X-Shopify-Storefront-Access-Token: ${Constants.ACCESS_TOKEN_VALUE}"
     )
     @POST("graphql.json")
     suspend fun registerUser(@Body request: Map<String, String>): Response<RegisterUserResponse>

@@ -28,7 +28,7 @@
         android:layout_gravity="center"
         android:layout_margin="16dp"
         android:gravity="center"
-        android:text="@string/customerName"
+        android:text="@string/customer_name"
         android:textColor="@color/black"
         android:textSize="22sp"
         android:textStyle="bold|italic"
