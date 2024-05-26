@@ -58,6 +58,7 @@ class ShopifyRepositoryImpl(
     override suspend fun writeBooleanToSharedPreferences(key: String, value: Boolean) {
         sharedPreferences.writeBooleanToSharedPreferences(key, value)
     }
+
     override suspend fun readBooleanFromSharedPreferences(key: String): Boolean {
         return sharedPreferences.readBooleanFromSharedPreferences(key)
     }
@@ -66,7 +67,25 @@ class ShopifyRepositoryImpl(
         return sharedPreferences.readStringFromSharedPreferences(Constants.USER_TOKEN)
     }
 
-    override suspend fun getCurrencyRate(requiredCurrency: Currencies):Flow<ApiState<CurrencyResponse>> {
+    override suspend fun getCurrencyRate(requiredCurrency: Currencies): Flow<ApiState<CurrencyResponse>> {
         return currencyRemoteDataSource.getCurrencyRate(requiredCurrency)
     }
+
+    override suspend fun writeCurrencyRate(key: String, value: Long) {
+        sharedPreferences.writeCurrencyRateToSharedPreferences(key, value)
+    }
+
+    override suspend fun writeCurrencyUnit(key: String, value: String) {
+        sharedPreferences.writeCurrencyUnitToSharedPreferences(key, value)
+    }
+
+    override suspend fun readCurrencyRate(key: String): Long {
+        return readCurrencyRate(key)
+    }
+
+    override suspend fun readCurrencyUnit(key: String): String {
+        return readCurrencyUnit(key)
+    }
+
+
 }

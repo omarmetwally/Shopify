@@ -22,4 +22,11 @@ interface ShopifyRepository {
 
     suspend fun getCurrencyRate(requiredCurrency: Currencies): Flow<ApiState<CurrencyResponse>>
 
+   suspend fun writeCurrencyRate(key: String, value: Long)
+
+   suspend fun writeCurrencyUnit(key: String, value: String)
+
+   suspend fun readCurrencyRate(key: String): Long
+
+   suspend fun readCurrencyUnit(key: String): String
 }

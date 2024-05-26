@@ -13,5 +13,6 @@ object Constants {
     const val USER_SKIPPED = "skip_button_pressed"
     const val CURRENCY_API_BASE_URL = "https://api.currencyapi.com/"
     const val CURRENCY_API_KEY = "cur_live_usLMp14VDCAQTXO0bfD3JzCtTo4S5WRz585BvJ5E"
-
+    const val CURRENCY_RATE = "rate"
+    const val CURRENCY_UNIT = "unit"
 }
