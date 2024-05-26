@@ -1,25 +1,30 @@
 package com.omarinc.shopify.model
 
 import com.omarinc.shopify.network.ShopifyRemoteDataSource
-import kotlinx.coroutines.Dispatchers
+import com.omarinc.shopify.network.ApiState
+import com.omarinc.shopify.sharedPreferences.ISharedPreferences
+import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
-import retrofit2.Response
+import kotlinx.coroutines.flow.map
 
 class ShopifyRepositoryImpl(
-    private val shopifyRemoteDataSource: ShopifyRemoteDataSource
+    private val shopifyRemoteDataSource: ShopifyRemoteDataSource,
+    private val sharedPreferences: ISharedPreferences
 ) : ShopifyRepository {
 
     companion object {
-
         @Volatile
         private var instance: ShopifyRepositoryImpl? = null
 
         fun getInstance(
-            shopifyRemoteDataSource: ShopifyRemoteDataSource
+            shopifyRemoteDataSource: ShopifyRemoteDataSource,
+            sharedPreferences: ISharedPreferences
         ): ShopifyRepositoryImpl {
             return instance ?: synchronized(this) {
-                instance ?: ShopifyRepositoryImpl(shopifyRemoteDataSource).also { instance = it }
+                instance ?: ShopifyRepositoryImpl(
+                    shopifyRemoteDataSource,
+                    sharedPreferences
+                ).also { instance = it }
             }
         }
     }
@@ -27,10 +32,31 @@ class ShopifyRepositoryImpl(
     override suspend fun registerUser(
         email: String,
         password: String,
-        firstName: String
-    ): Flow<RegisterUserResponse> {
-        return withContext(Dispatchers.IO) {
-            shopifyRemoteDataSource.registerUser(email, password, firstName)
+        fullName: String
+    ): Flow<ApiState<RegisterUserResponse>> {
+        return shopifyRemoteDataSource.registerUser(email, password, fullName)
+    }
+
+    override suspend fun loginUser(email: String, password: String): Flow<ApiState<String>> {
+        return shopifyRemoteDataSource.loginUser(email, password).map { state ->
+            if (state is ApiState.Success) {
+                sharedPreferences.writeStringToSharedPreferences(
+                    Constants.USER_TOKEN,
+                    state.response
+                )
+            }
+            state
         }
+    }
+
+    override suspend fun writeBooleanToSharedPreferences(key: String, value: Boolean) {
+        sharedPreferences.writeBooleanToSharedPreferences(key, value)
+    }
+    override suspend fun readBooleanFromSharedPreferences(key: String): Boolean {
+        return sharedPreferences.readBooleanFromSharedPreferences(key)
+    }
+
+    override suspend fun readUserToken(): String {
+        return sharedPreferences.readStringFromSharedPreferences(Constants.USER_TOKEN)
     }
 }

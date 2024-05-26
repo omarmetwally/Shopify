@@ -5,5 +5,6 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 interface ShopifyRemoteDataSource {
-    fun registerUser(email: String, password: String, fullName: String): Flow<RegisterUserResponse>
+    fun registerUser(email: String, password: String, fullName: String): Flow<ApiState<RegisterUserResponse>>
+    fun loginUser(email: String, password: String): Flow<ApiState<String>>
 }

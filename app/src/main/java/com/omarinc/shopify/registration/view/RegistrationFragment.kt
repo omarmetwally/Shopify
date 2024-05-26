@@ -9,15 +9,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentRegistrationBinding
 import com.omarinc.shopify.registration.viewmodel.RegistrationViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.ApiState
+import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.registration.viewModel.RegistrationViewModelFactory
-import kotlinx.coroutines.flow.collect
+import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
 import kotlinx.coroutines.launch
 
 class RegistrationFragment : Fragment() {
@@ -36,16 +34,13 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
         val repository = ShopifyRepositoryImpl.getInstance(
-            ShopifyRemoteDataSourceImpl.getInstance(requireContext())
+            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+            sharedPreferences
         )
         val factory = RegistrationViewModelFactory(repository, requireContext())
         viewModel = ViewModelProvider(this, factory).get(RegistrationViewModel::class.java)
-
-        binding.imgBackInRegister.setOnClickListener {
-            findNavController().navigate(R.id.action_registrationFragment_to_loginFragment)
-
-        }
 
         binding.btnRegister.setOnClickListener {
             val fullName = binding.nameRegisterEditText.text.toString().trim()
