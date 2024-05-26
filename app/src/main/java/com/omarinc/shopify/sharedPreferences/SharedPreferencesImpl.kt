@@ -36,4 +36,21 @@ class SharedPreferencesImpl private constructor(context: Context) : ISharedPrefe
     override fun readBooleanFromSharedPreferences(key: String): Boolean {
         return sharedPreferences.getBoolean(key, false)
     }
+
+    override fun writeCurrencyRateToSharedPreferences(key: String, value: Long) {
+        sharedPreferences.edit().putLong(key, value).apply()
+    }
+
+    override fun writeCurrencyUnitToSharedPreferences(key: String, value: String) {
+        sharedPreferences.edit().putString(key, value).apply()
+
+    }
+
+    override fun readCurrencyRateFromSharedPreferences(key: String): Long {
+        return sharedPreferences.getLong(key, 0)
+    }
+
+    override fun readCurrencyUnitFromSharedPreferences(key: String): String {
+        return sharedPreferences.getString(key, "null") ?: "null"
+    }
 }

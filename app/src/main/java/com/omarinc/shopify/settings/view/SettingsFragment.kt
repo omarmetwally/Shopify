@@ -52,12 +52,27 @@ class SettingsFragment : Fragment() {
         lifecycleScope.launch {
             settingsViewModel.requiredCurrency.collect { result ->
                 when (result) {
-                    is ApiState.Failure -> Log.i(TAG, "onViewCreated: Failure ${result.msg.message}")
+                    is ApiState.Failure -> Log.i(
+                        TAG,
+                        "onViewCreated: Failure ${result.msg.message}"
+                    )
+
                     ApiState.Loading -> Log.i(TAG, "onViewCreated: Loading")
                     is ApiState.Success -> {
 
                         val currency = result.response.data["USD"]
-                        Log.i(TAG, "onViewCreated: Success code=${currency?.code} value=${currency?.value} last update ${result.response.meta.last_updated_at}")
+                        Log.i(
+                            TAG,
+                            "onViewCreated: Success code=${currency?.code} value=${currency?.value} last update ${result.response.meta.last_updated_at}"
+                        )
+                        currency?.value?.let {value->
+                            currency?.code?.let { unit ->
+                                settingsViewModel.setCurrency(
+                                    value,
+                                    unit
+                                )
+                            }
+                        }
                     }
                 }
             }
