@@ -12,7 +12,7 @@ import com.omarinc.shopify.models.Brand
 
 class BrandsAdapter(
     val context: Context,
-   // private val listener: (weather: Favourites)->Unit,
+    private val listener: (id:Int)->Unit,
     //private val favListener: (latitude:Double, longitude:Double)->Unit
 ) : ListAdapter<Brand, BrandsViewHolder>(
     FavouritesDiffUtil()
@@ -34,12 +34,11 @@ class BrandsAdapter(
         binding.brandName.text = current.name
         binding.brandImage.setImageResource(current.image)
 
-//        binding.favConstraint.setOnClickListener {
-//            favListener.invoke(
-//                current.latitude,
-//                current.longitude
-//            )
-//        }
+        binding.brandConstrainLayout.setOnClickListener {
+            listener.invoke(
+                1
+            )
+        }
     }
 }
 

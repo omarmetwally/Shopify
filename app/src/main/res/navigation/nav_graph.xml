@@ -5,17 +5,24 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
-    <fragment
+  
+  <fragment
         android:id="@+id/homeFragment"
         android:name="com.omarinc.shopify.home.view.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
-    <fragment
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_productsFragment"
+            app:destination="@id/productsFragment" />
+    </fragment>
+  
+  <fragment
         android:id="@+id/testFragment"
         android:name="com.omarinc.shopify.home.view.TestFragment"
         android:label="fragment_test"
         tools:layout="@layout/fragment_test" />
-    <fragment
+  
+  <fragment
         android:id="@+id/profileFragment"
         android:name="com.omarinc.shopify.profile.view.ProfileFragment"
         android:label="fragment_profile"
@@ -24,9 +31,27 @@
             android:id="@+id/action_profileFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
     </fragment>
-    <fragment
+  
+  <fragment
         android:id="@+id/settingsFragment"
         android:name="com.omarinc.shopify.settings.view.SettingsFragment"
         android:label="SettingsFragment"
         tools:layout="fragment_settings"/>
+        tools:layout="@layout/fragment_profile" />
+  
+  <fragment
+        android:id="@+id/productsFragment"
+        android:name="com.omarinc.shopify.home.view.ProductsFragment"
+        android:label="fragment_products"
+        tools:layout="@layout/fragment_products" >
+        <argument
+            android:name="id"
+            app:argType="integer" />
+    </fragment>
+  
+    <fragment
+        android:id="@+id/categoriesFragment"
+        android:name="com.omarinc.shopify.home.view.CategoriesFragment"
+        android:label="fragment_categories"
+        tools:layout="@layout/fragment_categories" />
 </navigation>
