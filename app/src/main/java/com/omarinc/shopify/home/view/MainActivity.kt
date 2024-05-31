@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.SearchView
 import android.widget.Toolbar
 import androidx.navigation.NavController
@@ -12,6 +13,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.ActivityMainBinding
+import com.omarinc.shopify.utilities.Constants
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +33,14 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController)
 
         NavigationUI.setupWithNavController(binding.bottomNav, navController)
+        // 3lshan el bottomNavigation y5tafe
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id in Constants.fragmentsWithHiddenBottomNav) {
+                binding.bottomNav.visibility = View.VISIBLE
+            } else {
+                binding.bottomNav.visibility = View.GONE
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModel
@@ -19,6 +20,7 @@ import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModelFactory
 import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Helper
 import kotlinx.coroutines.launch
 
 class ProductDetailsFragment : Fragment() {
@@ -73,6 +75,11 @@ class ProductDetailsFragment : Fragment() {
                         val dotsIndicator = binding.dotsIndicator
                         dotsIndicator.attachTo(binding.viewPagerImages)
 
+                        val staticComments = Helper.generateStaticComments()
+                        val randomComments = Helper.getRandomComments(staticComments, 3)
+                        val commentsAdapter = CommentsAdapter(randomComments)
+                        binding.rvCustomerComments.adapter = commentsAdapter
+                        binding.rvCustomerComments.layoutManager = LinearLayoutManager(requireContext())
                     }
 
                     is ApiState.Failure -> {

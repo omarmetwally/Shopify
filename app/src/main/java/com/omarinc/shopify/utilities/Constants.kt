@@ -1,9 +1,11 @@
 package com.omarinc.shopify.utilities
 
+import com.omarinc.shopify.R
+
 object Constants {
-    const val ADMIN_API_ACCESS_TOKEN= "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"
-    const val API_KEY= "4f039557b234dc82a7b4c8dc0c75b7bf"
-    const val API_SECRET_KEY= "9ac6086486858f2f489a17f85ea56724"
+    const val ADMIN_API_ACCESS_TOKEN = "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"
+    const val API_KEY = "4f039557b234dc82a7b4c8dc0c75b7bf"
+    const val API_SECRET_KEY = "9ac6086486858f2f489a17f85ea56724"
     const val BASE_URL = "https://mad44-sv-and.myshopify.com/api/2024-04/"
     const val BASE_URL_GRAPHQL = "https://mad44-sv-and.myshopify.com/api/2024-04/graphql.json"
     const val ACCESS_TOKEN_KEY = "X-Shopify-Storefront-Access-Token"
@@ -15,4 +17,12 @@ object Constants {
     const val CURRENCY_API_KEY = "cur_live_usLMp14VDCAQTXO0bfD3JzCtTo4S5WRz585BvJ5E"
     const val CURRENCY_RATE = "rate"
     const val CURRENCY_UNIT = "unit"
+
+
+    val fragmentsWithHiddenBottomNav = setOf(
+        R.id.homeFragment,
+        R.id.profileFragment,
+        R.id.categoriesFragment
+        )
+
 }
