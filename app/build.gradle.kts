@@ -95,7 +95,8 @@ dependencies {
     implementation ("com.airbnb.android:lottie:6.4.0")
     //loading animation
     implementation ("com.github.leandroborgesferreira:loading-button-android:2.3.0")
-
+    //dots viewPager
+    implementation("com.tbuonomo:dotsindicator:5.0")
 
 
     implementation ("androidx.navigation:navigation-fragment:2.5.3")

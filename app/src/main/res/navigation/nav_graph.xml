@@ -47,11 +47,23 @@
         <argument
             android:name="id"
             app:argType="integer" />
-    </fragment>
+      <action
+          android:id="@+id/action_productsFragment_to_productDetailsFragment"
+          app:destination="@id/productDetailsFragment" />
+  </fragment>
   
     <fragment
         android:id="@+id/categoriesFragment"
         android:name="com.omarinc.shopify.home.view.CategoriesFragment"
         android:label="fragment_categories"
         tools:layout="@layout/fragment_categories" />
+    <fragment
+        android:id="@+id/productDetailsFragment"
+        android:name="com.omarinc.shopify.productdetails.view.ProductDetailsFragment"
+        android:label="fragment_product_details"
+        tools:layout="@layout/fragment_product_details" >
+        <action
+            android:id="@+id/action_productDetailsFragment_to_productsFragment"
+            app:destination="@id/productsFragment" />
+    </fragment>
 </navigation>
