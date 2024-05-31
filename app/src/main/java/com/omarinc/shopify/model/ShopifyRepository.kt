@@ -3,6 +3,7 @@ package com.omarinc.shopify.model
 import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.network.ApiState
+import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
@@ -29,4 +30,5 @@ interface ShopifyRepository {
    suspend fun readCurrencyRate(key: String): Long
 
    suspend fun readCurrencyUnit(key: String): String
+    suspend fun getProductById(productId: String): Flow<ApiState<ProductDetails>>
 }

@@ -7,8 +7,11 @@ import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
 import com.omarinc.shopify.CreateCustomerAccessTokenMutation
 import com.omarinc.shopify.CreateCustomerMutation
+import com.omarinc.shopify.GetProductByIdQuery
 import com.omarinc.shopify.model.CustomerCreateData
 import com.omarinc.shopify.model.RegisterUserResponse
+import com.omarinc.shopify.productdetails.model.ProductDetails
+import com.omarinc.shopify.productdetails.model.ProductImage
 import com.omarinc.shopify.type.CustomerCreateInput
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
@@ -101,6 +104,40 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             }
         } catch (e: ApolloException) {
             Log.e("ShopifyRemoteDataSource", "Error logging in", e)
+            emit(ApiState.Failure(e))
+        }
+    }
+
+    override fun getProductById(productId: String): Flow<ApiState<ProductDetails>> = flow {
+        val query = GetProductByIdQuery(productId)
+
+        try {
+            val response = apolloClient.query(query).execute()
+
+            if (response.hasErrors()) {
+                val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
+                throw ApolloException(errorMessages)
+            }
+
+            val data = response.data?.product
+            if (data != null) {
+                val productDetails = ProductDetails(
+                    id = data.id,
+                    title = data.title,
+                    description = data.description,
+                    productType = data.productType,
+                    vendor = data.vendor,
+                    totalInventory = data.totalInventory,
+                    price = data.variants.edges.firstOrNull()?.node?.priceV2?.amount ?: "0.0",
+                    images = data.images.edges.map { ProductImage(it.node.originalSrc) },
+                    onlineStoreUrl = data.onlineStoreUrl
+                )
+                emit(ApiState.Success(productDetails))
+            } else {
+                throw ApolloException("Response data is null")
+            }
+        } catch (e: ApolloException) {
+            Log.e("ShopifyRemoteDataSource", "Error fetching product details", e)
             emit(ApiState.Failure(e))
         }
     }
