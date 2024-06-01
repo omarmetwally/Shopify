@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".home.view.CategoriesFragment">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/categoriesRV"
         android:layout_width="120dp"

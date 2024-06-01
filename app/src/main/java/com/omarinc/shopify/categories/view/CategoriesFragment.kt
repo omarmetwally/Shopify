@@ -3,8 +3,13 @@ package com.omarinc.shopify.home.view
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapter
@@ -23,6 +28,7 @@ class CategoriesFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
 
     }
 
@@ -32,7 +38,9 @@ class CategoriesFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentCategoriesBinding.inflate(layoutInflater, container, false)
-        return binding.root    }
+        (activity as? AppCompatActivity)?.setSupportActionBar(binding.toolbar)
+        return binding.root
+    }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,4 +73,21 @@ class CategoriesFragment : Fragment() {
 
         categoriessAdapter.submitList(dummyBrands)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.tool_bar_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.testFragment -> {
+                findNavController().navigate(R.id.testFragment)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 }
