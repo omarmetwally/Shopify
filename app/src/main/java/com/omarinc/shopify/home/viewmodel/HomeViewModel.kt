@@ -23,24 +23,23 @@ class HomeViewModel (private val repository: ShopifyRepository) : ViewModel() {
     private val _productsApiState = MutableStateFlow<ApiState<List<Product>>>(ApiState.Loading)
     val productsApiState: StateFlow<ApiState<List<Product>>> = _productsApiState
 
-    fun getBrands(){
+    fun getBrands() {
         Log.i("TAG", "getBrands: Viewmodel")
         viewModelScope.launch {
-            repository.getBrands().collect{
+            repository.getBrands().collect {
                 _apiState.value = it
             }
         }
     }
 
-    fun getProductsByBrandId(id:String){
+    fun getProductsByBrandId(id: String) {
         Log.i("TAG", "getBrands: Viewmodel")
         viewModelScope.launch {
-            repository.getProductsByBrandId(id).collect{
+            repository.getProductsByBrandId(id).collect {
                 _productsApiState.value = it
             }
         }
     }
-
 
 
     class HomeViewModelFactory(
@@ -54,3 +53,4 @@ class HomeViewModel (private val repository: ShopifyRepository) : ViewModel() {
             }
         }
     }
+}

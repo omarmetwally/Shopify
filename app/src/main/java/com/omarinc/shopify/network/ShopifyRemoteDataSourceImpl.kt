@@ -12,13 +12,10 @@ import com.omarinc.shopify.GetBrandsQuery
 import com.omarinc.shopify.GetProductsByBrandIdQuery
 import com.omarinc.shopify.model.CustomerCreateData
 import com.omarinc.shopify.model.RegisterUserResponse
-import com.omarinc.shopify.models.Brand
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.Product
 
 import com.omarinc.shopify.GetProductByIdQuery
-import com.omarinc.shopify.model.CustomerCreateData
-import com.omarinc.shopify.model.RegisterUserResponse
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.ProductImage
 import com.omarinc.shopify.type.CustomerCreateInput
@@ -184,7 +181,6 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
              emit(ApiState.Failure(e))
          }
      }
- }
 
     override fun getProductById(productId: String): Flow<ApiState<ProductDetails>> = flow {
         val query = GetProductByIdQuery(productId)
@@ -219,4 +215,6 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             emit(ApiState.Failure(e))
         }
     }
+
 }
+
