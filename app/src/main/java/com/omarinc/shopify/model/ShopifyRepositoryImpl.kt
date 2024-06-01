@@ -1,5 +1,8 @@
 package com.omarinc.shopify.model
 
+import com.omarinc.shopify.GetBrandsQuery
+import com.omarinc.shopify.models.Brands
+import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.network.ShopifyRemoteDataSource
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
@@ -35,6 +38,14 @@ class ShopifyRepositoryImpl(
         fullName: String
     ): Flow<ApiState<RegisterUserResponse>> {
         return shopifyRemoteDataSource.registerUser(email, password, fullName)
+    }
+
+    override fun getBrands(): Flow<ApiState<List<Brands>>> {
+        return  shopifyRemoteDataSource.getBrands()
+    }
+
+    override fun getProductsByBrandId(id: String): Flow<ApiState<List<Product>>> {
+        return shopifyRemoteDataSource.getProductsByBrandId(id)
     }
 
     override suspend fun loginUser(email: String, password: String): Flow<ApiState<String>> {
