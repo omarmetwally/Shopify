@@ -14,6 +14,7 @@ import com.omarinc.shopify.registration.viewmodel.RegistrationViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.registration.viewModel.RegistrationViewModelFactory
 import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
 import kotlinx.coroutines.launch
@@ -37,7 +38,8 @@ class RegistrationFragment : Fragment() {
         val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-            sharedPreferences
+            sharedPreferences,
+            CurrencyRemoteDataSourceImpl.getInstance()
         )
         val factory = RegistrationViewModelFactory(repository, requireContext())
         viewModel = ViewModelProvider(this, factory).get(RegistrationViewModel::class.java)
@@ -59,12 +61,19 @@ class RegistrationFragment : Fragment() {
             viewModel.apiState.collect { state ->
                 when (state) {
                     is ApiState.Success -> {
-                        Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT)
+                            .show()
                     }
+
                     is ApiState.Failure -> {
                         Log.e("RegistrationFragment", "Registration Failed", state.msg)
-                        Toast.makeText(context, "Registration Failed: ${state.msg.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Registration Failed: ${state.msg.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+
                     ApiState.Loading -> {
                         Toast.makeText(context, "Loading", Toast.LENGTH_SHORT).show()
                     }

@@ -14,6 +14,8 @@ import androidx.navigation.fragment.findNavController
 import com.omarinc.shopify.home.view.MainActivity
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.currency.CurrencyRemoteDataSource
+import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.shopify.splashscreen.viewmodel.SplashNavigationState
 import com.omarinc.shopify.splashscreen.viewmodel.SplashScreenViewModel
@@ -50,7 +52,8 @@ class SplashScreenFragment : Fragment() {
         val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-            sharedPreferences
+            sharedPreferences,
+            CurrencyRemoteDataSourceImpl.getInstance()
         )
         val factory = SplashScreenViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory).get(SplashScreenViewModel::class.java)

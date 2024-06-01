@@ -18,6 +18,7 @@ import com.omarinc.shopify.login.viewmodel.LoginViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
 import kotlinx.coroutines.launch
 
@@ -43,7 +44,8 @@ class LoginFragment : Fragment() {
         val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-            sharedPreferences
+            sharedPreferences,
+            CurrencyRemoteDataSourceImpl.getInstance()
         )
         val factory = LoginViewModelFactory(repository, requireContext())
         viewModel = ViewModelProvider(this, factory).get(LoginViewModel::class.java)

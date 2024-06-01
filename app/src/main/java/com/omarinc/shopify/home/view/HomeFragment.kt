@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherforecastapplication.favouritesFeature.view.AdsAdapter
@@ -88,6 +89,14 @@ class HomeFragment : Fragment() {
 
         adsAdapter.submitList(images)
         binding.adsVP.setPageTransformer(ZoomOutPageTransformer())
+
+        val onBrandClick = { id : Int ->
+            val action = HomeFragmentDirections
+                .actionHomeFragmentToProductsFragment(
+                    id
+                )
+            Navigation.findNavController(requireView()).navigate(action)
+        }
         brandsAdapter = BrandsAdapter(
             requireContext(),
             {

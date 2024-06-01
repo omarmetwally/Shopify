@@ -54,4 +54,3 @@ class HomeViewModel (private val repository: ShopifyRepository) : ViewModel() {
             }
         }
     }
-}

@@ -16,7 +16,6 @@ import com.omarinc.shopify.models.Brands
 class BrandsAdapter(
     val context: Context,
     private val listener: (id: String)->Unit,
-    //private val favListener: (latitude:Double, longitude:Double)->Unit
 ) : ListAdapter<Brands, BrandsViewHolder>(
     BrandsDiffUtil()
 ) {
@@ -43,6 +42,7 @@ class BrandsAdapter(
             .into(binding.brandImage)
         binding.planConstrainLayout.setOnClickListener {
             listener.invoke(current.id)
+
         }
     }
 }

@@ -95,7 +95,8 @@ dependencies {
     implementation ("com.airbnb.android:lottie:6.4.0")
     //loading animation
     implementation ("com.github.leandroborgesferreira:loading-button-android:2.3.0")
-
+    //dots viewPager
+    implementation("com.tbuonomo:dotsindicator:5.0")
 
 
     implementation ("androidx.navigation:navigation-fragment:2.5.3")
@@ -159,5 +160,11 @@ dependencies {
     //ImageViewShape
     implementation ("com.google.android.material:material:1.6.0")
 
+
+    // circular image
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+
+    //OkHttp
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
 }
