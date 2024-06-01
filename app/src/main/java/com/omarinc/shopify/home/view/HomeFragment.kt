@@ -1,6 +1,7 @@
 package com.omarinc.shopify.home.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,9 +19,9 @@ import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
-import com.omarinc.shopify.models.Brand
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
 import kotlinx.coroutines.launch
 
@@ -36,12 +37,12 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val factory = HomeViewModel.HomeViewModelFactory(ShopifyRepositoryImpl(ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-            SharedPreferencesImpl.getInstance(requireContext())))
+            SharedPreferencesImpl.getInstance(requireContext()),
+            CurrencyRemoteDataSourceImpl.getInstance()))
 
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
         viewModel.getBrands()
-        viewModel.getProductsByBrandId("gid://shopify/Collection/308804419763")
 
     }
 
@@ -90,7 +91,7 @@ class HomeFragment : Fragment() {
         adsAdapter.submitList(images)
         binding.adsVP.setPageTransformer(ZoomOutPageTransformer())
 
-        val onBrandClick = { id : Int ->
+        val onBrandClick = { id : String ->
             val action = HomeFragmentDirections
                 .actionHomeFragmentToProductsFragment(
                     id
@@ -100,7 +101,12 @@ class HomeFragment : Fragment() {
         brandsAdapter = BrandsAdapter(
             requireContext(),
             {
-
+                Log.i("TAG", "onViewCreated: it id "+it)
+                val action = HomeFragmentDirections
+                    .actionHomeFragmentToProductsFragment(
+                        it
+                    )
+                Navigation.findNavController(requireView()).navigate(action)
             }
         )
 
@@ -109,34 +115,5 @@ class HomeFragment : Fragment() {
         binding.brandsRV.layoutManager = brandsManager
         binding.brandsRV.adapter = brandsAdapter
 
-        val dummyBrands = listOf(
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
-
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
-
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
-
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
-
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
-
-        )
-
-        //brandsAdapter.submitList(dummyBrands)
     }
 }

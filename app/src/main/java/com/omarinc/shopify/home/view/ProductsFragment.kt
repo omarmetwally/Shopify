@@ -1,26 +1,52 @@
 package com.omarinc.shopify.home.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapter
-import com.omarinc.shopify.R
-import com.omarinc.shopify.databinding.FragmentHomeBinding
+import com.example.weatherforecastapplication.favouritesFeature.view.ProductsAdapter
 import com.omarinc.shopify.databinding.FragmentProductsBinding
-import com.omarinc.shopify.models.Brand
+import com.omarinc.shopify.home.viewmodel.HomeViewModel
+import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.network.ApiState
+import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import kotlinx.coroutines.launch
 
 
 class ProductsFragment : Fragment() {
 
     private lateinit var binding: FragmentProductsBinding
     private lateinit var productsManager: GridLayoutManager
-    private lateinit var productsAdapter: BrandsAdapter
+    private lateinit var productsAdapter: ProductsAdapter
+    private lateinit var viewModel: HomeViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val factory = HomeViewModel.HomeViewModelFactory(
+            ShopifyRepositoryImpl(
+                ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+            SharedPreferencesImpl.getInstance(requireContext()),
+            CurrencyRemoteDataSourceImpl.getInstance())
+        )
+
+        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+
+        val id =  arguments?.getString("id")
+        Log.i("TAG", "onCreate: id"+id)
+
+        viewModel.getProductsByBrandId(id?:"gid://shopify/Collection/308804419763")
 
     }
 
@@ -36,44 +62,36 @@ class ProductsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        productsAdapter = BrandsAdapter(
+        productsAdapter = ProductsAdapter(
             requireContext(),
-            {id:Int -> }
+            {}
         )
+
 
         productsManager = GridLayoutManager(requireContext(),2)
         productsManager.orientation = LinearLayoutManager.VERTICAL
         binding.productsRV.layoutManager = productsManager
         binding.productsRV.adapter = productsAdapter
 
-        val dummyBrands = listOf(
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.productsApiState.collect{ result ->
+                    when(result){
+                        is ApiState.Loading ->{
 
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
+                        }
 
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
+                        is ApiState.Success ->{
+                            productsAdapter.submitList(result.response)
+                        }
+                        is ApiState.Failure ->{
 
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
+                        }
+                    }
+                }
+            }
+        }
 
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
 
-            )
-
-        productsAdapter.submitList(dummyBrands)
     }
 }
