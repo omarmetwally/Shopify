@@ -13,6 +13,7 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.ActivityMainBinding
+import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.utilities.Constants
 
 class MainActivity : AppCompatActivity() {

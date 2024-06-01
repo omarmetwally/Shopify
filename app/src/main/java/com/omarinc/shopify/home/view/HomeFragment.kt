@@ -5,6 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,7 +16,13 @@ import com.example.weatherforecastapplication.favouritesFeature.view.AdsAdapter
 import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
+import com.omarinc.shopify.home.viewmodel.HomeViewModel
+import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.Brand
+import com.omarinc.shopify.network.ApiState
+import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
@@ -21,9 +31,18 @@ class HomeFragment : Fragment() {
     private lateinit var brandsManager: GridLayoutManager
     private lateinit var brandsAdapter: BrandsAdapter
     private lateinit var adsAdapter: AdsAdapter
+    private lateinit var viewModel: HomeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val factory = HomeViewModel.HomeViewModelFactory(ShopifyRepositoryImpl(ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+            SharedPreferencesImpl.getInstance(requireContext())))
+
+        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+
+        viewModel.getBrands()
+        viewModel.getProductsByBrandId("gid://shopify/Collection/308804419763")
+
     }
 
     override fun onCreateView(
@@ -40,6 +59,25 @@ class HomeFragment : Fragment() {
 
 
         adsAdapter = AdsAdapter(requireContext())
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.apiState.collect{ result ->
+                    when(result){
+                        is ApiState.Loading ->{
+
+                        }
+
+                        is ApiState.Success ->{
+                            brandsAdapter.submitList(result.response)
+                        }
+                        is ApiState.Failure ->{
+
+                        }
+                    }
+                }
+            }
+        }
 
         binding.adsVP.adapter = adsAdapter
         val images = listOf(
@@ -61,7 +99,9 @@ class HomeFragment : Fragment() {
         }
         brandsAdapter = BrandsAdapter(
             requireContext(),
-            onBrandClick
+            {
+
+            }
         )
 
         brandsManager = GridLayoutManager(requireContext(),2)
@@ -97,6 +137,6 @@ class HomeFragment : Fragment() {
 
         )
 
-        brandsAdapter.submitList(dummyBrands)
+        //brandsAdapter.submitList(dummyBrands)
     }
 }
