@@ -1,6 +1,5 @@
 package com.omarinc.shopify.model
 
-import com.omarinc.shopify.GetBrandsQuery
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.Currencies
@@ -10,7 +9,6 @@ import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
-import retrofit2.Response
 
 interface ShopifyRepository {
     suspend fun registerUser(
@@ -29,7 +27,7 @@ interface ShopifyRepository {
     suspend fun readBooleanFromSharedPreferences(key: String): Boolean
     suspend fun readUserToken(): String
 
-    suspend fun getCurrencyRate(requiredCurrency: Currencies): Flow<ApiState<CurrencyResponse>>
+    suspend fun getCurrencyRate(requiredCurrency: String): Flow<ApiState<CurrencyResponse>>
 
     suspend fun writeCurrencyRate(key: String, value: Long)
 

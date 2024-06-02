@@ -80,7 +80,7 @@ class ShopifyRepositoryImpl(
         return sharedPreferences.readStringFromSharedPreferences(Constants.USER_TOKEN)
     }
 
-    override suspend fun getCurrencyRate(requiredCurrency: Currencies): Flow<ApiState<CurrencyResponse>> {
+    override suspend fun getCurrencyRate(requiredCurrency: String): Flow<ApiState<CurrencyResponse>> {
         return currencyRemoteDataSource.getCurrencyRate(requiredCurrency)
     }
 

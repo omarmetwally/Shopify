@@ -32,6 +32,7 @@ class ProductDetailsFragment : Fragment() {
 
     companion object {
         fun newInstance() = ProductDetailsFragment()
+        val TAG = "ProductDetailsFragment"
     }
 
     private lateinit var viewModel: ProductDetailsViewModel
@@ -70,7 +71,7 @@ class ProductDetailsFragment : Fragment() {
 
 
         checkFavorite(userToken, productId)
-
+        getCurrentCurrency()
         clickFavorite(userToken, productId)
         binding.btnBack.setOnClickListener{
             findNavController().navigateUp()
@@ -151,6 +152,21 @@ class ProductDetailsFragment : Fragment() {
                     ApiState.Loading -> {
                     }
                 }
+            }
+        }
+    }
+
+    private fun getCurrentCurrency(){
+
+        lifecycleScope.launch {
+            viewModel.requiredCurrency.collect {result->
+
+                when(result){
+                    is ApiState.Failure -> Log.i(TAG, "getCurrentCurrency: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
+                    is ApiState.Success -> Log.i(TAG, "getCurrentCurrency: ${result.response.data.values}")
+                }
+
             }
         }
     }
