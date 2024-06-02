@@ -30,7 +30,8 @@ class MainActivity : AppCompatActivity() {
 
         navController =
             Navigation.findNavController(this, R.id.nav_host_fragment)
-        setupActionBarWithNavController(navController)
+//        setupActionBarWithNavController(navController)
+        NavigationUI.setupWithNavController(binding.bottomNav, navController)
 
         NavigationUI.setupWithNavController(binding.bottomNav, navController)
         // 3lshan el bottomNavigation y5tafe

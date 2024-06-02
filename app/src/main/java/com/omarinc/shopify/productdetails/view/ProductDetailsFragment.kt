@@ -10,16 +10,20 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayoutMediator
+import com.omarinc.shopify.R
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModel
 import com.omarinc.shopify.databinding.FragmentProductDetailsBinding
+import com.omarinc.shopify.favorites.model.FavoriteItem
+import com.omarinc.shopify.favorites.model.FavoritesRepository
+import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModel
+import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModelFactory
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModelFactory
 import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Constants
 import com.omarinc.shopify.utilities.Helper
 import kotlinx.coroutines.launch
 
@@ -30,6 +34,7 @@ class ProductDetailsFragment : Fragment() {
     }
 
     private lateinit var viewModel: ProductDetailsViewModel
+    private lateinit var favoriteViewModel: FavoriteViewModel
     private lateinit var binding: FragmentProductDetailsBinding
 
     override fun onCreateView(
@@ -49,10 +54,57 @@ class ProductDetailsFragment : Fragment() {
             sharedPreferences,
             CurrencyRemoteDataSourceImpl.getInstance()
         )
-        val factory = ProductDetailsViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, factory).get(ProductDetailsViewModel::class.java)
+        val productDetailsFactory = ProductDetailsViewModelFactory(repository)
+        viewModel =
+            ViewModelProvider(this, productDetailsFactory).get(ProductDetailsViewModel::class.java)
 
-//        val productId = arguments?.getString("productId") ?: ""
+        val favoriteFactory = FavoriteViewModelFactory(FavoritesRepository.getInstance())
+        favoriteViewModel =
+            ViewModelProvider(this, favoriteFactory).get(FavoriteViewModel::class.java)
+
+
+        loadProductDetails()
+
+        val userToken = sharedPreferences.readStringFromSharedPreferences(
+            Constants.USER_TOKEN
+        )
+        lifecycleScope.launch {
+            favoriteViewModel.checkIfFavorite(
+                userToken, "gid://shopify/Product/7880180302003"
+            )
+            favoriteViewModel.isFavorite.collect { isFavorite ->
+                binding.btnFavorite.setImageResource(
+                    if (isFavorite) R.drawable.ic_favorite_filled else R.drawable.ic_favorite_unfilled
+                )
+            }
+        }
+        binding.btnFavorite.setOnClickListener {
+            lifecycleScope.launch {
+                val isFavorite = favoriteViewModel.isFavorite.value
+                if (isFavorite) {
+                    favoriteViewModel.removeFromFavorites(
+                        userToken,
+                        "gid://shopify/Product/7880180302003"
+                    )
+                } else {
+                    val favoriteItem = FavoriteItem(
+                        productId = "gid://shopify/Product/7880180302003",
+                        productName = binding.tvProductName.text.toString(),
+                        productPrice = binding.tvProductPrice.text.toString().removeSuffix(" USD")
+                            .toDouble(),
+                        productImage = viewModel.apiState.value.let {
+                            if (it is ApiState.Success) it.response.images[0].src else ""
+                        }
+                    )
+                    favoriteViewModel.addToFavorites(userToken, favoriteItem)
+                }
+            }
+        }
+    }
+
+
+    private fun loadProductDetails() {
+        //        val productId = arguments?.getString("productId") ?: ""
 
         viewModel.getProductById("gid://shopify/Product/7880180302003")
         lifecycleScope.launch {
@@ -71,7 +123,7 @@ class ProductDetailsFragment : Fragment() {
                         val adapter = ImagesPagerAdapter(requireContext(), imageUrls)
                         binding.viewPagerImages.adapter = adapter
 
-//                        TabLayoutMediator(binding.tabDots, binding.viewPagerImages) { _, _ -> }.attach()
+                        //                        TabLayoutMediator(binding.tabDots, binding.viewPagerImages) { _, _ -> }.attach()
                         val dotsIndicator = binding.dotsIndicator
                         dotsIndicator.attachTo(binding.viewPagerImages)
 
@@ -79,7 +131,8 @@ class ProductDetailsFragment : Fragment() {
                         val randomComments = Helper.getRandomComments(staticComments, 3)
                         val commentsAdapter = CommentsAdapter(randomComments)
                         binding.rvCustomerComments.adapter = commentsAdapter
-                        binding.rvCustomerComments.layoutManager = LinearLayoutManager(requireContext())
+                        binding.rvCustomerComments.layoutManager =
+                            LinearLayoutManager(requireContext())
                     }
 
                     is ApiState.Failure -> {

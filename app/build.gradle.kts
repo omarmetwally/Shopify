@@ -5,6 +5,7 @@ plugins {
     id("androidx.navigation.safeargs")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.apollographql.apollo3").version("3.7.3")
+    id("com.google.gms.google-services")
 }
 
 apollo {
@@ -103,6 +104,9 @@ dependencies {
     implementation ("androidx.navigation:navigation-ui:2.5.3")
 
 
+    //firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-firestore")
 
 
     // Dependencies for local unit tests
