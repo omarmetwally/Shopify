@@ -15,7 +15,9 @@ import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.ActivityMainBinding
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.utilities.Constants
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
