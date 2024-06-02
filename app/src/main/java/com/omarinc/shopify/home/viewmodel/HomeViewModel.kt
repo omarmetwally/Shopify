@@ -10,6 +10,7 @@ import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.network.ApiState
+import com.omarinc.shopify.productdetails.model.Products
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,7 +32,17 @@ class HomeViewModel (private val repository: ShopifyRepository) : ViewModel() {
             }
         }
     }
-
+    private val _searchResults = MutableStateFlow<List<Products>>(emptyList())
+    val searchResults: StateFlow<List<Products>> get() = _searchResults
+    fun searchProducts(query: String) {
+        viewModelScope.launch {
+            try {
+                val response = repository.searchProducts(query)
+                _searchResults.value = response
+            } catch (e: Exception) {
+            }
+        }
+    }
     fun getProductsByBrandId(id: String) {
         Log.i("TAG", "getBrands: Viewmodel")
         viewModelScope.launch {

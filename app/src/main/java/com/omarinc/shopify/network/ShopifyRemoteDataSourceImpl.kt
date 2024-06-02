@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
+import com.apollographql.apollo3.api.Input
 import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
 import com.omarinc.shopify.CreateCustomerAccessTokenMutation
@@ -16,8 +17,10 @@ import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.Product
 
 import com.omarinc.shopify.GetProductByIdQuery
+import com.omarinc.shopify.SearchProductsQuery
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.ProductImage
+import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.type.CustomerCreateInput
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
@@ -215,6 +218,30 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             emit(ApiState.Failure(e))
         }
     }
+    override suspend fun searchProducts(query: String): List<Products> {
+        val response = apolloClient.query(
+            SearchProductsQuery(query = query)
+        ).execute()
+
+        if (response.hasErrors()) {
+            throw ApolloException(response.errors?.joinToString { it.message } ?: "Unknown error")
+        }
+
+        val products = response.data?.products?.edges?.mapNotNull { edge ->
+            edge.node?.let {
+                Products(
+                    id = it.id,
+                    title = it.title,
+                    description = it.description.orEmpty(),
+                    imageUrl = it.images.edges.firstOrNull()?.node?.src.toString() ?: "",
+                    price = it.variants.edges.firstOrNull()?.node?.priceV2?.amount ?: "0.0"
+                )
+            }
+        } ?: emptyList()
+
+        return products
+    }
+
+
 
 }
-
