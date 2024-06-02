@@ -14,7 +14,10 @@
         <action
             android:id="@+id/action_homeFragment_to_productsFragment"
             app:destination="@id/productsFragment" />
-    </fragment>
+      <action
+          android:id="@+id/action_homeFragment_to_favoritesFragment"
+          app:destination="@id/favoritesFragment" />
+  </fragment>
   
   <fragment
         android:id="@+id/testFragment"
@@ -30,7 +33,10 @@
         <action
             android:id="@+id/action_profileFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
-    </fragment>
+      <action
+          android:id="@+id/action_profileFragment_to_favoritesFragment"
+          app:destination="@id/favoritesFragment" />
+  </fragment>
   
   <fragment
         android:id="@+id/settingsFragment"
@@ -56,7 +62,11 @@
         android:id="@+id/categoriesFragment"
         android:name="com.omarinc.shopify.home.view.CategoriesFragment"
         android:label="fragment_categories"
-        tools:layout="@layout/fragment_categories" />
+        tools:layout="@layout/fragment_categories" >
+        <action
+            android:id="@+id/action_categoriesFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment" />
+    </fragment>
     <fragment
         android:id="@+id/productDetailsFragment"
         android:name="com.omarinc.shopify.productdetails.view.ProductDetailsFragment"
@@ -65,10 +75,26 @@
         <action
             android:id="@+id/action_productDetailsFragment_to_productsFragment"
             app:destination="@id/productsFragment" />
+        <argument
+            android:name="productId"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/favoritesFragment"
         android:name="com.omarinc.shopify.favorites.view.FavoritesFragment"
         android:label="fragment_favorites"
-        tools:layout="@layout/fragment_favorites" />
+        tools:layout="@layout/fragment_favorites" >
+        <action
+            android:id="@+id/action_favoritesFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.omarinc.shopify.search.view.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
+    </fragment>
 </navigation>

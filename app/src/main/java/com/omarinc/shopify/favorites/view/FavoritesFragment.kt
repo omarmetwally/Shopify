@@ -2,32 +2,59 @@ package com.omarinc.shopify.favorites.view
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.omarinc.shopify.R
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import com.omarinc.shopify.databinding.FragmentFavoritesBinding
+import com.omarinc.shopify.favorites.model.FavoritesRepository
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModel
+import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModelFactory
+import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Constants
+import kotlinx.coroutines.launch
 
 class FavoritesFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = FavoritesFragment()
-    }
-
     private lateinit var viewModel: FavoriteViewModel
+    private lateinit var binding: FragmentFavoritesBinding
+    private lateinit var favoritesAdapter: FavoritesAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_favorites, container, false)
+        binding = FragmentFavoritesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(FavoriteViewModel::class.java)
-        // TODO: Use the ViewModel
-    }
+        val favoriteFactory = FavoriteViewModelFactory(FavoritesRepository.getInstance())
+        viewModel = ViewModelProvider(this, favoriteFactory).get(FavoriteViewModel::class.java)
 
+        favoritesAdapter = FavoritesAdapter(requireContext()) { productId ->
+            val action = FavoritesFragmentDirections.actionFavoritesFragmentToProductDetailsFragment(productId)
+            findNavController().navigate(action)
+        }
+        binding.rvFavorites.layoutManager = GridLayoutManager(requireContext(), 3)
+        binding.rvFavorites.adapter = favoritesAdapter
+
+        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
+        val userToken = sharedPreferences.readStringFromSharedPreferences(Constants.USER_TOKEN)
+
+        viewModel.getFavorites(userToken)
+
+        binding.btnBack.setOnClickListener{
+            findNavController().navigateUp()
+        }
+        lifecycleScope.launch {
+            viewModel.favorites.collect { favoriteItems ->
+                favoritesAdapter.submitList(favoriteItems)
+            }
+        }
+
+    }
 }

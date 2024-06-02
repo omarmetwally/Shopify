@@ -46,6 +46,9 @@
     <string name="my_wishlist">My Wishlist</string>
     <string name="my_delivery_address">Delivery Address</string>
     <string name="logout">Log Out</string>
+    <string name="favorites">Favorites</string>
+    <string name="search_">Search...</string>
+    <string name="products">Products</string>
 
 
 </resources>

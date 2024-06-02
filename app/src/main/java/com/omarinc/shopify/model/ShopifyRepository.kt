@@ -6,6 +6,8 @@ import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
+import com.omarinc.shopify.productdetails.model.Products
+import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
 
 interface ShopifyRepository {
@@ -15,8 +17,8 @@ interface ShopifyRepository {
         firstName: String
     ): Flow<ApiState<RegisterUserResponse>>
 
-     fun getBrands() :Flow<ApiState<List<Brands>>>
-    fun getProductsByBrandId(id:String) :Flow<ApiState<List<Product>>>
+    fun getBrands(): Flow<ApiState<List<Brands>>>
+    fun getProductsByBrandId(id: String): Flow<ApiState<List<Product>>>
 
 
     suspend fun loginUser(email: String, password: String): Flow<ApiState<String>>
@@ -27,12 +29,13 @@ interface ShopifyRepository {
 
     suspend fun getCurrencyRate(requiredCurrency: String): Flow<ApiState<CurrencyResponse>>
 
-   suspend fun writeCurrencyRate(key: String, value: Long)
+    suspend fun writeCurrencyRate(key: String, value: Long)
 
-   suspend fun writeCurrencyUnit(key: String, value: String)
+    suspend fun writeCurrencyUnit(key: String, value: String)
 
-   suspend fun readCurrencyRate(key: String): Long
+    suspend fun readCurrencyRate(key: String): Long
 
-   suspend fun readCurrencyUnit(key: String): String
+    suspend fun readCurrencyUnit(key: String): String
     suspend fun getProductById(productId: String): Flow<ApiState<ProductDetails>>
+    suspend fun searchProducts(query: String): List<Products>
 }

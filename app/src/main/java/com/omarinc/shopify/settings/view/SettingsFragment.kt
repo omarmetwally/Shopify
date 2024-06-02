@@ -18,6 +18,8 @@ import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.settings.viewModel.SettingsViewModel
 import com.omarinc.shopify.settings.viewModel.SettingsViewModelFactory
 import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
 

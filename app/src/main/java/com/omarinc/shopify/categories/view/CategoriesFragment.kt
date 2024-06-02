@@ -82,8 +82,12 @@ class CategoriesFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.testFragment -> {
-                findNavController().navigate(R.id.testFragment)
+            R.id.searchFragment -> {
+                findNavController().navigate(R.id.searchFragment)
+                true
+            }
+            R.id.favoritesFragment -> {
+                findNavController().navigate(R.id.favoritesFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)

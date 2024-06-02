@@ -9,6 +9,7 @@ import com.omarinc.shopify.network.ShopifyRemoteDataSource
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSource
 import com.omarinc.shopify.productdetails.model.ProductDetails
+import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
@@ -104,4 +105,7 @@ class ShopifyRepositoryImpl(
     }
 
 
+    override suspend fun searchProducts(query: String): List<Products> {
+        return shopifyRemoteDataSource.searchProducts(query)
+    }
 }
