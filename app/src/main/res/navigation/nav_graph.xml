@@ -44,12 +44,12 @@
         android:name="com.omarinc.shopify.home.view.ProductsFragment"
         android:label="fragment_products"
         tools:layout="@layout/fragment_products" >
-        <argument
-            android:name="id"
-            app:argType="integer" />
       <action
           android:id="@+id/action_productsFragment_to_productDetailsFragment"
           app:destination="@id/productDetailsFragment" />
+      <argument
+          android:name="id"
+          app:argType="string" />
   </fragment>
   
     <fragment

@@ -1,5 +1,8 @@
 package com.omarinc.shopify.model
 
+import com.omarinc.shopify.GetBrandsQuery
+import com.omarinc.shopify.models.Brands
+import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.network.ApiState
@@ -14,6 +17,10 @@ interface ShopifyRepository {
         password: String,
         firstName: String
     ): Flow<ApiState<RegisterUserResponse>>
+
+     fun getBrands() :Flow<ApiState<List<Brands>>>
+    fun getProductsByBrandId(id:String) :Flow<ApiState<List<Product>>>
+
 
     suspend fun loginUser(email: String, password: String): Flow<ApiState<String>>
 

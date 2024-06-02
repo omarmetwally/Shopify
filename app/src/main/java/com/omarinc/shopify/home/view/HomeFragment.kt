@@ -1,18 +1,34 @@
 package com.omarinc.shopify.home.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherforecastapplication.favouritesFeature.view.AdsAdapter
 import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
-import com.omarinc.shopify.models.Brand
+import com.omarinc.shopify.home.viewmodel.HomeViewModel
+import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.network.ApiState
+import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
@@ -21,9 +37,20 @@ class HomeFragment : Fragment() {
     private lateinit var brandsManager: GridLayoutManager
     private lateinit var brandsAdapter: BrandsAdapter
     private lateinit var adsAdapter: AdsAdapter
+    private lateinit var viewModel: HomeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+
+        val factory = HomeViewModel.HomeViewModelFactory(ShopifyRepositoryImpl(ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+            SharedPreferencesImpl.getInstance(requireContext()),
+            CurrencyRemoteDataSourceImpl.getInstance()))
+
+        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+
+        viewModel.getBrands()
+
     }
 
     override fun onCreateView(
@@ -31,6 +58,8 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
+        (activity as? AppCompatActivity)?.setSupportActionBar(binding.toolbar)
+
         return binding.root
     }
 
@@ -40,6 +69,25 @@ class HomeFragment : Fragment() {
 
 
         adsAdapter = AdsAdapter(requireContext())
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.apiState.collect{ result ->
+                    when(result){
+                        is ApiState.Loading ->{
+
+                        }
+
+                        is ApiState.Success ->{
+                            brandsAdapter.submitList(result.response)
+                        }
+                        is ApiState.Failure ->{
+
+                        }
+                    }
+                }
+            }
+        }
 
         binding.adsVP.adapter = adsAdapter
         val images = listOf(
@@ -52,7 +100,7 @@ class HomeFragment : Fragment() {
         adsAdapter.submitList(images)
         binding.adsVP.setPageTransformer(ZoomOutPageTransformer())
 
-        val onBrandClick = { id : Int ->
+        val onBrandClick = { id : String ->
             val action = HomeFragmentDirections
                 .actionHomeFragmentToProductsFragment(
                     id
@@ -61,7 +109,14 @@ class HomeFragment : Fragment() {
         }
         brandsAdapter = BrandsAdapter(
             requireContext(),
-            onBrandClick
+            {
+                Log.i("TAG", "onViewCreated: it id "+it)
+                val action = HomeFragmentDirections
+                    .actionHomeFragmentToProductsFragment(
+                        it
+                    )
+                Navigation.findNavController(requireView()).navigate(action)
+            }
         )
 
         brandsManager = GridLayoutManager(requireContext(),2)
@@ -69,34 +124,26 @@ class HomeFragment : Fragment() {
         binding.brandsRV.layoutManager = brandsManager
         binding.brandsRV.adapter = brandsAdapter
 
-        val dummyBrands = listOf(
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
-
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
-
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
-
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
-
-            Brand(R.drawable.shoe, "Brand 1"),
-            Brand(R.drawable.shoe, "Brand 2"),
-            Brand(R.drawable.shoe, "Brand 3"),
-            Brand(R.drawable.shoe, "Brand 4"),
-
-        )
-
-        brandsAdapter.submitList(dummyBrands)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.tool_bar_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.testFragment -> {
+                findNavController().navigate(R.id.testFragment)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+
+
+
+
 }
