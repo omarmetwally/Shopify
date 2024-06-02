@@ -26,11 +26,11 @@ class CurrencyRemoteDataSourceImpl : CurrencyRemoteDataSource {
     }
 
 
-    override fun getCurrencyRate(requiredCurrency: Currencies): Flow<ApiState<CurrencyResponse>> {
+    override fun getCurrencyRate(requiredCurrency: String): Flow<ApiState<CurrencyResponse>> {
         return flow {
             emit(ApiState.Loading)
             try {
-                val response = currencyService.getLatestRates(CURRENCY_API_KEY, "USD", requiredCurrency.name)
+                val response = currencyService.getLatestRates(CURRENCY_API_KEY, "USD", requiredCurrency)
                 if (response.isSuccessful) {
                     response.body()?.let {
                         emit(ApiState.Success(it))

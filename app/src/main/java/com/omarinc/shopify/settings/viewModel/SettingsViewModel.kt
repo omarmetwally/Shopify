@@ -9,10 +9,12 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.utilities.Constants.CURRENCY_RATE
 import com.omarinc.shopify.utilities.Constants.CURRENCY_UNIT
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SettingsViewModel(private val repository: ShopifyRepository) : ViewModel() {
 
@@ -20,7 +22,7 @@ class SettingsViewModel(private val repository: ShopifyRepository) : ViewModel()
     private var _requiredCurrency = MutableStateFlow<ApiState<CurrencyResponse>>(ApiState.Loading)
     val requiredCurrency = _requiredCurrency.asStateFlow()
 
-    fun getRequiredCurrency(requiredCurrency: Currencies) {
+   /* fun getRequiredCurrency(requiredCurrency: Currencies) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getCurrencyRate(requiredCurrency)
                 .catch { error ->
@@ -31,14 +33,14 @@ class SettingsViewModel(private val repository: ShopifyRepository) : ViewModel()
                         response ?: ApiState.Failure(Throwable("Something went wrong"))
                 }
         }
-    }
+    }*/
 
-    fun setCurrency(rate: Double, unit: String) {
+    fun setCurrency(unit: String) {
         viewModelScope.launch(Dispatchers.IO) {
-
-            repository.writeCurrencyRate(CURRENCY_RATE, rate.toLong())
 
             repository.writeCurrencyUnit(CURRENCY_UNIT, unit)
         }
     }
+
+
 }

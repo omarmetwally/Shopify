@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface CurrencyRemoteDataSource {
 
-    fun getCurrencyRate(requiredCurrency: Currencies): Flow<ApiState<CurrencyResponse>>
+    fun getCurrencyRate(requiredCurrency: String): Flow<ApiState<CurrencyResponse>>
 }
