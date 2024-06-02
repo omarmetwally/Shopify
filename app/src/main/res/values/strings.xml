@@ -45,6 +45,9 @@
     <string name="my_wishlist">My Wishlist</string>
     <string name="my_delivery_address">Delivery Address</string>
     <string name="logout">Log Out</string>
+    <string name="totalPrice">"Total Price : "</string>
+    <string name="createdAt">"Created At : "</string>
+    <string name="addressOrder">"Address : "</string>
 
 
 </resources>

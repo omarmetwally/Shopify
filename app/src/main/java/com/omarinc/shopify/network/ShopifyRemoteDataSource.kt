@@ -1,9 +1,11 @@
 package com.omarinc.shopify.network
 
+import com.omarinc.shopify.CustomerOrdersQuery
 import com.omarinc.shopify.GetBrandsQuery
 import com.omarinc.shopify.model.RegisterUserResponse
 import com.omarinc.shopify.models.Brand
 import com.omarinc.shopify.models.Brands
+import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import kotlinx.coroutines.flow.Flow
@@ -14,6 +16,8 @@ interface ShopifyRemoteDataSource {
     fun loginUser(email: String, password: String): Flow<ApiState<String>>
 
     fun getBrands():Flow<ApiState<List<Brands>>>
+
+    fun getCustomerOrders(token:String): Flow<ApiState<List<Order>>>
 
     fun getProductsByBrandId(id:String):Flow<ApiState<List<Product>>>
 

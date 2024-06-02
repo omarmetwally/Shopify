@@ -7,10 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.omarinc.shopify.profile.viewModel.ProfileViewModel
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentProfileBinding
+import com.omarinc.shopify.home.view.HomeFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,6 +47,11 @@ class ProfileFragment : Fragment() {
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
 
         setListeners()
+        _binding?.orders?.setOnClickListener {
+            val action = ProfileFragmentDirections
+                .actionProfileFragmentToOrdersFragment()
+            Navigation.findNavController(requireView()).navigate(action)
+        }
 
     }
 
