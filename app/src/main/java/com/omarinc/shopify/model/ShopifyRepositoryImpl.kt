@@ -13,14 +13,15 @@ import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class ShopifyRepositoryImpl(
+class ShopifyRepositoryImpl @Inject constructor(
     private val shopifyRemoteDataSource: ShopifyRemoteDataSource,
     private val sharedPreferences: ISharedPreferences,
     private val currencyRemoteDataSource: CurrencyRemoteDataSource
 ) : ShopifyRepository {
 
-    companion object {
+    /*companion object {
         @Volatile
         private var instance: ShopifyRepositoryImpl? = null
 
@@ -37,7 +38,7 @@ class ShopifyRepositoryImpl(
                 ).also { instance = it }
             }
         }
-    }
+    }*/
 
     override suspend fun registerUser(
         email: String,

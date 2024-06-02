@@ -11,14 +11,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.omarinc.shopify.databinding.FragmentRegistrationBinding
 import com.omarinc.shopify.registration.viewmodel.RegistrationViewModel
-import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
-import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.registration.viewModel.RegistrationViewModelFactory
-import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class RegistrationFragment : Fragment() {
 
     private lateinit var viewModel: RegistrationViewModel
@@ -35,14 +32,14 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
+      /*  val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             sharedPreferences,
             CurrencyRemoteDataSourceImpl.getInstance()
         )
-        val factory = RegistrationViewModelFactory(repository, requireContext())
-        viewModel = ViewModelProvider(this, factory).get(RegistrationViewModel::class.java)
+        val factory = RegistrationViewModelFactory(repository, requireContext())*/
+        viewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
 
         binding.btnRegister.setOnClickListener {
             val fullName = binding.nameRegisterEditText.text.toString().trim()

@@ -22,26 +22,28 @@ import com.omarinc.shopify.type.CustomerCreateInput
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-class ShopifyRemoteDataSourceImpl private constructor(private val context: Context) : ShopifyRemoteDataSource {
-    private val apolloClient: ApolloClient
+class ShopifyRemoteDataSourceImpl @Inject  constructor(//private val context: Context,
+                                                       private val apolloClient: ApolloClient) : ShopifyRemoteDataSource {
+    //private val apolloClient: ApolloClient
 
-    companion object {
-        @Volatile
-        private var instance: ShopifyRemoteDataSourceImpl? = null
+//    companion object {
+//        @Volatile
+//        private var instance: ShopifyRemoteDataSourceImpl? = null
+//
+//        fun getInstance(context: Context): ShopifyRemoteDataSourceImpl =
+//            instance ?: synchronized(this) {
+//                instance ?: ShopifyRemoteDataSourceImpl(context).also { instance = it }
+//            }
+//    }
 
-        fun getInstance(context: Context): ShopifyRemoteDataSourceImpl =
-            instance ?: synchronized(this) {
-                instance ?: ShopifyRemoteDataSourceImpl(context).also { instance = it }
-            }
-    }
-
-    init {
-        apolloClient = ApolloClient.Builder()
-            .serverUrl(Constants.BASE_URL_GRAPHQL)
-            .addHttpHeader(Constants.ACCESS_TOKEN_KEY, Constants.ACCESS_TOKEN_VALUE)
-            .build()
-    }
+//    init {
+//        apolloClient = ApolloClient.Builder()
+//            .serverUrl(Constants.BASE_URL_GRAPHQL)
+//            .addHttpHeader(Constants.ACCESS_TOKEN_KEY, Constants.ACCESS_TOKEN_VALUE)
+//            .build()
+//    }
 
     override fun registerUser(email: String, password: String, fullName: String): Flow<ApiState<RegisterUserResponse>> = flow {
         val input = CustomerCreateInput(

@@ -6,14 +6,15 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.utilities.Constants.CURRENCY_API_KEY
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-class CurrencyRemoteDataSourceImpl : CurrencyRemoteDataSource {
+class CurrencyRemoteDataSourceImpl @Inject constructor(private val currencyService : CurrencyApiService) : CurrencyRemoteDataSource {
 
-    private val currencyService : CurrencyApiService by lazy {
+    /*private val currencyService : CurrencyApiService by lazy {
         CurrencyRetrofitClient.getInstance().create(CurrencyApiService::class.java)
-    }
+    }*/
 
-    companion object {
+   /* companion object {
         private var instance: CurrencyRemoteDataSourceImpl? = null
 
         fun getInstance(): CurrencyRemoteDataSourceImpl {
@@ -23,7 +24,7 @@ class CurrencyRemoteDataSourceImpl : CurrencyRemoteDataSource {
             return instance!!
 
         }
-    }
+    }*/
 
 
     override fun getCurrencyRate(requiredCurrency: Currencies): Flow<ApiState<CurrencyResponse>> {

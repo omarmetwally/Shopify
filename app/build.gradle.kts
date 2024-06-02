@@ -5,6 +5,9 @@ plugins {
     id("androidx.navigation.safeargs")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.apollographql.apollo3").version("3.7.3")
+    //hilt
+    id ("com.google.dagger.hilt.android")
+
 }
 
 apollo {
@@ -53,6 +56,9 @@ android {
 dependencies {
 
 
+    // dagger hilt
+    implementation ("com.google.dagger:hilt-android:2.51")
+    kapt ("com.google.dagger:hilt-compiler:2.51")
     //Room
     implementation ("androidx.room:room-ktx:2.6.1")
     implementation ("androidx.room:room-runtime:2.6.1")

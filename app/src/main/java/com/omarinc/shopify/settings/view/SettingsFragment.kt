@@ -9,16 +9,14 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.omarinc.shopify.databinding.FragmentSettingsBinding
-import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
-import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.settings.viewModel.SettingsViewModel
 import com.omarinc.shopify.settings.viewModel.SettingsViewModelFactory
-import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class SettingsFragment : Fragment() {
 
     companion object {
@@ -82,16 +80,14 @@ class SettingsFragment : Fragment() {
 
     private fun setUpViewModel() {
 
-        val repository = ShopifyRepositoryImpl.getInstance(
+       /* val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             SharedPreferencesImpl.getInstance(requireContext()),
             CurrencyRemoteDataSourceImpl.getInstance()
         )
-        settingsViewModelFactory = SettingsViewModelFactory(repository)
+        settingsViewModelFactory = SettingsViewModelFactory(repository)*/
         settingsViewModel =
-            ViewModelProvider(this, settingsViewModelFactory)[SettingsViewModel::class.java]
-
-
+            ViewModelProvider(this)[SettingsViewModel::class.java]
     }
 }
 

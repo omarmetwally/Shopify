@@ -23,13 +23,11 @@ import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapt
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
-import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
-import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
 
@@ -43,11 +41,11 @@ class HomeFragment : Fragment() {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        val factory = HomeViewModel.HomeViewModelFactory(ShopifyRepositoryImpl(ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-            SharedPreferencesImpl.getInstance(requireContext()),
-            CurrencyRemoteDataSourceImpl.getInstance()))
+//        val factory = HomeViewModel.HomeViewModelFactory(ShopifyRepositoryImpl(ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+//            SharedPreferencesImpl.getInstance(requireContext()),
+//            CurrencyRemoteDataSourceImpl.getInstance()))
 
-        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
         viewModel.getBrands()
 

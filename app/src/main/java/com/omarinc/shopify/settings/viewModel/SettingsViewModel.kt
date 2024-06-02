@@ -8,13 +8,16 @@ import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.utilities.Constants.CURRENCY_RATE
 import com.omarinc.shopify.utilities.Constants.CURRENCY_UNIT
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SettingsViewModel(private val repository: ShopifyRepository) : ViewModel() {
+@HiltViewModel
+class SettingsViewModel @Inject constructor(private val repository: ShopifyRepository) : ViewModel() {
 
 
     private var _requiredCurrency = MutableStateFlow<ApiState<CurrencyResponse>>(ApiState.Loading)

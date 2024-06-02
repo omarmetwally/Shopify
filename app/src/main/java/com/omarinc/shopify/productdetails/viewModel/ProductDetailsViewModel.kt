@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProductDetailsViewModel(private val repository: ShopifyRepository) : ViewModel() {
+@HiltViewModel
+class ProductDetailsViewModel @Inject constructor(private val repository: ShopifyRepository) : ViewModel() {
 
     private val _apiState = MutableStateFlow<ApiState<ProductDetails>>(ApiState.Loading)
     val apiState: StateFlow<ApiState<ProductDetails>> = _apiState

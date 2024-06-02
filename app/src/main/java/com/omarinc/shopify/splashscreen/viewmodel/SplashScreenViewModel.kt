@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.utilities.Constants
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SplashScreenViewModel(private val repository: ShopifyRepository) : ViewModel() {
+@HiltViewModel
+class SplashScreenViewModel @Inject constructor(private val repository: ShopifyRepository) : ViewModel() {
 
     private val _navigationState = MutableStateFlow<SplashNavigationState>(SplashNavigationState.Checking)
     val navigationState: StateFlow<SplashNavigationState> = _navigationState

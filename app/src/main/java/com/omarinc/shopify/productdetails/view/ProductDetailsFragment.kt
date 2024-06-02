@@ -10,19 +10,13 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayoutMediator
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModel
 import com.omarinc.shopify.databinding.FragmentProductDetailsBinding
-import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
-import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModelFactory
-import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Helper
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-
+@AndroidEntryPoint
 class ProductDetailsFragment : Fragment() {
 
     companion object {
@@ -43,14 +37,14 @@ class ProductDetailsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
-        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
+      /*  val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             sharedPreferences,
             CurrencyRemoteDataSourceImpl.getInstance()
         )
-        val factory = ProductDetailsViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, factory).get(ProductDetailsViewModel::class.java)
+        val factory = ProductDetailsViewModelFactory(repository)*/
+        viewModel = ViewModelProvider(this).get(ProductDetailsViewModel::class.java)
 
 //        val productId = arguments?.getString("productId") ?: ""
 

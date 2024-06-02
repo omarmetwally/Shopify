@@ -1,17 +1,19 @@
-package com.omarinc.shopify.sharedpreferences
+package com.omarinc.shopify.sharedPreferences
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.utilities.Constants
+import javax.inject.Inject
 
-class SharedPreferencesImpl private constructor(context: Context) : ISharedPreferences {
-    private val sharedPreferences: SharedPreferences by lazy {
+class SharedPreferencesImpl @Inject constructor(
+                                                private val sharedPreferences: SharedPreferences) : ISharedPreferences {
+    /*private val sharedPreferences: SharedPreferences by lazy {
         context.getSharedPreferences(Constants.SETTINGS, AppCompatActivity.MODE_PRIVATE)
-    }
+    }*/
 
-    companion object {
+   /* companion object {
         private var instance: SharedPreferencesImpl? = null
 
         fun getInstance(context: Context): SharedPreferencesImpl {
@@ -19,7 +21,7 @@ class SharedPreferencesImpl private constructor(context: Context) : ISharedPrefe
                 instance ?: SharedPreferencesImpl(context).also { instance = it }
             }
         }
-    }
+    }*/
 
     override fun writeStringToSharedPreferences(key: String, value: String) {
         sharedPreferences.edit().putString(key, value).apply()

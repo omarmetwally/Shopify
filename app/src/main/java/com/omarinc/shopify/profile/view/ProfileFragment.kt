@@ -11,7 +11,9 @@ import androidx.navigation.fragment.findNavController
 import com.omarinc.shopify.profile.viewModel.ProfileViewModel
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentProfileBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ProfileFragment : Fragment() {
 
     companion object {

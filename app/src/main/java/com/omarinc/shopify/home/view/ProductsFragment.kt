@@ -12,18 +12,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapter
 import com.example.weatherforecastapplication.favouritesFeature.view.ProductsAdapter
 import com.omarinc.shopify.databinding.FragmentProductsBinding
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
-import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
-import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 
+@AndroidEntryPoint
 class ProductsFragment : Fragment() {
 
     private lateinit var binding: FragmentProductsBinding
@@ -34,14 +31,14 @@ class ProductsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val factory = HomeViewModel.HomeViewModelFactory(
-            ShopifyRepositoryImpl(
-                ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-            SharedPreferencesImpl.getInstance(requireContext()),
-            CurrencyRemoteDataSourceImpl.getInstance())
-        )
+//        val factory = HomeViewModel.HomeViewModelFactory(
+//            ShopifyRepositoryImpl(
+//                ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+//            SharedPreferencesImpl.getInstance(requireContext()),
+//            CurrencyRemoteDataSourceImpl.getInstance())
+//        )
 
-        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
         val id =  arguments?.getString("id")
         Log.i("TAG", "onCreate: id"+id)

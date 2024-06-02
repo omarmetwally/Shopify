@@ -12,14 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.omarinc.shopify.home.view.MainActivity
-import com.omarinc.shopify.model.ShopifyRepositoryImpl
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
-import com.omarinc.shopify.network.currency.CurrencyRemoteDataSource
-import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.shopify.splashscreen.viewmodel.SplashNavigationState
 import com.omarinc.shopify.splashscreen.viewmodel.SplashScreenViewModel
-import com.omarinc.shopify.splashscreen.viewmodel.SplashScreenViewModelFactory
 import kotlinx.coroutines.launch
 
 private const val ARG_PARAM1 = "param1"
@@ -49,14 +43,14 @@ class SplashScreenFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
+        /*val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             sharedPreferences,
             CurrencyRemoteDataSourceImpl.getInstance()
         )
-        val factory = SplashScreenViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, factory).get(SplashScreenViewModel::class.java)
+        val factory = SplashScreenViewModelFactory(repository)*/
+        viewModel = ViewModelProvider(this).get(SplashScreenViewModel::class.java)
 
         lifecycleScope.launch {
             viewModel.navigationState.collect { state ->

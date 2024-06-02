@@ -28,7 +28,6 @@ class CategoriesFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
 
     }
 
@@ -38,6 +37,7 @@ class CategoriesFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentCategoriesBinding.inflate(layoutInflater, container, false)
+        setHasOptionsMenu(true)
         (activity as? AppCompatActivity)?.setSupportActionBar(binding.toolbar)
         return binding.root
     }
