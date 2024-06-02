@@ -17,3 +17,11 @@ data class ProductDetails(
 data class ProductImage(
     val src: Any
 )
+
+data class Products(
+    val id: String,
+    val title: String,
+    val description: String,
+    val imageUrl: String,
+    val price: Any
+)

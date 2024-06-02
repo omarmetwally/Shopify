@@ -1,9 +1,8 @@
-package com.omarinc.shopify.sharedpreferences
+package com.omarinc.shopify.sharedPreferences
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
-import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.utilities.Constants
 
 class SharedPreferencesImpl private constructor(context: Context) : ISharedPreferences {

@@ -13,7 +13,7 @@ import com.omarinc.shopify.databinding.FragmentFavoritesBinding
 import com.omarinc.shopify.favorites.model.FavoritesRepository
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModel
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModelFactory
-import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.launch
 

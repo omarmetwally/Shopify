@@ -27,7 +27,7 @@ import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
@@ -134,8 +134,8 @@ class HomeFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.testFragment -> {
-                findNavController().navigate(R.id.testFragment)
+            R.id.searchFragment -> {
+                findNavController().navigate(R.id.searchFragment)
                 true
             }
             R.id.favoritesFragment -> {

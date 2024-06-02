@@ -17,7 +17,7 @@
         android:icon="@drawable/favourites"
         app:showAsAction="always" />
     <item
-        android:id="@+id/testFragment"
+        android:id="@+id/searchFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/search"

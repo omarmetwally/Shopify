@@ -14,7 +14,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapter
 import com.example.weatherforecastapplication.favouritesFeature.view.ProductsAdapter
 import com.omarinc.shopify.databinding.FragmentProductsBinding
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
@@ -22,9 +21,7 @@ import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged

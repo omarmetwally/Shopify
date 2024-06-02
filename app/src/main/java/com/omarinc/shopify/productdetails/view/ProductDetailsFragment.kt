@@ -23,7 +23,7 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModelFactory
-import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
+import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
 import com.omarinc.shopify.utilities.Helper
 import kotlinx.coroutines.launch
