@@ -85,14 +85,15 @@
 
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="@string/register_name_hint"
-                        android:visibility="gone">
+                        android:hint="@string/register_phone_hint"
+                        android:visibility="visible">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/nameEditText"
+                            android:id="@+id/PhoneEditText"
                             android:layout_width="match_parent"
 
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:inputType="phone" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 

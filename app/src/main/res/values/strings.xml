@@ -29,6 +29,7 @@
     <string name="register_now">New user? Register Now</string>
     <string name="first_time">Here\'s\nyour first\nstep with\nus!</string>
     <string name="register_name_hint">Name</string>
+    <string name="register_phone_hint">Phone Number</string>
     <string name="register_email_hint">Email</string>
     <string name="login_email_hint">Email</string>
     <string name="register_password_hint">Password</string>
