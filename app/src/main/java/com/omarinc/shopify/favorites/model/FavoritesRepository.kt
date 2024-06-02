@@ -30,9 +30,9 @@ class FavoritesRepository private constructor() : IFavoritesRepository {
             .delete().await()
     }
 
-    override suspend fun getFavorites(userToken: String): List<FavoriteItem> {
+    override suspend fun getFavorites(userToken: String): List<FavoriteItemFirebase> {
         return db.collection("users").document(userToken).collection("favorites").get().await()
-            .toObjects(FavoriteItem::class.java)
+            .toObjects(FavoriteItemFirebase::class.java)
     }
 
     override suspend fun isFavorite(userToken: String, productId: String): Boolean {

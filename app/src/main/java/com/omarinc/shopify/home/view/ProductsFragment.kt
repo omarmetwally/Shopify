@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapter
@@ -62,11 +63,10 @@ class ProductsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        productsAdapter = ProductsAdapter(
-            requireContext(),
-            {}
-        )
-
+        productsAdapter = ProductsAdapter(requireContext()) { productId ->
+            val action = ProductsFragmentDirections.actionProductsFragmentToProductDetailsFragment(productId)
+            findNavController().navigate(action)
+        }
 
         productsManager = GridLayoutManager(requireContext(),2)
         productsManager.orientation = LinearLayoutManager.VERTICAL

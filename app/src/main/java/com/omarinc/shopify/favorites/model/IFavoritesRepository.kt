@@ -5,7 +5,7 @@ interface IFavoritesRepository {
 
     suspend fun removeFavorite(userToken: String, productId: String)
 
-    suspend fun getFavorites(userToken: String): List<FavoriteItem>
+    suspend fun getFavorites(userToken: String): List<FavoriteItemFirebase>
 
     suspend fun isFavorite(userToken: String, productId: String): Boolean
 }
