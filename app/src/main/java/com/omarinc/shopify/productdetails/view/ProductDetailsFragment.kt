@@ -71,7 +71,7 @@ class ProductDetailsFragment : Fragment() {
 
 
         checkFavorite(userToken, productId)
-
+        getCurrentCurrency()
         clickFavorite(userToken, productId)
         binding.btnBack.setOnClickListener{
             findNavController().navigateUp()
@@ -162,8 +162,8 @@ class ProductDetailsFragment : Fragment() {
             viewModel.requiredCurrency.collect {result->
 
                 when(result){
-                    is ApiState.Failure -> TODO()
-                    ApiState.Loading -> TODO()
+                    is ApiState.Failure -> Log.i(TAG, "getCurrentCurrency: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
                     is ApiState.Success -> Log.i(TAG, "getCurrentCurrency: ${result.response.data.values}")
                 }
 

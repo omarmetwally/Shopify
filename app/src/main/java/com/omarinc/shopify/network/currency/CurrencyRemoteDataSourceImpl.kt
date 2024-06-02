@@ -1,6 +1,5 @@
 package com.omarinc.shopify.network.currency
 
-import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.utilities.Constants.CURRENCY_API_KEY
@@ -30,7 +29,7 @@ class CurrencyRemoteDataSourceImpl : CurrencyRemoteDataSource {
         return flow {
             emit(ApiState.Loading)
             try {
-                val response = currencyService.getLatestRates(CURRENCY_API_KEY, "USD", requiredCurrency)
+                val response = currencyService.getLatestRates(CURRENCY_API_KEY, "EGP", "USD")
                 if (response.isSuccessful) {
                     response.body()?.let {
                         emit(ApiState.Success(it))

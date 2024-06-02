@@ -1,7 +1,6 @@
 package com.omarinc.shopify.settings.view
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.omarinc.shopify.databinding.FragmentSettingsBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.Currencies
@@ -17,9 +15,7 @@ import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.settings.viewModel.SettingsViewModel
 import com.omarinc.shopify.settings.viewModel.SettingsViewModelFactory
-import com.omarinc.shopify.sharedpreferences.SharedPreferencesImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
-import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
