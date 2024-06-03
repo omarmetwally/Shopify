@@ -1,3 +1,57 @@
 <resources>
     <string name="app_name">Shopify</string>
+    <string name="home">Home</string>
+    <string name="categories">Categories</string>
+    <string name="cart">Cart</string>
+    <string name="favourites">Favourites</string>
+    <string name="me">Me</string>
+    <string name="search">Search</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="brands">Brands</string>
+    <string name="settings_text_view">Settings</string>
+    <string name="language_text_view">Language</string>
+    <string name="about_us_text_view">About us</string>
+    <string name="privacy_policy"><![CDATA[Privacy & Policy]]></string>
+
+    <string name="checkout_button">Checkout</string>
+    <string name="address">Adress</string>
+    <string name="payment_text_view">Payment</string>
+    <string name="shipping_to_text_view">Shipping to</string>
+    <string name="add_address_text_view">Add Address</string>
+
+
+    <!--strings for authentication screens-->
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="register_now">New user? Register Now</string>
+    <string name="first_time">Here\'s\nyour first\nstep with\nus!</string>
+    <string name="register_name_hint">Name</string>
+    <string name="register_phone_hint">Phone Number</string>
+    <string name="register_email_hint">Email</string>
+    <string name="login_email_hint">Email</string>
+    <string name="register_password_hint">Password</string>
+    <string name="login_password_hint">Password</string>
+    <string name="register_confirm_password_hint">Confirm Password *</string>
+    <string name="full_name_hint">Full Name</string>
+    <string name="skip">Skip</string>
+    <string name="have_account">Already \nhave an \nAccount?\n</string>
+    <string name="another_method">Another Methods</string>
+    <string name="forget_password">Forget Password</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="my_orders">My Orders</string>
+    <string name="my_wishlist">My Wishlist</string>
+    <string name="my_delivery_address">Delivery Address</string>
+    <string name="logout">Log Out</string>
+    <string name="favorites">Favorites</string>
+    <string name="search_">Search...</string>
+    <string name="products">Products</string>
+    <string name="totalPrice">"Total Price : "</string>
+    <string name="createdAt">"Created At : "</string>
+    <string name="addressOrder">"Address : "</string>
+
+
 </resources>

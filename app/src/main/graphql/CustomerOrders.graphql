@@ -1,0 +1,29 @@
+query CustomerOrders($accessToken: String!) {
+    customer(customerAccessToken: $accessToken) {
+        orders(first: 10) {
+            edges {
+                node {
+                    id
+                    name
+                    currencyCode
+                    canceledAt
+                    currentTotalPrice {
+                        amount
+                        currencyCode
+                    }
+                    currentSubtotalPrice {
+                        amount
+                        currencyCode
+                    }
+                    billingAddress {
+                        address1
+                    }
+                    currentTotalTax {
+                        currencyCode
+                        amount
+                    }
+                }
+            }
+        }
+    }
+}
