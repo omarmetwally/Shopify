@@ -36,6 +36,9 @@
       <action
           android:id="@+id/action_profileFragment_to_favoritesFragment"
           app:destination="@id/favoritesFragment" />
+      <action
+          android:id="@+id/action_profileFragment_to_ordersFragment"
+          app:destination="@id/ordersFragment" />
   </fragment>
   
   <fragment
@@ -97,4 +100,9 @@
             android:id="@+id/action_searchFragment_to_productDetailsFragment"
             app:destination="@id/productDetailsFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/ordersFragment"
+        android:name="com.omarinc.shopify.orders.view.OrdersFragment"
+        android:label="fragment_orders"
+        tools:layout="@layout/fragment_orders" />
 </navigation>

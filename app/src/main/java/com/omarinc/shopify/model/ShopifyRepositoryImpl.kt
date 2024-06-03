@@ -5,6 +5,7 @@ import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
+import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.network.ShopifyRemoteDataSource
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSource
@@ -107,5 +108,9 @@ class ShopifyRepositoryImpl(
 
     override suspend fun searchProducts(query: String): List<Products> {
         return shopifyRemoteDataSource.searchProducts(query)
+    }
+
+    override fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>> {
+        return shopifyRemoteDataSource.getCutomerOrders(token)
     }
 }

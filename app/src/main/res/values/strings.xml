@@ -49,6 +49,9 @@
     <string name="favorites">Favorites</string>
     <string name="search_">Search...</string>
     <string name="products">Products</string>
+    <string name="totalPrice">"Total Price : "</string>
+    <string name="createdAt">"Created At : "</string>
+    <string name="addressOrder">"Address : "</string>
 
 
 </resources>

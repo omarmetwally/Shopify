@@ -4,6 +4,7 @@ import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
+import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
@@ -38,4 +39,7 @@ interface ShopifyRepository {
     suspend fun readCurrencyUnit(key: String): String
     suspend fun getProductById(productId: String): Flow<ApiState<ProductDetails>>
     suspend fun searchProducts(query: String): List<Products>
+
+    fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>>
+
 }

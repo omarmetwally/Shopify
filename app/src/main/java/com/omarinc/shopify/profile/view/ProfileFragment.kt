@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.omarinc.shopify.profile.viewModel.ProfileViewModel
 import com.omarinc.shopify.R
@@ -50,6 +51,11 @@ class ProfileFragment : Fragment() {
         binding.settingsLinearLayout.setOnClickListener {
             val action = ProfileFragmentDirections.actionProfileFragmentToSettingsFragment()
             findNavController().navigate(action)
+        }
+        _binding?.orders?.setOnClickListener {
+            val action = ProfileFragmentDirections
+                .actionProfileFragmentToOrdersFragment()
+            Navigation.findNavController(requireView()).navigate(action)
         }
     }
 
