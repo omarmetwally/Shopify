@@ -158,6 +158,7 @@ class ProductDetailsFragment : Fragment() {
 
     private fun getCurrentCurrency(){
 
+        viewModel.getRequiredCurrency()
         lifecycleScope.launch {
             viewModel.requiredCurrency.collect {result->
 

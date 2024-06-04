@@ -19,21 +19,13 @@ import kotlinx.coroutines.withContext
 class SettingsViewModel(private val repository: ShopifyRepository) : ViewModel() {
 
 
-    private var _requiredCurrency = MutableStateFlow<ApiState<CurrencyResponse>>(ApiState.Loading)
-    val requiredCurrency = _requiredCurrency.asStateFlow()
-
-   /* fun getRequiredCurrency(requiredCurrency: Currencies) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getCurrencyRate(requiredCurrency)
-                .catch { error ->
-                    _requiredCurrency.value = ApiState.Failure(error)
-                }
-                .collect { response ->
-                    _requiredCurrency.value =
-                        response ?: ApiState.Failure(Throwable("Something went wrong"))
-                }
+    suspend fun getCurrencyUnit(): String {
+        val currencyUnit = viewModelScope.async(Dispatchers.IO) {
+            repository.readCurrencyUnit(CURRENCY_UNIT)
         }
-    }*/
+
+        return currencyUnit.await()
+    }
 
     fun setCurrency(unit: String) {
         viewModelScope.launch(Dispatchers.IO) {

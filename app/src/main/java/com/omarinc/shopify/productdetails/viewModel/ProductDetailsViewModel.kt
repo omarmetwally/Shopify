@@ -18,9 +18,10 @@ import kotlinx.coroutines.launch
 class ProductDetailsViewModel(private val repository: ShopifyRepository) : ViewModel() {
 
 
-    companion object{
+    companion object {
         val TAG = "ProductDetailsViewModel"
     }
+
     private val _apiState = MutableStateFlow<ApiState<ProductDetails>>(ApiState.Loading)
     val apiState: StateFlow<ApiState<ProductDetails>> = _apiState
 
@@ -39,7 +40,6 @@ class ProductDetailsViewModel(private val repository: ShopifyRepository) : ViewM
     fun getRequiredCurrency() {
         Log.i(TAG, "getRequiredCurrency: ")
         viewModelScope.launch(Dispatchers.IO) {
-            Log.i(TAG, "getRequiredCurrency: ${repository.readCurrencyUnit(CURRENCY_UNIT)}")
 
             repository.getCurrencyRate(repository.readCurrencyUnit(CURRENCY_UNIT))
                 .catch { error ->

@@ -9,21 +9,35 @@ import com.omarinc.shopify.login.viewmodel.LoginViewModel
 import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.Collection
+import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.Products
+import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModel
+import com.omarinc.shopify.utilities.Constants
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class CategoriesViewModel (private val repository: ShopifyRepository) : ViewModel() {
 
+
+    companion object{
+        val TAG = "CategoriesViewModel"
+    }
 
     private val _apiState = MutableStateFlow<ApiState<List<Product>>>(ApiState.Loading)
     val apiState: StateFlow<ApiState<List<Product>>> = _apiState
 
     private val _collectionApiState = MutableStateFlow<ApiState<Collection>>(ApiState.Loading)
     val collectionApiState: StateFlow<ApiState<Collection>> = _collectionApiState
+
+    private var _requiredCurrency = MutableStateFlow<ApiState<CurrencyResponse>>(ApiState.Loading)
+    val requiredCurrency = _requiredCurrency.asStateFlow()
+
     fun getProductsByType(type:String) {
         Log.i("TAG", "getProductsByType: Viewmodel")
         viewModelScope.launch {
@@ -58,6 +72,23 @@ class CategoriesViewModel (private val repository: ShopifyRepository) : ViewMode
             }
         }
     }
+
+    fun getRequiredCurrency() {
+        Log.i(TAG, "getRequiredCurrency: ")
+        viewModelScope.launch(Dispatchers.IO) {
+
+            repository.getCurrencyRate(repository.readCurrencyUnit(Constants.CURRENCY_UNIT))
+                .catch { error ->
+                    _requiredCurrency.value = ApiState.Failure(error)
+                }
+                .collect { response ->
+                    _requiredCurrency.value =
+                        response ?: ApiState.Failure(Throwable("Something went wrong"))
+                }
+        }
+    }
+
+
 
     class CategoriesViewModelFactory(
         private val repository: ShopifyRepository,
