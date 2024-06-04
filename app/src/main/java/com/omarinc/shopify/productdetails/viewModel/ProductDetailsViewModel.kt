@@ -39,7 +39,6 @@ class ProductDetailsViewModel(private val repository: ShopifyRepository) : ViewM
     fun getRequiredCurrency() {
         Log.i(TAG, "getRequiredCurrency: ")
         viewModelScope.launch(Dispatchers.IO) {
-            Log.i(TAG, "getRequiredCurrency: ${repository.readCurrencyUnit(CURRENCY_UNIT)}")
 
             repository.getCurrencyRate(repository.readCurrencyUnit(CURRENCY_UNIT))
                 .catch { error ->

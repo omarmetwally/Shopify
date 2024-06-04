@@ -95,11 +95,11 @@ class ShopifyRepositoryImpl(
     }
 
     override suspend fun readCurrencyRate(key: String): Long {
-        return readCurrencyRate(key)
+        return sharedPreferences.readCurrencyRateFromSharedPreferences(key)
     }
 
     override suspend fun readCurrencyUnit(key: String): String {
-        return readCurrencyUnit(key)
+        return sharedPreferences.readCurrencyUnitFromSharedPreferences(key)
     }
 
     override suspend fun getProductById(productId: String): Flow<ApiState<ProductDetails>> {
