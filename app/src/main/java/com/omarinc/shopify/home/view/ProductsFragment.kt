@@ -21,6 +21,7 @@ import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.productdetails.view.ProductDetailsFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
@@ -137,6 +138,22 @@ class ProductsFragment : Fragment() {
                     product.title.contains(query, ignoreCase = true)
                 }
                 productsAdapter.submitList(filteredList)
+            }
+        }
+    }
+
+    private fun getCurrentCurrency(){
+
+        viewModel.getRequiredCurrency()
+        lifecycleScope.launch {
+            viewModel.requiredCurrency.collect {result->
+
+                when(result){
+                    is ApiState.Failure -> Log.i(ProductDetailsFragment.TAG, "getCurrentCurrency: ${result.msg}")
+                    ApiState.Loading -> Log.i(ProductDetailsFragment.TAG, "getCurrentCurrency: Loading")
+                    is ApiState.Success -> Log.i(ProductDetailsFragment.TAG, "getCurrentCurrency: ${result.response.data.values}")
+                }
+
             }
         }
     }
