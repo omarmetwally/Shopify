@@ -18,9 +18,10 @@ import kotlinx.coroutines.launch
 class ProductDetailsViewModel(private val repository: ShopifyRepository) : ViewModel() {
 
 
-    companion object{
+    companion object {
         val TAG = "ProductDetailsViewModel"
     }
+
     private val _apiState = MutableStateFlow<ApiState<ProductDetails>>(ApiState.Loading)
     val apiState: StateFlow<ApiState<ProductDetails>> = _apiState
 
