@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +18,12 @@ import com.example.weatherforecastapplication.favouritesFeature.view.CategoriesA
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentCategoriesBinding
 import com.omarinc.shopify.databinding.FragmentHomeBinding
+import com.omarinc.shopify.home.viewmodel.CategoriesViewModel
+import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.Brand
+import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 
 
 class CategoriesFragment : Fragment() {
@@ -25,11 +31,23 @@ class CategoriesFragment : Fragment() {
     private lateinit var binding: FragmentCategoriesBinding
     private lateinit var categoriesManager: LinearLayoutManager
     private lateinit var categoriessAdapter: CategoriesAdapter
+    private lateinit var viewModel: CategoriesViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
+        val factory = CategoriesViewModel.CategoriesViewModelFactory(
+            ShopifyRepositoryImpl(
+                ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+                SharedPreferencesImpl.getInstance(requireContext()),
+                CurrencyRemoteDataSourceImpl.getInstance())
+        )
+
+        viewModel = ViewModelProvider(this, factory).get(CategoriesViewModel::class.java)
+
+        viewModel.getCollectionByHandle("men")
     }
 
     override fun onCreateView(
@@ -52,7 +70,36 @@ class CategoriesFragment : Fragment() {
 
         categoriesManager = LinearLayoutManager(requireContext())
         categoriesManager.orientation = LinearLayoutManager.VERTICAL
-        binding.categoriesRV.layoutManager = categoriesManager
+
+        binding.men.setOnClickListener {
+            viewModel.getCollectionByHandle("men")
+            binding.menDivider.visibility = View.VISIBLE
+            binding.womenDivider.visibility = View.GONE
+            binding.kidDivider.visibility = View.GONE
+            binding.saleDivider.visibility = View.GONE
+        }
+        binding.women.setOnClickListener {
+            viewModel.getCollectionByHandle("women")
+            binding.menDivider.visibility = View.GONE
+            binding.womenDivider.visibility = View.VISIBLE
+            binding.kidDivider.visibility = View.GONE
+            binding.saleDivider.visibility = View.GONE
+        }
+        binding.kid.setOnClickListener {
+            viewModel.getCollectionByHandle("kid")
+            binding.menDivider.visibility = View.GONE
+            binding.womenDivider.visibility = View.GONE
+            binding.kidDivider.visibility = View.VISIBLE
+            binding.saleDivider.visibility = View.GONE
+        }
+        binding.sale.setOnClickListener {
+            viewModel.getCollectionByHandle("sale")
+            binding.menDivider.visibility = View.GONE
+            binding.womenDivider.visibility = View.GONE
+            binding.kidDivider.visibility = View.GONE
+            binding.saleDivider.visibility = View.VISIBLE
+        }
+       /* binding.categoriesRV.layoutManager = categoriesManager
         binding.categoriesRV.adapter = categoriessAdapter
 
         val dummyBrands = listOf(
@@ -71,7 +118,7 @@ class CategoriesFragment : Fragment() {
 
             )
 
-        categoriessAdapter.submitList(dummyBrands)
+        categoriessAdapter.submitList(dummyBrands)*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

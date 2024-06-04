@@ -33,7 +33,7 @@ class CategoriesAdapter(
        // binding.favCard.setCardBackgroundColor( setCardViewBackground(context))
         val current = getItem(position)
         if(position !=0)
-            binding.divider.visibility = View.GONE
+           // binding.divider.visibility = View.GONE
 //        binding.brandImage = current.image
 //        binding.brandName = current.name
         binding.categoryName.text = current.name

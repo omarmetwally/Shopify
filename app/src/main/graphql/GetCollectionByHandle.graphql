@@ -1,0 +1,38 @@
+query GetCollectionByHandle($handle:String!){
+
+    collectionByHandle(handle: $handle) {
+        id
+        title
+        description
+        products(first: 10) {
+            edges {
+                node {
+                    id
+                    title
+                    descriptionHtml
+                    description
+                    handle
+                    productType
+                    tags
+                    variants(first: 10) {
+                        edges {
+                            node {
+                                id
+                                title
+                                sku
+                            }
+                        }
+                    }
+                    images(first: 10) {
+                        edges {
+                            node {
+                                originalSrc
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

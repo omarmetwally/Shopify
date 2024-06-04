@@ -1,6 +1,7 @@
 package com.omarinc.shopify.model
 
 import com.omarinc.shopify.models.Brands
+import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
@@ -42,4 +43,7 @@ interface ShopifyRepository {
 
     fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>>
 
+    fun getProductByType(type: String): Flow<ApiState<List<Product>>>
+
+    fun getCollectionByHandle(handle: String): Flow<ApiState<Collection>>
 }
