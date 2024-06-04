@@ -2,6 +2,7 @@ package com.omarinc.shopify.model
 
 import com.omarinc.shopify.GetBrandsQuery
 import com.omarinc.shopify.models.Brands
+import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
@@ -112,5 +113,13 @@ class ShopifyRepositoryImpl(
 
     override fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>> {
         return shopifyRemoteDataSource.getCutomerOrders(token)
+    }
+
+    override fun getProductByType(type: String): Flow<ApiState<List<Product>>> {
+        return  shopifyRemoteDataSource.getProductByType(type)
+    }
+
+    override fun getCollectionByHandle(handle: String): Flow<ApiState<Collection>> {
+        return shopifyRemoteDataSource.getCollectionByHandle(handle)
     }
 }

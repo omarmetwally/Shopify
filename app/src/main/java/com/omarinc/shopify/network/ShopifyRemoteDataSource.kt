@@ -4,6 +4,7 @@ import com.omarinc.shopify.GetBrandsQuery
 import com.omarinc.shopify.model.RegisterUserResponse
 import com.omarinc.shopify.models.Brand
 import com.omarinc.shopify.models.Brands
+import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.productdetails.model.ProductDetails
@@ -29,4 +30,7 @@ interface ShopifyRemoteDataSource {
 
     fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>>
 
+    fun getProductByType(type: String): Flow<ApiState<List<Product>>>
+
+    fun getCollectionByHandle(handle:String) : Flow<ApiState<Collection>>
 }

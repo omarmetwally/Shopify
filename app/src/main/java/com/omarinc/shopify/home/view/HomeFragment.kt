@@ -42,6 +42,7 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        //ACCESSORIES T-SHIRTS SHOES
 
         val factory = HomeViewModel.HomeViewModelFactory(ShopifyRepositoryImpl(ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             SharedPreferencesImpl.getInstance(requireContext()),

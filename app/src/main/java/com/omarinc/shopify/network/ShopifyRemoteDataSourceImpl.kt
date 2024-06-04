@@ -11,6 +11,7 @@ import com.omarinc.shopify.CreateCustomerAccessTokenMutation
 import com.omarinc.shopify.CreateCustomerMutation
 import com.omarinc.shopify.CustomerOrdersQuery
 import com.omarinc.shopify.GetBrandsQuery
+import com.omarinc.shopify.GetCollectionByHandleQuery
 import com.omarinc.shopify.GetProductsByBrandIdQuery
 import com.omarinc.shopify.model.CustomerCreateData
 import com.omarinc.shopify.model.RegisterUserResponse
@@ -18,7 +19,9 @@ import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.Product
 
 import com.omarinc.shopify.GetProductByIdQuery
+import com.omarinc.shopify.GetProductsByTypeQuery
 import com.omarinc.shopify.SearchProductsQuery
+import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.ProductImage
@@ -28,7 +31,8 @@ import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class ShopifyRemoteDataSourceImpl private constructor(private val context: Context) : ShopifyRemoteDataSource {
+class ShopifyRemoteDataSourceImpl private constructor(private val context: Context) :
+    ShopifyRemoteDataSource {
     private val apolloClient: ApolloClient
 
     companion object {
@@ -48,7 +52,11 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             .build()
     }
 
-    override fun registerUser(email: String, password: String, fullName: String): Flow<ApiState<RegisterUserResponse>> = flow {
+    override fun registerUser(
+        email: String,
+        password: String,
+        fullName: String
+    ): Flow<ApiState<RegisterUserResponse>> = flow {
         val input = CustomerCreateInput(
             email = email,
             password = password,
@@ -83,7 +91,16 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                             message = it.message
                         )
                     }
-                    emit(ApiState.Success(RegisterUserResponse(CustomerCreateData(customer, userErrors))))
+                    emit(
+                        ApiState.Success(
+                            RegisterUserResponse(
+                                CustomerCreateData(
+                                    customer,
+                                    userErrors
+                                )
+                            )
+                        )
+                    )
                 } else {
                     emit(ApiState.Failure(Throwable("Response data is null")))
                 }
@@ -109,7 +126,8 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                 if (data?.customerAccessToken != null) {
                     emit(ApiState.Success(data.customerAccessToken.accessToken))
                 } else {
-                    val errorMessage = data?.customerUserErrors?.joinToString { it.message } ?: "Unknown error"
+                    val errorMessage =
+                        data?.customerUserErrors?.joinToString { it.message } ?: "Unknown error"
                     emit(ApiState.Failure(Throwable(errorMessage)))
                 }
             }
@@ -133,10 +151,10 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             } else {
                 val data = response.data?.collections?.edges
                 if (data != null) {
-                    Log.i("TAG", "getBrands: "+data)
-                    var brands:MutableList<Brands> = mutableListOf()
+                    Log.i("TAG", "getBrands: " + data)
+                    var brands: MutableList<Brands> = mutableListOf()
                     data.forEach {
-                        brands.add(Brands(it.node.id,it.node.title,it.node.image?.url.toString()))
+                        brands.add(Brands(it.node.id, it.node.title, it.node.image?.url.toString()))
                     }
                     emit(ApiState.Success(brands))
                 } else {
@@ -151,41 +169,45 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
     }
 
 
+    override fun getProductsByBrandId(id: String): Flow<ApiState<List<Product>>> = flow {
+        val query = GetProductsByBrandIdQuery(id)
+        Log.i("TAG", "getProducts: before")
+        try {
+            emit(ApiState.Loading)
 
-     override fun getProductsByBrandId(id:String): Flow<ApiState<List<Product>>> = flow {
-         val query = GetProductsByBrandIdQuery(id)
-         Log.i("TAG", "getProducts: before")
-         try {
-             emit(ApiState.Loading)
+            val response: ApolloResponse<GetProductsByBrandIdQuery.Data> =
+                apolloClient.query(query).execute()
 
-             val response: ApolloResponse<GetProductsByBrandIdQuery.Data> = apolloClient.query(query).execute()
+            if (response.hasErrors()) {
+                Log.i("TAG", "getBrands: error")
+                val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
+                emit(ApiState.Failure(Throwable(errorMessages)))
+            } else {
+                val data = response.data?.collection?.products
+                if (data != null) {
+                    Log.i("TAG", "getBrands: " + data)
+                    var products: MutableList<Product> = mutableListOf()
 
-             if (response.hasErrors()) {
-                 Log.i("TAG", "getBrands: error")
-                 val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
-                 emit(ApiState.Failure(Throwable(errorMessages)))
-             } else {
-                 val data = response.data?.collection?.products
-                 if (data != null) {
-                     Log.i("TAG", "getBrands: "+data)
-                     var products:MutableList<Product> = mutableListOf()
-
-                     data.edges.forEach {
-                         products.add(Product(it.node.id,it.node.title,it.node.handle,
-                             it.node.description,
-                             it.node.images.edges[0].node.originalSrc.toString()))
-                     }
-                     emit(ApiState.Success(products))
-                 } else {
-                     Log.i("TAG", "getBrands: Unknown error")
-                     emit(ApiState.Failure(Throwable("Unknown error")))
-                 }
-             }
-         } catch (e: ApolloException) {
-             Log.e("ShopifyRemoteDataSource", "Error fetching collections", e)
-             emit(ApiState.Failure(e))
-         }
-     }
+                    data.edges.forEach {
+                        products.add(
+                            Product(
+                                it.node.id, it.node.title, it.node.handle,
+                                it.node.description,
+                                it.node.images.edges[0].node.originalSrc.toString()
+                            ,it.node.productType.toString())
+                        )
+                    }
+                    emit(ApiState.Success(products))
+                } else {
+                    Log.i("TAG", "getBrands: Unknown error")
+                    emit(ApiState.Failure(Throwable("Unknown error")))
+                }
+            }
+        } catch (e: ApolloException) {
+            Log.e("ShopifyRemoteDataSource", "Error fetching collections", e)
+            emit(ApiState.Failure(e))
+        }
+    }
 
     override fun getProductById(productId: String): Flow<ApiState<ProductDetails>> = flow {
         val query = GetProductByIdQuery(productId)
@@ -220,6 +242,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             emit(ApiState.Failure(e))
         }
     }
+
     override suspend fun searchProducts(query: String): List<Products> {
         val response = apolloClient.query(
             SearchProductsQuery(query = query)
@@ -250,7 +273,8 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         Log.i("TAG", "getORders: ")
         try {
             emit(ApiState.Loading)
-            val response: ApolloResponse<CustomerOrdersQuery.Data> = apolloClient.query(query).execute()
+            val response: ApolloResponse<CustomerOrdersQuery.Data> =
+                apolloClient.query(query).execute()
 
             if (response.hasErrors()) {
                 Log.i("TAG", "get Orders: error")
@@ -259,19 +283,22 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             } else {
                 val data = response.data?.customer?.orders?.edges
                 if (data != null) {
-                    Log.i("TAG", "getOrders: "+data)
-                    var orders:MutableList<Order> = mutableListOf()
+                    Log.i("TAG", "getOrders: " + data)
+                    var orders: MutableList<Order> = mutableListOf()
                     data.forEach {
-                        orders.add(Order(
-                            it.node.id,
-                            it.node.name,it.node.billingAddress?.address1?:"",
-                            it.node.currentTotalPrice.amount as Double,
-                            it.node.currentTotalPrice.currencyCode as Int,
-                            it.node.currentSubtotalPrice.amount as Double,
-                            it.node.currentSubtotalPrice.currencyCode as Int,
-                            it.node.currentTotalTax.amount as Double,
-                            it.node.currentTotalTax.currencyCode as Int,
-                            it.node.canceledAt.toString()))
+                        orders.add(
+                            Order(
+                                it.node.id,
+                                it.node.name, it.node.billingAddress?.address1 ?: "",
+                                it.node.currentTotalPrice.amount as Double,
+                                it.node.currentTotalPrice.currencyCode as Int,
+                                it.node.currentSubtotalPrice.amount as Double,
+                                it.node.currentSubtotalPrice.currencyCode as Int,
+                                it.node.currentTotalTax.amount as Double,
+                                it.node.currentTotalTax.currencyCode as Int,
+                                it.node.canceledAt.toString()
+                            )
+                        )
                     }
                     emit(ApiState.Success(orders))
                 } else {
@@ -282,7 +309,92 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         } catch (e: ApolloException) {
             Log.e("ShopifyRemoteDataSource", "Error fetching collections", e)
             emit(ApiState.Failure(e))
-        }    }
+        }
+    }
 
+    override fun getProductByType(type: String): Flow<ApiState<List<Product>>> = flow {
+        val query = GetProductsByTypeQuery(type)
+        Log.i("TAG", "getProducts Types: before")
+        try {
+            emit(ApiState.Loading)
+
+            val response: ApolloResponse<GetProductsByTypeQuery.Data> =
+                apolloClient.query(query).execute()
+
+            if (response.hasErrors()) {
+                Log.i("TAG", "getProducts Types: error")
+                val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
+                emit(ApiState.Failure(Throwable(errorMessages)))
+            } else {
+                val data = response.data?.products
+                if (data != null) {
+                    Log.i("TAG", "getTypes: " + data)
+                    var products: MutableList<Product> = mutableListOf()
+
+                    data.edges.forEach {
+                        products.add(
+                            Product(
+                                it.node.id, it.node.title, it.node.handle,
+                                it.node.description,
+                                it.node.images.edges[0].node.originalSrc.toString()
+                            ,it.node.productType)
+                        )
+                    }
+                    emit(ApiState.Success(products))
+                } else {
+                    Log.i("TAG", "getBrands: Unknown error")
+                    emit(ApiState.Failure(Throwable("Unknown error")))
+                }
+            }
+        } catch (e: ApolloException) {
+            Log.e("ShopifyRemoteDataSource", "Error fetching collections", e)
+            emit(ApiState.Failure(e))
+        }
+    }
+
+    override fun getCollectionByHandle(handle: String): Flow<ApiState<Collection>> = flow {
+        val query = GetCollectionByHandleQuery(handle)
+        Log.i("TAG", "getCollection Types: before")
+        try {
+            emit(ApiState.Loading)
+
+            val response: ApolloResponse<GetCollectionByHandleQuery.Data> =
+                apolloClient.query(query).execute()
+
+            if (response.hasErrors()) {
+                Log.i("TAG", "getProducts Types: error")
+                val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
+                emit(ApiState.Failure(Throwable(errorMessages)))
+            } else {
+                val data = response.data?.collectionByHandle?.products
+                if (data != null) {
+                    Log.i("TAG", "getTypes: " + data)
+                    var products: MutableList<Product> = mutableListOf()
+
+                    data.edges.forEach {
+                        products.add(
+                            Product(
+                                it.node.id, it.node.title, it.node.handle,
+                                it.node.description,
+                                it.node.images.edges[0].node.originalSrc.toString()
+                            ,it.node.productType)
+                        )
+                    }
+                    val collection = Collection(
+                        response.data?.collectionByHandle?.id ?: "",
+                        response.data?.collectionByHandle?.title ?: "",
+                        response.data?.collectionByHandle?.description ?: "", products
+                    )
+                    emit(ApiState.Success(collection))
+                } else {
+                    Log.i("TAG", "getBrands: Unknown error")
+                    emit(ApiState.Failure(Throwable("Unknown error")))
+                }
+            }
+        } catch (e: ApolloException) {
+            Log.e("ShopifyRemoteDataSource", "Error fetching collections", e)
+            emit(ApiState.Failure(e))
+        }
+    }
 
 }

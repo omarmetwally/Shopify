@@ -9,7 +9,7 @@
         android:layout_height="match_parent">
 
         <View
-            android:id="@+id/divider"
+            android:id="@+id/menDivider"
             android:layout_width="6dp"
             android:layout_height="130dp"
             android:background="@drawable/vertical_divider"

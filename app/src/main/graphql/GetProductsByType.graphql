@@ -1,14 +1,12 @@
-query GetProductsByBrandId($brandId: ID!) {
-    collection(id: $brandId) {
-        id
-        title
-        products(first: 20) {
+query GetProductsByType($type:String!) {
+    products(first: 20, query: $type) {
             edges {
                 node {
                     id
                     title
                     handle
                     description
+                    productType
                     images(first: 1) {
                         edges {
                             node {
@@ -21,4 +19,3 @@ query GetProductsByBrandId($brandId: ID!) {
             }
         }
     }
-}
