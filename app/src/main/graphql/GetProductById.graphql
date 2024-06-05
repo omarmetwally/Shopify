@@ -6,12 +6,17 @@ query GetProductById($id: ID!) {
         productType
         vendor
         totalInventory
-        variants(first: 1) {
+        variants(first: 10) {
             edges {
                 node {
+                    id
                     priceV2 {
                         amount
                         currencyCode
+                    }
+                    selectedOptions {
+                        name
+                        value
                     }
                 }
             }
