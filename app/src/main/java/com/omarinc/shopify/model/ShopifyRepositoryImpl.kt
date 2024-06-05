@@ -122,4 +122,8 @@ class ShopifyRepositoryImpl(
     override fun getCollectionByHandle(handle: String): Flow<ApiState<Collection>> {
         return shopifyRemoteDataSource.getCollectionByHandle(handle)
     }
+
+    override suspend fun createCart(token: String): Flow<ApiState<String?>> {
+        return shopifyRemoteDataSource.createCart(token)
+    }
 }

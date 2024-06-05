@@ -28,4 +28,17 @@ class LoginViewModel(private val repository: ShopifyRepository) : ViewModel() {
         repository.writeBooleanToSharedPreferences(Constants.USER_SKIPPED, true)
         _skipButtonState.value = true
     }
+
+
+    private val _cartId = MutableStateFlow<ApiState<String?>>(ApiState.Loading)
+    val cartId: StateFlow<ApiState<String?>> = _cartId
+
+    fun createCart(token: String){
+
+        viewModelScope.launch {
+            repository.createCart(token).collect { response ->
+                _cartId.value = response
+            }
+        }
+    }
 }

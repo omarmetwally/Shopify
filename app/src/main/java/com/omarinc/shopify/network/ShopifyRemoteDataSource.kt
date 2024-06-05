@@ -33,4 +33,6 @@ interface ShopifyRemoteDataSource {
     fun getProductByType(type: String): Flow<ApiState<List<Product>>>
 
     fun getCollectionByHandle(handle:String) : Flow<ApiState<Collection>>
+
+    fun createCart(token: String): Flow<ApiState<String?>>
 }

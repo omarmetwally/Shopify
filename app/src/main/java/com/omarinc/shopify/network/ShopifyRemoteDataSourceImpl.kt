@@ -7,6 +7,7 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Input
 import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
+import com.omarinc.shopify.CreateCartMutation
 import com.omarinc.shopify.CreateCustomerAccessTokenMutation
 import com.omarinc.shopify.CreateCustomerMutation
 import com.omarinc.shopify.CustomerOrdersQuery
@@ -21,6 +22,7 @@ import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.GetProductByIdQuery
 import com.omarinc.shopify.GetProductsByTypeQuery
 import com.omarinc.shopify.SearchProductsQuery
+import com.omarinc.shopify.models.CartCreateResponse
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.productdetails.model.Price
@@ -412,6 +414,30 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             }
         } catch (e: ApolloException) {
             Log.e("ShopifyRemoteDataSource", "Error fetching collections", e)
+            emit(ApiState.Failure(e))
+        }
+    }
+
+    override fun createCart(token: String): Flow<ApiState<String?>> = flow {
+        val mutation = CreateCartMutation(token)
+
+        try {
+            emit(ApiState.Loading)
+
+            val response = apolloClient.mutation(mutation).execute()
+
+            if (response.hasErrors()) {
+                val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
+                emit(ApiState.Failure(Throwable(errorMessages)))
+            } else {
+                response.data?.let { data ->
+                    emit(ApiState.Success(data.cartCreate?.cart?.id))
+                } ?: run {
+                    emit(ApiState.Failure(Throwable("Response data is null")))
+                }
+            }
+
+        } catch (e: ApolloException) {
             emit(ApiState.Failure(e))
         }
     }
