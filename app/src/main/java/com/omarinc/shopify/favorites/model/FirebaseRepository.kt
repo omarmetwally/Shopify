@@ -5,9 +5,10 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.omarinc.shopify.utilities.Constants.CUSTOMER_CART_ROOT
+import com.omarinc.shopify.utilities.Helper.encodeEmail
 import kotlinx.coroutines.tasks.await
 
-class FavoritesRepository private constructor() : IFavoritesRepository {
+class FirebaseRepository private constructor() : IFirebaseRepository {
 
     private val firestore = FirebaseFirestore.getInstance()
 
@@ -15,11 +16,11 @@ class FavoritesRepository private constructor() : IFavoritesRepository {
 
     companion object {
         @Volatile
-        private var instance: FavoritesRepository? = null
+        private var instance: FirebaseRepository? = null
 
-        fun getInstance(): FavoritesRepository {
+        fun getInstance(): FirebaseRepository {
             return instance ?: synchronized(this) {
-                instance ?: FavoritesRepository().also { instance = it }
+                instance ?: FirebaseRepository().also { instance = it }
             }
         }
     }
@@ -57,11 +58,10 @@ class FavoritesRepository private constructor() : IFavoritesRepository {
         return productId.substringAfterLast("/")
     }
 
-    override suspend fun addCustomerCart(email: String, cartId: Int) {
+    override suspend fun addCustomerCart(email: String, cartId: String) {
         try {
-
-
-            database.child(CUSTOMER_CART_ROOT).child(email).setValue(cartId).await()
+            val encodedEmail = encodeEmail(email)
+            database.child(CUSTOMER_CART_ROOT).child(encodedEmail).setValue(cartId).await()
         } catch (e: Exception) {
 
             throw e
@@ -71,12 +71,16 @@ class FavoritesRepository private constructor() : IFavoritesRepository {
     override suspend fun isCustomerHasCart(email: String): Boolean {
 
         return try {
-            val snapshot = database.child(CUSTOMER_CART_ROOT).child(email).get().await()
+            val encodedEmail = encodeEmail(email)
+            val snapshot = database.child(CUSTOMER_CART_ROOT).child(encodedEmail).get().await()
             snapshot.exists()
         } catch (e: Exception) {
             throw e
         }
     }
+
+
+
 
 
 }

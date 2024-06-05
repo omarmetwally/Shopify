@@ -77,5 +77,13 @@ object Helper {
         }
     }
 
+    fun encodeEmail(email: String): String {
+        return email.replace(".", ",")
+    }
+
+    fun decodeEmail(encodedEmail: String): String {
+        return encodedEmail.replace(",", ".")
+    }
+
 
 }

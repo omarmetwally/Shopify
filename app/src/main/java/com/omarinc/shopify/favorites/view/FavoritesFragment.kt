@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.omarinc.shopify.databinding.FragmentFavoritesBinding
-import com.omarinc.shopify.favorites.model.FavoritesRepository
+import com.omarinc.shopify.favorites.model.FirebaseRepository
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModel
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
@@ -32,7 +32,7 @@ class FavoritesFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val favoriteFactory = FavoriteViewModelFactory(FavoritesRepository.getInstance())
+        val favoriteFactory = FavoriteViewModelFactory(FirebaseRepository.getInstance())
         viewModel = ViewModelProvider(this, favoriteFactory).get(FavoriteViewModel::class.java)
 
         favoritesAdapter = FavoritesAdapter(requireContext()) { productId ->
