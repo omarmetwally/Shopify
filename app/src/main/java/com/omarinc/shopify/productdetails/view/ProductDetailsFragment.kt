@@ -47,7 +47,7 @@ class ProductDetailsFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentProductDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }

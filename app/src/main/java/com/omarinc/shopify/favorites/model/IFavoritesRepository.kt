@@ -8,4 +8,9 @@ interface IFavoritesRepository {
     suspend fun getFavorites(userToken: String): List<FavoriteItemFirebase>
 
     suspend fun isFavorite(userToken: String, productId: String): Boolean
+
+    suspend fun addCustomerCart(email: String, cartId: Int)
+
+    suspend fun isCustomerHasCart(email: String): Boolean
+
 }
