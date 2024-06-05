@@ -73,10 +73,14 @@ class ProductDetailsFragment : Fragment() {
 
         loadProductDetails(productId)
 
+
+        viewModel.addCustomerCart("test@test.com","gid://shopify/Cart/Z2NwLWV1cm9wZS13ZXN0MTowMUhaTVBDNERONDdFR1RRNzhHMzVQNDZKTQ?key=22cacec08785daefc1a6a03f924f9017")
+
+
         //   setListeners("test@test.com")
 
 
-        viewModel.createCart("test@test.com")
+/*        viewModel.createCart("test@test.com")
 
         lifecycleScope.launch {
 
@@ -92,7 +96,7 @@ class ProductDetailsFragment : Fragment() {
                 }
 
             }
-        }
+        }*/
 
         checkFavorite(userToken, productId)
 
