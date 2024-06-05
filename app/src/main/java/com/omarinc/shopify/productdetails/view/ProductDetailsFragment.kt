@@ -1,5 +1,7 @@
 package com.omarinc.shopify.productdetails.view
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -7,10 +9,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.chip.Chip
 import com.omarinc.shopify.R
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModel
 import com.omarinc.shopify.databinding.FragmentProductDetailsBinding
@@ -22,6 +27,7 @@ import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
@@ -69,11 +75,10 @@ class ProductDetailsFragment : Fragment() {
 
         loadProductDetails(productId)
 
-
         checkFavorite(userToken, productId)
         getCurrentCurrency()
         clickFavorite(userToken, productId)
-        binding.btnBack.setOnClickListener{
+        binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
     }
@@ -87,8 +92,7 @@ class ProductDetailsFragment : Fragment() {
                         userToken, productId
                     )
                 } else {
-                    val favoriteItem = FavoriteItem(
-                        productId = productId,
+                    val favoriteItem = FavoriteItem(productId = productId,
                         productName = binding.tvProductName.text.toString(),
                         productPrice = binding.tvProductPrice.text.toString().removeSuffix(" USD")
                             .toDouble(),
@@ -144,6 +148,8 @@ class ProductDetailsFragment : Fragment() {
                         binding.rvCustomerComments.adapter = commentsAdapter
                         binding.rvCustomerComments.layoutManager =
                             LinearLayoutManager(requireContext())
+                        setupChips(productDetails)
+
                     }
 
                     is ApiState.Failure -> {
@@ -155,6 +161,55 @@ class ProductDetailsFragment : Fragment() {
             }
         }
     }
+
+    private fun setupChips(productDetails: ProductDetails) {
+        binding.chipGroupSizes.removeAllViews()
+        binding.chipGroupColors.removeAllViews()
+
+        val sizeSet = mutableSetOf<String>()
+        val colorSet = mutableSetOf<String>()
+
+        productDetails.variants.forEach { variant ->
+            variant.selectedOptions.forEach { option ->
+                when (option.name) {
+                    "Size" -> sizeSet.add(option.value)
+                    "Color" -> colorSet.add(option.value)
+                }
+            }
+        }
+
+        sizeSet.forEach { size ->
+            val chip = Chip(context).apply {
+                text = size.uppercase()
+                isCheckable = true
+                setOnCheckedChangeListener { buttonView, isChecked ->
+                    (buttonView as Chip).chipBackgroundColor = if (isChecked) {
+                        ColorStateList.valueOf( getResources().getColor(R.color.secondary_color))
+                    } else {
+                        ColorStateList.valueOf(Color.WHITE)
+                    }
+                }
+            }
+            binding.chipGroupSizes.addView(chip)
+        }
+
+
+        colorSet.forEach { color ->
+            val chipView = LayoutInflater.from(context)
+                .inflate(R.layout.layout_color_chip, binding.chipGroupColors, false)
+            val chip = chipView.findViewById<Chip>(R.id.chip_color)
+            val colorName = chipView.findViewById<TextView>(R.id.tv_color_name)
+
+            chip.chipBackgroundColor = ColorStateList.valueOf(Helper.getColorFromName(color))
+            chip.setOnCheckedChangeListener { _, isChecked ->
+                chip.setChipIconVisible(isChecked)
+            }
+            colorName.text = color
+
+            binding.chipGroupColors.addView(chipView)
+        }
+    }
+
 
     private fun getCurrentCurrency(){
 

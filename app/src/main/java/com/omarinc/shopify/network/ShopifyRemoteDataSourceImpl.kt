@@ -23,9 +23,12 @@ import com.omarinc.shopify.GetProductsByTypeQuery
 import com.omarinc.shopify.SearchProductsQuery
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Order
+import com.omarinc.shopify.productdetails.model.Price
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.ProductImage
+import com.omarinc.shopify.productdetails.model.ProductVariant
 import com.omarinc.shopify.productdetails.model.Products
+import com.omarinc.shopify.productdetails.model.SelectedOption
 import com.omarinc.shopify.type.CustomerCreateInput
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
@@ -222,6 +225,21 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
 
             val data = response.data?.product
             if (data != null) {
+                val variants = data.variants.edges.map { edge ->
+                    ProductVariant(
+                        id = edge.node.id,
+                        priceV2 = Price(
+                            amount = edge.node.priceV2.amount,
+                            currencyCode = edge.node.priceV2.currencyCode.toString()
+                        ),
+                        selectedOptions = edge.node.selectedOptions.map { option ->
+                            SelectedOption(
+                                name = option.name,
+                                value = option.value
+                            )
+                        }
+                    )
+                }
                 val productDetails = ProductDetails(
                     id = data.id,
                     title = data.title,
@@ -231,7 +249,8 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                     totalInventory = data.totalInventory,
                     price = data.variants.edges.firstOrNull()?.node?.priceV2?.amount ?: "0.0",
                     images = data.images.edges.map { ProductImage(it.node.originalSrc) },
-                    onlineStoreUrl = data.onlineStoreUrl
+                    onlineStoreUrl = data.onlineStoreUrl,
+                    variants = variants
                 )
                 emit(ApiState.Success(productDetails))
             } else {
