@@ -1,8 +1,7 @@
-mutation CreateCartMutation($token: String!){
+mutation CreateCartMutation($email: String!){
     cartCreate(input: {
         buyerIdentity: {
-
-            customerAccessToken: $token
+            email: $email
         }
     }) {
         cart {

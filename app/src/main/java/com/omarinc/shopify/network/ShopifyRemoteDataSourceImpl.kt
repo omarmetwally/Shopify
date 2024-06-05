@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
-import com.apollographql.apollo3.api.Input
 import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
 import com.omarinc.shopify.CreateCartMutation
@@ -41,6 +40,8 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
     private val apolloClient: ApolloClient
 
     companion object {
+        const val TAG = "ShopifyRemoteDataSource"
+
         @Volatile
         private var instance: ShopifyRemoteDataSourceImpl? = null
 
@@ -196,10 +197,13 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                     data.edges.forEach {
                         products.add(
                             Product(
-                                it.node.id, it.node.title, it.node.handle,
+                                it.node.id,
+                                it.node.title,
+                                it.node.handle,
                                 it.node.description,
-                                it.node.images.edges[0].node.originalSrc.toString()
-                            ,it.node.productType.toString())
+                                it.node.images.edges[0].node.originalSrc.toString(),
+                                it.node.productType.toString()
+                            )
                         )
                     }
                     emit(ApiState.Success(products))
@@ -355,10 +359,13 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                     data.edges.forEach {
                         products.add(
                             Product(
-                                it.node.id, it.node.title, it.node.handle,
+                                it.node.id,
+                                it.node.title,
+                                it.node.handle,
                                 it.node.description,
-                                it.node.images.edges[0].node.originalSrc.toString()
-                            ,it.node.productType)
+                                it.node.images.edges[0].node.originalSrc.toString(),
+                                it.node.productType
+                            )
                         )
                     }
                     emit(ApiState.Success(products))
@@ -395,10 +402,13 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                     data.edges.forEach {
                         products.add(
                             Product(
-                                it.node.id, it.node.title, it.node.handle,
+                                it.node.id,
+                                it.node.title,
+                                it.node.handle,
                                 it.node.description,
-                                it.node.images.edges[0].node.originalSrc.toString()
-                            ,it.node.productType)
+                                it.node.images.edges[0].node.originalSrc.toString(),
+                                it.node.productType
+                            )
                         )
                     }
                     val collection = Collection(
@@ -418,28 +428,29 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         }
     }
 
-    override fun createCart(token: String): Flow<ApiState<String?>> = flow {
-        val mutation = CreateCartMutation(token)
+    override fun createCart(email: String): Flow<ApiState<String?>> = flow {
+        val mutation = CreateCartMutation(email)
 
         try {
             emit(ApiState.Loading)
 
-            val response = apolloClient.mutation(mutation).execute()
+            val response: ApolloResponse<CreateCartMutation.Data> =
+                apolloClient.mutation(mutation).execute()
+
+
 
             if (response.hasErrors()) {
                 val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
                 emit(ApiState.Failure(Throwable(errorMessages)))
-            } else {
-                response.data?.let { data ->
-                    emit(ApiState.Success(data.cartCreate?.cart?.id))
-                } ?: run {
-                    emit(ApiState.Failure(Throwable("Response data is null")))
-                }
-            }
 
+            } else {
+
+                val cartId = response.data?.cartCreate?.cart?.id
+                emit(ApiState.Success(cartId))
+
+            }
         } catch (e: ApolloException) {
             emit(ApiState.Failure(e))
         }
     }
-
 }

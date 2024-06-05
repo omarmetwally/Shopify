@@ -32,12 +32,13 @@ import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
 import com.omarinc.shopify.utilities.Helper
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 class ProductDetailsFragment : Fragment() {
 
     companion object {
         fun newInstance() = ProductDetailsFragment()
-        val TAG = "ProductDetailsFragment"
+        const val TAG = "ProductDetailsFragment"
     }
 
     private lateinit var sharedPreferences: SharedPreferencesImpl
@@ -63,6 +64,7 @@ class ProductDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setUpViewModel()
+
         val productId = arguments?.getString("productId") ?: ""
 
         val userToken = sharedPreferences.readStringFromSharedPreferences(
@@ -71,24 +73,42 @@ class ProductDetailsFragment : Fragment() {
 
         loadProductDetails(productId)
 
-        setListeners("test@test.com")
+        //   setListeners("test@test.com")
+
+
+        viewModel.createCart("test@test.com")
+
+        lifecycleScope.launch {
+
+            viewModel.cartId.collect { result ->
+
+                when (result) {
+                    is ApiState.Failure -> Log.i(TAG, "onViewCreated: failure ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "onViewCreated: Loading")
+                    is ApiState.Success -> Log.i(
+                        TAG,
+                        "onViewCreated: Success ${result.response}"
+                    )
+                }
+
+            }
+        }
 
         checkFavorite(userToken, productId)
+
 
         getCurrentCurrency()
 
         clickFavorite(userToken, productId)
 
 
-
     }
 
 
+    private fun setUpViewModel() {
 
-    private fun setUpViewModel(){
 
-
-        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
+        sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             sharedPreferences,
@@ -109,6 +129,7 @@ class ProductDetailsFragment : Fragment() {
 
 
     }
+
     private fun clickFavorite(userToken: String, productId: String) {
         binding.btnFavorite.setOnClickListener {
             lifecycleScope.launch {
@@ -213,10 +234,12 @@ class ProductDetailsFragment : Fragment() {
                             // Do something if the customer already has a cart
                         }
                     }
+
                     is ApiState.Loading -> {
                         Log.i(TAG, "setListeners: Loading")
                         // Show loading indicator if needed
                     }
+
                     is ApiState.Failure -> {
                         Log.i(TAG, "setListeners: failed ${result.msg}")
                         // Handle error if the check fails

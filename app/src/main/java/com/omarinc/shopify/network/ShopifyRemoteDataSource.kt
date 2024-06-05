@@ -4,6 +4,7 @@ import com.omarinc.shopify.GetBrandsQuery
 import com.omarinc.shopify.model.RegisterUserResponse
 import com.omarinc.shopify.models.Brand
 import com.omarinc.shopify.models.Brands
+import com.omarinc.shopify.models.CartCreateResponse
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.models.Product
@@ -34,5 +35,5 @@ interface ShopifyRemoteDataSource {
 
     fun getCollectionByHandle(handle:String) : Flow<ApiState<Collection>>
 
-    fun createCart(token: String): Flow<ApiState<String?>>
+    fun createCart(email: String): Flow<ApiState<String?>>
 }

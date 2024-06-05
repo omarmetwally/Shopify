@@ -17,7 +17,7 @@ data class CartCreateResponse(
                     val edges: List<Edge>
                 ) {
                     data class Edge(
-                        val node: Node
+                        val node: Node?
                     ) {
                         data class Node(
                             val id: String,
