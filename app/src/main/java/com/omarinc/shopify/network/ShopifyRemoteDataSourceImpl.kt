@@ -20,9 +20,11 @@ import com.omarinc.shopify.models.Product
 
 import com.omarinc.shopify.GetProductByIdQuery
 import com.omarinc.shopify.GetProductsByTypeQuery
+import com.omarinc.shopify.GetProductsInCartQuery
 import com.omarinc.shopify.SearchProductsQuery
 import com.omarinc.shopify.models.CartCreateResponse
 import com.omarinc.shopify.models.CartLineInput
+import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.productdetails.model.Price
@@ -455,7 +457,56 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         }
     }
 
-    override fun addToCart(cartId: String, lines: List<CartLineInput>) {
+    override suspend fun addToCart(
+        cartId: String,
+        lines: List<CartLineInput>
+    ): Flow<ApiState<CartCreateResponse>> = flow {
+
 
     }
+
+    override suspend fun getProductsCart(cartId: String): Flow<ApiState<List<CartProduct>>> = flow {
+        emit(ApiState.Loading)
+
+        val cartProducts = mutableListOf<CartProduct>()
+        val query = GetProductsInCartQuery(cartId)
+
+        try {
+            val response: ApolloResponse<GetProductsInCartQuery.Data> = apolloClient.query(query).execute()
+
+            response.data?.cart?.lines?.edges?.forEach { line ->
+                val node = line.node
+                val merchandise = node.merchandise.onProductVariant
+                if (merchandise != null) {
+                    val product = merchandise.product
+                    val productId = product.id
+                    val productTitle = product.title ?: ""
+                    val productImageUrl = product.featuredImage?.url ?: ""
+                    val variantId = merchandise.id
+                    val variantTitle = merchandise.title ?: ""
+                    val variantPrice = merchandise.price.amount
+
+                    cartProducts.add(
+                        CartProduct(
+                            id = node.id,
+                            quantity = node.quantity,
+                            productId = productId,
+                            productTitle = productTitle,
+                            productImageUrl = productImageUrl.toString(),
+                            variantId = variantId,
+                            variantTitle = variantTitle,
+                            variantPrice = variantPrice.toString()
+                        )
+                    )
+                }
+            }
+
+            emit(ApiState.Success(cartProducts)) // Emit success state with the list of cart products
+        } catch (e: ApolloException) {
+            emit(ApiState.Failure(Throwable("Error fetching products in cart: ${e.message}"))) // Emit failure state with error message
+        } catch (e: Exception) {
+            emit(ApiState.Failure(Throwable("An unknown error occurred: ${e.message}"))) // Emit failure state for unknown errors
+        }
+    }
+
 }

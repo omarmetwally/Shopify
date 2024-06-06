@@ -1,10 +1,9 @@
 package com.omarinc.shopify.model
 
-import com.omarinc.shopify.GetBrandsQuery
 import com.omarinc.shopify.models.Brands
+import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Product
-import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.network.ShopifyRemoteDataSource
@@ -135,4 +134,10 @@ class ShopifyRepositoryImpl(
     override suspend fun readEmailFromSharedPreferences(key: String): String {
         return sharedPreferences.readStringFromSharedPreferences(key)
     }
+
+    override suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>> {
+        return shopifyRemoteDataSource.getProductsCart(cartId)
+    }
+
+
 }

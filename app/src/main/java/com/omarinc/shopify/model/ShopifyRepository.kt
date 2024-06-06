@@ -1,6 +1,7 @@
 package com.omarinc.shopify.model
 
 import com.omarinc.shopify.models.Brands
+import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.Currencies
@@ -50,5 +51,7 @@ interface ShopifyRepository {
     suspend fun createCart(token: String): Flow<ApiState<String?>>
 
     suspend fun readEmailFromSharedPreferences(key: String): String
+
+    suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>>
 
 }
