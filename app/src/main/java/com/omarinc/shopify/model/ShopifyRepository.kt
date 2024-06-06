@@ -49,4 +49,6 @@ interface ShopifyRepository {
 
     suspend fun createCart(token: String): Flow<ApiState<String?>>
 
+    suspend fun readEmailFromSharedPreferences(key: String): String
+
 }
