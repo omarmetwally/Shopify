@@ -17,6 +17,9 @@
       <action
           android:id="@+id/action_homeFragment_to_favoritesFragment"
           app:destination="@id/favoritesFragment" />
+      <action
+          android:id="@+id/action_homeFragment_to_shoppingCartFragment"
+          app:destination="@id/shoppingCartFragment" />
   </fragment>
   
   <fragment
@@ -69,6 +72,9 @@
         <action
             android:id="@+id/action_categoriesFragment_to_favoritesFragment"
             app:destination="@id/favoritesFragment" />
+        <action
+            android:id="@+id/action_categoriesFragment_to_shoppingCartFragment"
+            app:destination="@id/shoppingCartFragment" />
     </fragment>
     <fragment
         android:id="@+id/productDetailsFragment"
@@ -105,4 +111,9 @@
         android:name="com.omarinc.shopify.orders.view.OrdersFragment"
         android:label="fragment_orders"
         tools:layout="@layout/fragment_orders" />
+    <fragment
+        android:id="@+id/shoppingCartFragment"
+        android:name="com.omarinc.shopify.shoppingcart.ShoppingCartFragment"
+        android:label="fragment_shopping_cart"
+        tools:layout="@layout/fragment_shopping_cart" />
 </navigation>

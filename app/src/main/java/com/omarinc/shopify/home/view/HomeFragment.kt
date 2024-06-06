@@ -143,6 +143,11 @@ class HomeFragment : Fragment() {
                 findNavController().navigate(R.id.favoritesFragment)
                 true
             }
+            R.id.shoppingCartFragment  ->
+            {
+                findNavController().navigate(R.id.shoppingCartFragment)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
