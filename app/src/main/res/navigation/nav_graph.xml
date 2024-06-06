@@ -114,7 +114,6 @@
     <fragment
         android:id="@+id/shoppingCartFragment"
         android:name="com.omarinc.shopify.shoppingcart.view.ShoppingCartFragment"
-        android:name="com.omarinc.shopify.shoppingcart.ShoppingCartFragment"
         android:label="fragment_shopping_cart"
         tools:layout="@layout/fragment_shopping_cart" />
 </navigation>

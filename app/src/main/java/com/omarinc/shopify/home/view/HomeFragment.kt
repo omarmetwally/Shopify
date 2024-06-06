@@ -18,7 +18,6 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weatherforecastapplication.favouritesFeature.view.AdsAdapter
 import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
