@@ -79,7 +79,19 @@ class FirebaseRepository private constructor() : IFirebaseRepository {
         }
     }
 
-
+    override suspend fun getCartByCustomer(email: String): String {
+        return try {
+            val encodedEmail = encodeEmail(email)
+            val snapshot = database.child(CUSTOMER_CART_ROOT).child(encodedEmail).get().await()
+            if (snapshot.exists()) {
+                snapshot.getValue(String::class.java) ?: throw IllegalStateException("Cart ID is null")
+            } else {
+                throw IllegalStateException("No cart found for the given customer")
+            }
+        } catch (e: Exception) {
+            throw e
+        }
+    }
 
 
 

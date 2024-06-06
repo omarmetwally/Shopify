@@ -31,6 +31,9 @@ import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModelFacto
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
 import com.omarinc.shopify.utilities.Helper
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlin.math.log
 
@@ -74,29 +77,41 @@ class ProductDetailsFragment : Fragment() {
         loadProductDetails(productId)
 
 
-        viewModel.addCustomerCart("test@test.com","gid://shopify/Cart/Z2NwLWV1cm9wZS13ZXN0MTowMUhaTVBDNERONDdFR1RRNzhHMzVQNDZKTQ?key=22cacec08785daefc1a6a03f924f9017")
-
-
-        //   setListeners("test@test.com")
-
-
-/*        viewModel.createCart("test@test.com")
+        /*viewModel.isCustomerHasCart("testdfdf@test.com")
 
         lifecycleScope.launch {
 
-            viewModel.cartId.collect { result ->
+            viewModel.hasCart.collect { result ->
 
-                when (result) {
-                    is ApiState.Failure -> Log.i(TAG, "onViewCreated: failure ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "onViewCreated: Loading")
-                    is ApiState.Success -> Log.i(
-                        TAG,
-                        "onViewCreated: Success ${result.response}"
-                    )
+                when(result){
+                    is ApiState.Failure -> Log.i(TAG, "hasCart Failure: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "hasCart Loading: ")
+                    is ApiState.Success -> Log.i(TAG, "hasCart Success: ${result.response} ")
                 }
-
             }
         }*/
+
+
+        setListeners("hadi@test.com")
+
+
+        /*        viewModel.createCart("test@test.com")
+
+                lifecycleScope.launch {
+
+                    viewModel.cartId.collect { result ->
+
+                        when (result) {
+                            is ApiState.Failure -> Log.i(TAG, "onViewCreated: failure ${result.msg}")
+                            ApiState.Loading -> Log.i(TAG, "onViewCreated: Loading")
+                            is ApiState.Success -> Log.i(
+                                TAG,
+                                "onViewCreated: Success ${result.response}"
+                            )
+                        }
+
+                    }
+                }*/
 
         checkFavorite(userToken, productId)
 
@@ -221,40 +236,65 @@ class ProductDetailsFragment : Fragment() {
             findNavController().navigateUp()
         }
         binding.btnAddToCart.setOnClickListener {
-            // Call the ViewModel function to check if the customer has a cart
-            viewModel.isCustomerHasCart(email)
-        }
 
-        // Observe the hasCart state flow to react to changes
-        lifecycleScope.launchWhenStarted {
-            viewModel.hasCart.collect { result ->
-                when (result) {
-                    is ApiState.Success -> {
-                        // If the customer doesn't have a cart, create a new one
-                        if (!result.response) {
-                            createNewCart(email)
-                        } else {
-                            Log.i(TAG, "setListeners: the customer already has a cart")
-                            // Do something if the customer already has a cart
+            viewModel.isCustomerHasCart(email)
+
+            lifecycleScope.launch {
+                viewModel.hasCart.collect { result ->
+                    when (result) {
+                        is ApiState.Failure -> Log.i(TAG, "hasCart Failure: ${result.msg}")
+                        ApiState.Loading -> Log.i(TAG, "hasCart Loading: ")
+                        is ApiState.Success -> {
+                            Log.i(TAG, "hasCart Success: ${result.response}")
+                            if (!result.response) {
+                                val cartId = createNewCart(email)
+
+
+                            }else{
+
+                                viewModel.getCartByCustomer(email)
+                                viewModel.customerCart.collect{result->
+                                    when(result){
+                                        is ApiState.Failure -> Log.i(TAG, "cutomerCart Failure: ${result.msg}" )
+                                        ApiState.Loading -> Log.i(TAG, "Loading ")
+                                        is ApiState.Success -> {
+
+                                        }
+                                    }
+
+                                }
+
+
+                            }
+
                         }
                     }
-
-                    is ApiState.Loading -> {
-                        Log.i(TAG, "setListeners: Loading")
-                        // Show loading indicator if needed
-                    }
-
-                    is ApiState.Failure -> {
-                        Log.i(TAG, "setListeners: failed ${result.msg}")
-                        // Handle error if the check fails
-                    }
                 }
+
             }
         }
+
+
     }
 
-    private fun createNewCart(email: String) {
+    private suspend fun createNewCart(email: String): String {
         viewModel.createCart(email)
+
+        // Variable to hold the cartId
+        var cartId: String? = null
+
+        // Collect only one result from the flow
+        viewModel.cartId
+            .filterIsInstance<ApiState.Success<String>>()
+            .firstOrNull()?.let { result ->
+                cartId = result.response
+            }
+
+        // Make sure the cartId is not null before proceeding
+        cartId?.let {
+            viewModel.addCustomerCart(email, it)
+            return it
+        } ?: throw IllegalStateException("Cart ID could not be retrieved")
     }
 
 

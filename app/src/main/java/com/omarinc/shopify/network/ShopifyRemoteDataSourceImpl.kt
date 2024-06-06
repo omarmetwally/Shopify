@@ -22,6 +22,7 @@ import com.omarinc.shopify.GetProductByIdQuery
 import com.omarinc.shopify.GetProductsByTypeQuery
 import com.omarinc.shopify.SearchProductsQuery
 import com.omarinc.shopify.models.CartCreateResponse
+import com.omarinc.shopify.models.CartLineInput
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.productdetails.model.Price
@@ -428,7 +429,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         }
     }
 
-    override fun createCart(email: String): Flow<ApiState<String?>> = flow {
+    override suspend fun createCart(email: String): Flow<ApiState<String?>> = flow {
         val mutation = CreateCartMutation(email)
 
         try {
@@ -452,5 +453,9 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         } catch (e: ApolloException) {
             emit(ApiState.Failure(e))
         }
+    }
+
+    override fun addToCart(cartId: String, lines: List<CartLineInput>) {
+
     }
 }

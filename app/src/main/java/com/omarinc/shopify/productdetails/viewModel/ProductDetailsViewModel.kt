@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class ProductDetailsViewModel(
-    private val repository: ShopifyRepository, private val favouritesRepository: FirebaseRepository
+    private val repository: ShopifyRepository, private val firebaseRepository: FirebaseRepository
 ) : ViewModel() {
 
     companion object {
@@ -34,6 +34,9 @@ class ProductDetailsViewModel(
 
     private val _cartId = MutableStateFlow<ApiState<String?>>(ApiState.Loading)
     val cartId: StateFlow<ApiState<String?>> = _cartId
+
+    private val _customerCart = MutableStateFlow<ApiState<String?>>(ApiState.Loading)
+    val customerCart: StateFlow<ApiState<String?>> = _customerCart
 
     fun getProductById(productId: String) {
         viewModelScope.launch {
@@ -68,7 +71,7 @@ class ProductDetailsViewModel(
     fun isCustomerHasCart(email: String) {
         viewModelScope.launch {
             try {
-                val hasCart = favouritesRepository.isCustomerHasCart(email)
+                val hasCart = firebaseRepository.isCustomerHasCart(email)
                 _hasCart.value = ApiState.Success(hasCart)
             } catch (e: Exception) {
                 _hasCart.value = ApiState.Failure(e)
@@ -79,11 +82,25 @@ class ProductDetailsViewModel(
     fun addCustomerCart(email: String, cartId: String) {
         viewModelScope.launch {
             try {
-                favouritesRepository.addCustomerCart(email, cartId)
+                firebaseRepository.addCustomerCart(email, cartId)
                 // You might want to update some state here if needed
             } catch (e: Exception) {
                 // Handle the error appropriately, e.g., log it or update a state flow
                 Log.e(TAG, "Error adding customer cart: ", e)
+            }
+        }
+    }
+
+
+    fun getCartByCustomer(email: String) {
+        viewModelScope.launch {
+            _customerCart.value = ApiState.Loading
+            try {
+                val cartId = firebaseRepository.getCartByCustomer(email)
+                _customerCart.value = ApiState.Success(cartId)
+            } catch (e: Exception) {
+                _customerCart.value = ApiState.Failure(e)
+                Log.e(TAG, "Error getting customer cart: ", e)
             }
         }
     }

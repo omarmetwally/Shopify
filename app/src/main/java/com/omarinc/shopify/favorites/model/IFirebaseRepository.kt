@@ -12,5 +12,6 @@ interface IFirebaseRepository {
     suspend fun addCustomerCart(email: String, cartId: String)
 
     suspend fun isCustomerHasCart(email: String): Boolean
+    suspend fun getCartByCustomer(email: String): String
 
 }
