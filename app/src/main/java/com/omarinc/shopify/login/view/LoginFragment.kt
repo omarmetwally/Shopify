@@ -41,42 +41,24 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
-        val repository = ShopifyRepositoryImpl.getInstance(
-            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-            sharedPreferences,
-            CurrencyRemoteDataSourceImpl.getInstance()
-        )
-        val factory = LoginViewModelFactory(repository, requireContext())
-        viewModel = ViewModelProvider(this, factory).get(LoginViewModel::class.java)
+        initViewModel()
 
         binding.btnSkip.setOnClickListener {
-
-            lifecycleScope.launch {
-                viewModel.onSkipButtonPressed()
-                viewModel.skipButtonState.collect { skipPressed ->
-                    if (skipPressed) {
-                        startActivity(Intent(requireActivity(), MainActivity::class.java))
-                        requireActivity().finish()
-                    }
-                }
-            }
+            skipAction()
         }
-
-
-
         binding.txtRegisterNow.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registrationFragment)
-
         }
 
         binding.btnLogin.setOnClickListener {
             val email = binding.emailLoginEditTetx.text.toString().trim()
             val password = binding.passwordLoginEditText.text.toString().trim()
-
             viewModel.loginUser(email, password)
         }
+        loginObserve()
+    }
 
+    private fun loginObserve() {
         lifecycleScope.launch {
             viewModel.apiState.collect { state ->
                 when (state) {
@@ -101,5 +83,28 @@ class LoginFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun skipAction() {
+        lifecycleScope.launch {
+            viewModel.onSkipButtonPressed()
+            viewModel.skipButtonState.collect { skipPressed ->
+                if (skipPressed) {
+                    startActivity(Intent(requireActivity(), MainActivity::class.java))
+                    requireActivity().finish()
+                }
+            }
+        }
+    }
+
+    private fun initViewModel() {
+        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
+        val repository = ShopifyRepositoryImpl.getInstance(
+            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+            sharedPreferences,
+            CurrencyRemoteDataSourceImpl.getInstance()
+        )
+        val factory = LoginViewModelFactory(repository, requireContext())
+        viewModel = ViewModelProvider(this, factory).get(LoginViewModel::class.java)
     }
 }
