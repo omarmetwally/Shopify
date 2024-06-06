@@ -309,19 +309,19 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             } else {
                 val data = response.data?.customer?.orders?.edges
                 if (data != null) {
-                    Log.i("TAG", "getOrders: " + data)
+                    Log.i("TAG", "getOrders: data" + data)
                     var orders: MutableList<Order> = mutableListOf()
                     data.forEach {
                         orders.add(
                             Order(
                                 it.node.id,
                                 it.node.name, it.node.billingAddress?.address1 ?: "",
-                                it.node.currentTotalPrice.amount as Double,
-                                it.node.currentTotalPrice.currencyCode as Int,
-                                it.node.currentSubtotalPrice.amount as Double,
-                                it.node.currentSubtotalPrice.currencyCode as Int,
-                                it.node.currentTotalTax.amount as Double,
-                                it.node.currentTotalTax.currencyCode as Int,
+                                it.node.currentTotalPrice.amount.toString()  ,
+                                it.node.currentTotalPrice.currencyCode.toString(),
+                                it.node.currentSubtotalPrice.amount.toString(),
+                                it.node.currentSubtotalPrice.currencyCode.toString(),
+                                it.node.currentTotalTax.amount.toString(),
+                                it.node.currentTotalTax.currencyCode.toString(),
                                 it.node.canceledAt.toString()
                             )
                         )

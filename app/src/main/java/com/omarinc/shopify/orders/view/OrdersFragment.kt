@@ -23,6 +23,7 @@ import com.omarinc.shopify.databinding.FragmentOrdersBinding
 import com.omarinc.shopify.home.view.HomeFragmentDirections
 import com.omarinc.shopify.home.view.ZoomOutPageTransformer
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
+import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
@@ -38,20 +39,21 @@ class OrdersFragment : Fragment() {
     private lateinit var ordersManager: LinearLayoutManager
     private lateinit var ordersAdapter: OrdersAdapter
     private lateinit var viewModel: OrdersViewModel
+    private lateinit var repo: ShopifyRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val factory = OrdersViewModel.OrdersViewModelFactory(
-            ShopifyRepositoryImpl(
-                ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+         repo = ShopifyRepositoryImpl(
+            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             SharedPreferencesImpl.getInstance(requireContext()),
             CurrencyRemoteDataSourceImpl.getInstance())
+        val factory = OrdersViewModel.OrdersViewModelFactory(
+            repo
         )
 
         viewModel = ViewModelProvider(this,factory).get(OrdersViewModel::class.java)
 
-        viewModel
-            .getCutomerOrders("a8f035227035120d9baa4a29f3d7b2c3")
+
     }
 
     override fun onCreateView(
@@ -69,6 +71,8 @@ class OrdersFragment : Fragment() {
 
 
         lifecycleScope.launch {
+            viewModel
+                .getCutomerOrders(repo.readUserToken())
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.apiState.collect{ result ->
                     when(result){
