@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -20,7 +19,7 @@ import com.omarinc.shopify.R
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModel
 import com.omarinc.shopify.databinding.FragmentProductDetailsBinding
 import com.omarinc.shopify.favorites.model.FavoriteItem
-import com.omarinc.shopify.favorites.model.FavoritesRepository
+import com.omarinc.shopify.favorites.model.FirebaseRepository
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModel
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModelFactory
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
@@ -32,55 +31,122 @@ import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModelFacto
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
 import com.omarinc.shopify.utilities.Helper
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 class ProductDetailsFragment : Fragment() {
 
     companion object {
         fun newInstance() = ProductDetailsFragment()
-        val TAG = "ProductDetailsFragment"
+        const val TAG = "ProductDetailsFragment"
     }
 
+    private lateinit var sharedPreferences: SharedPreferencesImpl
     private lateinit var viewModel: ProductDetailsViewModel
     private lateinit var favoriteViewModel: FavoriteViewModel
     private lateinit var binding: FragmentProductDetailsBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentProductDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as? AppCompatActivity)?.supportActionBar?.hide()
-        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
-        val repository = ShopifyRepositoryImpl.getInstance(
-            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-            sharedPreferences,
-            CurrencyRemoteDataSourceImpl.getInstance()
-        )
-        val productDetailsFactory = ProductDetailsViewModelFactory(repository)
-        viewModel =
-            ViewModelProvider(this, productDetailsFactory).get(ProductDetailsViewModel::class.java)
 
-        val favoriteFactory = FavoriteViewModelFactory(FavoritesRepository.getInstance())
-        favoriteViewModel =
-            ViewModelProvider(this, favoriteFactory).get(FavoriteViewModel::class.java)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setUpViewModel()
+
         val productId = arguments?.getString("productId") ?: ""
+
         val userToken = sharedPreferences.readStringFromSharedPreferences(
             Constants.USER_TOKEN
         )
 
         loadProductDetails(productId)
 
+
+        /*viewModel.isCustomerHasCart("testdfdf@test.com")
+
+        lifecycleScope.launch {
+
+            viewModel.hasCart.collect { result ->
+
+                when(result){
+                    is ApiState.Failure -> Log.i(TAG, "hasCart Failure: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "hasCart Loading: ")
+                    is ApiState.Success -> Log.i(TAG, "hasCart Success: ${result.response} ")
+                }
+            }
+        }*/
+
+
+        setListeners("hadi@test.com")
+
+
+        /*        viewModel.createCart("test@test.com")
+
+                lifecycleScope.launch {
+
+                    viewModel.cartId.collect { result ->
+
+                        when (result) {
+                            is ApiState.Failure -> Log.i(TAG, "onViewCreated: failure ${result.msg}")
+                            ApiState.Loading -> Log.i(TAG, "onViewCreated: Loading")
+                            is ApiState.Success -> Log.i(
+                                TAG,
+                                "onViewCreated: Success ${result.response}"
+                            )
+                        }
+
+                    }
+                }*/
+
         checkFavorite(userToken, productId)
+
+
         getCurrentCurrency()
+
         clickFavorite(userToken, productId)
-        binding.btnBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
+
+
+    }
+
+
+    private fun setUpViewModel() {
+
+
+        sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
+        val repository = ShopifyRepositoryImpl.getInstance(
+            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+            sharedPreferences,
+            CurrencyRemoteDataSourceImpl.getInstance()
+        )
+
+        val productDetailsFactory =
+            ProductDetailsViewModelFactory(repository, FirebaseRepository.getInstance())
+
+        viewModel =
+            ViewModelProvider(this, productDetailsFactory).get(ProductDetailsViewModel::class.java)
+
+
+        val favoriteFactory = FavoriteViewModelFactory(FirebaseRepository.getInstance())
+
+        favoriteViewModel =
+            ViewModelProvider(this, favoriteFactory).get(FavoriteViewModel::class.java)
+
+
     }
 
     private fun clickFavorite(userToken: String, productId: String) {
@@ -162,6 +228,76 @@ class ProductDetailsFragment : Fragment() {
         }
     }
 
+
+    private fun setListeners(email: String) {
+        Log.i(TAG, "setListeners: ")
+
+        binding.btnBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+        binding.btnAddToCart.setOnClickListener {
+
+            viewModel.isCustomerHasCart(email)
+
+            lifecycleScope.launch {
+                viewModel.hasCart.collect { result ->
+                    when (result) {
+                        is ApiState.Failure -> Log.i(TAG, "hasCart Failure: ${result.msg}")
+                        ApiState.Loading -> Log.i(TAG, "hasCart Loading: ")
+                        is ApiState.Success -> {
+                            Log.i(TAG, "hasCart Success: ${result.response}")
+                            if (!result.response) {
+                                val cartId = createNewCart(email)
+
+
+                            }else{
+
+                                viewModel.getCartByCustomer(email)
+                                viewModel.customerCart.collect{result->
+                                    when(result){
+                                        is ApiState.Failure -> Log.i(TAG, "cutomerCart Failure: ${result.msg}" )
+                                        ApiState.Loading -> Log.i(TAG, "Loading ")
+                                        is ApiState.Success -> {
+
+                                        }
+                                    }
+
+                                }
+
+
+                            }
+
+                        }
+                    }
+                }
+
+            }
+        }
+
+
+    }
+
+    private suspend fun createNewCart(email: String): String {
+        viewModel.createCart(email)
+
+        // Variable to hold the cartId
+        var cartId: String? = null
+
+        // Collect only one result from the flow
+        viewModel.cartId
+            .filterIsInstance<ApiState.Success<String>>()
+            .firstOrNull()?.let { result ->
+                cartId = result.response
+            }
+
+        // Make sure the cartId is not null before proceeding
+        cartId?.let {
+            viewModel.addCustomerCart(email, it)
+            return it
+        } ?: throw IllegalStateException("Cart ID could not be retrieved")
+    }
+
+
     private fun setupChips(productDetails: ProductDetails) {
         binding.chipGroupSizes.removeAllViews()
         binding.chipGroupColors.removeAllViews()
@@ -184,7 +320,7 @@ class ProductDetailsFragment : Fragment() {
                 isCheckable = true
                 setOnCheckedChangeListener { buttonView, isChecked ->
                     (buttonView as Chip).chipBackgroundColor = if (isChecked) {
-                        ColorStateList.valueOf( getResources().getColor(R.color.secondary_color))
+                        ColorStateList.valueOf(getResources().getColor(R.color.secondary_color))
                     } else {
                         ColorStateList.valueOf(Color.WHITE)
                     }
@@ -211,16 +347,19 @@ class ProductDetailsFragment : Fragment() {
     }
 
 
-    private fun getCurrentCurrency(){
+    private fun getCurrentCurrency() {
 
         viewModel.getRequiredCurrency()
         lifecycleScope.launch {
-            viewModel.requiredCurrency.collect {result->
+            viewModel.requiredCurrency.collect { result ->
 
-                when(result){
+                when (result) {
                     is ApiState.Failure -> Log.i(TAG, "getCurrentCurrency: ${result.msg}")
                     ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
-                    is ApiState.Success -> Log.i(TAG, "getCurrentCurrency: ${result.response.data.values}")
+                    is ApiState.Success -> Log.i(
+                        TAG,
+                        "getCurrentCurrency: ${result.response.data.values}"
+                    )
                 }
 
             }

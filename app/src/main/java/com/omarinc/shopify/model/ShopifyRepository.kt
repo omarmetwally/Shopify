@@ -46,4 +46,7 @@ interface ShopifyRepository {
     fun getProductByType(type: String): Flow<ApiState<List<Product>>>
 
     fun getCollectionByHandle(handle: String): Flow<ApiState<Collection>>
+
+    suspend fun createCart(token: String): Flow<ApiState<String?>>
+
 }

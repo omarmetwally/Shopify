@@ -28,4 +28,6 @@ class LoginViewModel(private val repository: ShopifyRepository) : ViewModel() {
         repository.writeBooleanToSharedPreferences(Constants.USER_SKIPPED, true)
         _skipButtonState.value = true
     }
+
+
 }

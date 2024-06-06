@@ -5,15 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omarinc.shopify.favorites.model.FavoriteItem
 import com.omarinc.shopify.favorites.model.FavoriteItemFirebase
-import com.omarinc.shopify.favorites.model.FavoritesRepository
-import com.omarinc.shopify.favorites.model.IFavoritesRepository
-import com.omarinc.shopify.model.ShopifyRepository
+import com.omarinc.shopify.favorites.model.IFirebaseRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class FavoriteViewModel(private val repository: IFavoritesRepository) : ViewModel() {
+class FavoriteViewModel(private val repository: IFirebaseRepository) : ViewModel() {
 
     private val _isFavorite = MutableStateFlow(false)
     val isFavorite: StateFlow<Boolean> get() = _isFavorite

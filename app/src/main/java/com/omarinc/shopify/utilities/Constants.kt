@@ -17,7 +17,7 @@ object Constants {
     const val CURRENCY_API_KEY = "cur_live_usLMp14VDCAQTXO0bfD3JzCtTo4S5WRz585BvJ5E"
     const val CURRENCY_RATE = "rate"
     const val CURRENCY_UNIT = "unit"
-
+    const val CUSTOMER_CART_ROOT= "Customer Cart"
 
     val fragmentsWithHiddenBottomNav = setOf(
         R.id.homeFragment,
