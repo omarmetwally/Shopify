@@ -65,6 +65,11 @@ class ShopifyRepositoryImpl(
                     Constants.USER_TOKEN,
                     state.response
                 )
+                sharedPreferences.writeStringToSharedPreferences(
+                    Constants.USER_EMAIL,
+                    email
+                )
+
             }
             state
         }
