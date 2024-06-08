@@ -5,6 +5,7 @@ import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.CurrencyResponse
+import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.network.ShopifyRemoteDataSource
 import com.omarinc.shopify.network.ApiState
@@ -50,7 +51,7 @@ class ShopifyRepositoryImpl(
     }
 
     override fun getBrands(): Flow<ApiState<List<Brands>>> {
-        return  shopifyRemoteDataSource.getBrands()
+        return shopifyRemoteDataSource.getBrands()
     }
 
     override fun getProductsByBrandId(id: String): Flow<ApiState<List<Product>>> {
@@ -120,7 +121,7 @@ class ShopifyRepositoryImpl(
     }
 
     override fun getProductByType(type: String): Flow<ApiState<List<Product>>> {
-        return  shopifyRemoteDataSource.getProductByType(type)
+        return shopifyRemoteDataSource.getProductByType(type)
     }
 
     override fun getCollectionByHandle(handle: String): Flow<ApiState<Collection>> {
@@ -137,6 +138,13 @@ class ShopifyRepositoryImpl(
 
     override suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>> {
         return shopifyRemoteDataSource.getProductsCart(cartId)
+    }
+
+    override suspend fun createAddress(
+        customerAddress: CustomerAddress,
+        token: String
+    ): Flow<ApiState<String?>> {
+        return shopifyRemoteDataSource.createAddress(customerAddress, token)
     }
 
 

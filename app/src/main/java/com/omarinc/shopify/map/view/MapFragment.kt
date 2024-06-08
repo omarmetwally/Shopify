@@ -4,12 +4,15 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.LocationManager
 import androidx.fragment.app.Fragment
 
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +20,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -28,15 +32,20 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentMapBinding
 import com.omarinc.shopify.map.viewModel.MapViewModel
 import com.omarinc.shopify.map.viewModel.MapViewModelFactory
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.models.CustomerAddress
+import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -54,9 +63,13 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
     private var longitude: Double = 0.0
     private var latitude: Double = 0.0
 
+    private var address: CustomerAddress = CustomerAddress("", "", "", "", "")
+
+    private var currentMarker: Marker? = null
+
     companion object {
         private const val REQUEST_LOCATION_CODE = 505
-
+        private const val TAG = "MapFragment"
     }
 
     override fun onCreateView(
@@ -76,37 +89,14 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         setupViewModel()
         setListeners()
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
     }
 
-    private fun setListeners() {
-        binding.chooseAddressButton.setOnClickListener {
-
-        }
-        binding.currentLocationButton.setOnClickListener {
-
-            setUpLocation()
-            addMarkerWithCoordinates(latitude, longitude)
-        }
-    }
-
-    override fun onMapReady(map: GoogleMap) {
-        googleMap = map
-        googleMap.setOnMapClickListener(this)
-
-
-
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cairo, 10f))
-    }
-
-    override fun onMapClick(latLng: LatLng) {
-        // Handle map click events
-        googleMap.addMarker(MarkerOptions().position(latLng).title("New Marker"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-    }
 
     private fun setupViewModel() {
         val repository = ShopifyRepositoryImpl.getInstance(
@@ -118,7 +108,69 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
         viewModel = ViewModelProvider(this, factory)[MapViewModel::class.java]
     }
 
-    private fun setUpLocation() {
+    private fun setListeners() {
+        binding.chooseAddressButton.setOnClickListener {
+
+            googleMap.let { map ->
+                val location = getCurrentLocation(map)
+                getCityFromLocation(location.latitude, location.longitude)
+
+            }
+
+            viewModel.createAddress(address)
+
+            Log.i(TAG, "City: ${address.city}")
+            lifecycleScope.launch {
+                viewModel.address.collect { result ->
+
+                    when (result) {
+                        is ApiState.Failure -> Log.i(TAG, "Address failure ${result.msg} ")
+                        ApiState.Loading -> Log.i(TAG, "Address loading")
+                        is ApiState.Success -> {
+                            Log.i(TAG, "ID:${result.response} ")
+                            Toast.makeText(
+                                requireContext(),
+                                "Address added",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            popFragment()
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+        binding.currentLocationButton.setOnClickListener {
+
+            setUpCurrentLocation()
+            addMarkerWithCoordinates(latitude, longitude)
+        }
+    }
+
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+        googleMap.setOnMapClickListener(this)
+
+
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cairo, 5f));
+
+    }
+
+    override fun onMapClick(latLng: LatLng) {
+
+        currentMarker?.remove()
+
+        getCityFromLocation(latLng.latitude, latLng.longitude)
+        currentMarker = googleMap.addMarker(MarkerOptions().position(latLng).title("New Marker"))
+
+
+    }
+
+
+    private fun setUpCurrentLocation() {
         if (checkPermissions()) {
             if (isLocationEnabled()) {
                 requestLocationUpdates()
@@ -181,7 +233,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
                     latitude = location?.latitude ?: 0.0
                     longitude = location?.longitude ?: 0.0
 
-
+                    getCityFromLocation(latitude, longitude)
 
 
                     fusedLocationProviderClient.removeLocationUpdates(this)
@@ -219,5 +271,38 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
 
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun getCityFromLocation(latitude: Double, longitude: Double) {
+        val geocoder = Geocoder(requireContext())
+        val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
+
+        if (!addresses.isNullOrEmpty()) {
+            val address = addresses[0]
+            val cityName = address.adminArea ?: "Unknown"
+            val countryName = address.countryName ?: "Unknown"
+            val addressLine = address.getAddressLine(0) ?: "Unknown"
+
+            this.address.apply {
+                this.city = cityName
+                this.country = countryName
+                this.address1 = addressLine
+
+            }
+        } else {
+            showToast("No address found for the provided location.")
+        }
+    }
+
+    private fun getCurrentLocation(googleMap: GoogleMap): LatLng {
+        val cameraPosition = googleMap.cameraPosition.target
+        latitude = cameraPosition.latitude
+        longitude = cameraPosition.longitude
+
+        return LatLng(cameraPosition.latitude, cameraPosition.longitude)
+    }
+
+    private fun popFragment() {
+        parentFragmentManager.popBackStack()
     }
 }

@@ -6,6 +6,7 @@ import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
+import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
@@ -54,4 +55,8 @@ interface ShopifyRepository {
 
     suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>>
 
+    suspend fun createAddress(
+        customerAddress: CustomerAddress,
+        token: String
+    ): Flow<ApiState<String?>>
 }

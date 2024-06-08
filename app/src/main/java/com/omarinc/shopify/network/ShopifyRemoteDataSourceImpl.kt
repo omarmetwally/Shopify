@@ -522,7 +522,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
 
             val mutation = CreateAddressMutation(
                 customerAddress.address1,
-                customerAddress.address2,
+                customerAddress.address2 ?:"address",
                 customerAddress.city,
                 customerAddress.country,
                 token
