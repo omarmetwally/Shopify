@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.omarinc.shopify.R
-import com.omarinc.shopify.databinding.BrandLayoutBinding
+import com.omarinc.shopify.databinding.ProductLayoutBinding
 import com.omarinc.shopify.models.Product
 
 
@@ -20,16 +20,15 @@ class ProductsAdapter(
     ProductsDiffUtil()
 ) {
 
-    private lateinit var binding: BrandLayoutBinding
+    private lateinit var binding: ProductLayoutBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductsViewHolder {
-        binding = BrandLayoutBinding.inflate(
+        binding = ProductLayoutBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
         return ProductsViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ProductsViewHolder, position: Int) {
-        // binding.favCard.setCardBackgroundColor( setCardViewBackground(context))
         val current = getItem(position)
 
         binding.brandName.text = current.title
@@ -47,7 +46,7 @@ class ProductsAdapter(
     }
 }
 
-class ProductsViewHolder(val layout: BrandLayoutBinding) : RecyclerView.ViewHolder(layout.root)
+class ProductsViewHolder(val layout: ProductLayoutBinding) : RecyclerView.ViewHolder(layout.root)
 class ProductsDiffUtil : DiffUtil.ItemCallback<Product>() {
     override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
         return oldItem.id == newItem.id

@@ -11,16 +11,12 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapter
 import com.example.weatherforecastapplication.favouritesFeature.view.CategoriesAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentCategoriesBinding
-import com.omarinc.shopify.databinding.FragmentHomeBinding
 import com.omarinc.shopify.home.viewmodel.CategoriesViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
-import com.omarinc.shopify.models.Brand
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
