@@ -6,6 +6,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
+import com.omarinc.shopify.CreateAddressMutation
 import com.omarinc.shopify.CreateCartMutation
 import com.omarinc.shopify.CreateCustomerAccessTokenMutation
 import com.omarinc.shopify.CreateCustomerMutation
@@ -26,6 +27,7 @@ import com.omarinc.shopify.models.CartCreateResponse
 import com.omarinc.shopify.models.CartLineInput
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
+import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.productdetails.model.Price
 import com.omarinc.shopify.productdetails.model.ProductDetails
@@ -318,7 +320,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                             Order(
                                 it.node.id,
                                 it.node.name, it.node.billingAddress?.address1 ?: "",
-                                it.node.currentTotalPrice.amount.toString()  ,
+                                it.node.currentTotalPrice.amount.toString(),
                                 it.node.currentTotalPrice.currencyCode.toString(),
                                 it.node.currentSubtotalPrice.amount.toString(),
                                 it.node.currentSubtotalPrice.currencyCode.toString(),
@@ -472,7 +474,8 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         val query = GetProductsInCartQuery(cartId)
 
         try {
-            val response: ApolloResponse<GetProductsInCartQuery.Data> = apolloClient.query(query).execute()
+            val response: ApolloResponse<GetProductsInCartQuery.Data> =
+                apolloClient.query(query).execute()
 
             response.data?.cart?.lines?.edges?.forEach { line ->
                 val node = line.node
@@ -508,5 +511,42 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             emit(ApiState.Failure(Throwable("An unknown error occurred: ${e.message}"))) // Emit failure state for unknown errors
         }
     }
+
+    override suspend fun createAddress(
+        customerAddress: CustomerAddress,
+        token: String
+    ): Flow<ApiState<String?>> =
+        flow {
+
+            emit(ApiState.Loading)
+
+            val mutation = CreateAddressMutation(
+                customerAddress.address1,
+                customerAddress.address2,
+                customerAddress.city,
+                customerAddress.country,
+                token
+
+            )
+            try {
+                val response = apolloClient.mutation(mutation).execute()
+
+
+                if (response.hasErrors()) {
+                    val errorMessages =
+                        response.errors?.joinToString { it.message } ?: "Unknown error"
+                    emit(ApiState.Failure(Throwable(errorMessages)))
+                } else {
+
+                    val addressId = response.data?.customerAddressCreate?.customerAddress?.id
+                    emit(ApiState.Success(addressId))
+                }
+
+            } catch (e: ApolloException) {
+                emit(ApiState.Failure(e))
+            } catch (e: Exception) {
+                emit(ApiState.Failure(e))
+            }
+        }
 
 }
