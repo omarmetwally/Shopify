@@ -12,22 +12,25 @@
         android:id="@+id/categoriesFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@drawable/categories"
+        android:icon="@drawable/category"
         android:title="@string/categories" />
-    <!--<item
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:icon="@drawable/cart"
-        android:title="@string/cart" />
+
     <item
+        android:id="@+id/shoppingCartFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@drawable/favourites"
-        android:title="@string/favourites" />-->
+        android:icon="@drawable/shopping"
+        android:title="@string/shopping" />
+    <item
+        android:id="@+id/favoritesFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/heart"
+        android:title="@string/favorites" />
     <item
         android:id="@+id/profileFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@drawable/profile"
+        android:icon="@drawable/user"
         android:title="@string/me" />
 </menu>

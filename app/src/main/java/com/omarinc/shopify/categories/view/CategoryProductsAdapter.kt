@@ -9,10 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.omarinc.shopify.R
-import com.omarinc.shopify.databinding.BrandLayoutBinding
-import com.omarinc.shopify.databinding.CategoriesLayoutBinding
 import com.omarinc.shopify.databinding.CategoryProductsLayoutBinding
-import com.omarinc.shopify.models.Brand
 import com.omarinc.shopify.models.Product
 
 
