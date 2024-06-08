@@ -31,6 +31,7 @@ import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModelFacto
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
 import com.omarinc.shopify.utilities.Helper
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.firstOrNull
@@ -92,7 +93,7 @@ class ProductDetailsFragment : Fragment() {
         }*/
 
 
-        setListeners("hadi@test.com")
+        setListeners()
 
 
         /*        viewModel.createCart("test@test.com")
@@ -115,6 +116,11 @@ class ProductDetailsFragment : Fragment() {
 
         checkFavorite(userToken, productId)
 
+        lifecycleScope.launch {
+
+
+            Log.i(TAG, "onViewCreated: Email ${viewModel.readCustomerEmail()}")
+        }
 
         getCurrentCurrency()
 
@@ -229,7 +235,7 @@ class ProductDetailsFragment : Fragment() {
     }
 
 
-    private fun setListeners(email: String) {
+    private fun setListeners() {
         Log.i(TAG, "setListeners: ")
 
         binding.btnBack.setOnClickListener {
@@ -237,9 +243,16 @@ class ProductDetailsFragment : Fragment() {
         }
         binding.btnAddToCart.setOnClickListener {
 
-            viewModel.isCustomerHasCart(email)
+            val email: Deferred<String>
+            email = lifecycleScope.async {
+                viewModel.readCustomerEmail()
+            }
+
 
             lifecycleScope.launch {
+
+                viewModel.isCustomerHasCart(email.await())
+                Log.i(TAG, "Email: ${email.await()}")
                 viewModel.hasCart.collect { result ->
                     when (result) {
                         is ApiState.Failure -> Log.i(TAG, "hasCart Failure: ${result.msg}")
@@ -247,15 +260,19 @@ class ProductDetailsFragment : Fragment() {
                         is ApiState.Success -> {
                             Log.i(TAG, "hasCart Success: ${result.response}")
                             if (!result.response) {
-                                val cartId = createNewCart(email)
+                                val cartId = createNewCart(email.await())
 
 
-                            }else{
+                            } else {
 
-                                viewModel.getCartByCustomer(email)
-                                viewModel.customerCart.collect{result->
-                                    when(result){
-                                        is ApiState.Failure -> Log.i(TAG, "cutomerCart Failure: ${result.msg}" )
+                                viewModel.getCartByCustomer(email.await())
+                                viewModel.customerCart.collect { result ->
+                                    when (result) {
+                                        is ApiState.Failure -> Log.i(
+                                            TAG,
+                                            "cutomerCart Failure: ${result.msg}"
+                                        )
+
                                         ApiState.Loading -> Log.i(TAG, "Loading ")
                                         is ApiState.Success -> {
 

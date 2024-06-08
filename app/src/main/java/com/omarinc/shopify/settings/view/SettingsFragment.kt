@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.omarinc.shopify.databinding.FragmentSettingsBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.Currencies
@@ -48,7 +49,15 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         setUpViewModel()
         setUpSpinner()
+        setUpListeners()
 
+    }
+
+    private fun setUpListeners() {
+        binding.addressTextView.setOnClickListener {
+            val action = SettingsFragmentDirections.actionSettingsFragmentToMapFragment()
+            findNavController().navigate(action)
+        }
     }
 
     private fun setUpViewModel() {
