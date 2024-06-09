@@ -212,6 +212,8 @@ class CategoryProductsFragment : Fragment() {
             binding.fab2.isClickable = true
             binding.fab3.isClickable = true
             isFabOpen = true
+
+
         }
     }
 
