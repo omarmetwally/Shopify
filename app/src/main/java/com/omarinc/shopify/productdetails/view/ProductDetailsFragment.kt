@@ -160,9 +160,7 @@ class ProductDetailsFragment : Fragment() {
             lifecycleScope.launch {
                 val isFavorite = favoriteViewModel.isFavorite.value
                 if (isFavorite) {
-                    favoriteViewModel.removeFromFavorites(
-                        userToken, productId
-                    )
+                    showUnfavoriteDialog(userToken, productId)
                 } else {
                     val favoriteItem = FavoriteItem(productId = productId,
                         productName = binding.tvProductName.text.toString(),
@@ -175,6 +173,19 @@ class ProductDetailsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun showUnfavoriteDialog(userToken: String, productId: String) {
+        Helper.showAlertDialog(
+            context = requireContext(),
+            title = getString(R.string.unfavorite_product),
+            message = getString(R.string.are_you_sure_to_unfavorite),
+            positiveButtonText = getString(R.string.yes),
+            positiveButtonAction = {
+                favoriteViewModel.removeFromFavorites(userToken, productId)
+            },
+            negativeButtonText = getString(R.string.no)
+        )
     }
 
     private fun checkFavorite(userToken: String, productId: String) {

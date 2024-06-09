@@ -1,5 +1,6 @@
 package com.omarinc.shopify.registration.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentRegistrationBinding
 import com.omarinc.shopify.registration.viewmodel.RegistrationViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
@@ -17,6 +19,9 @@ import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.registration.viewModel.RegistrationViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Helper
+import com.omarinc.shopify.utilities.Helper.validateEmail
+import com.omarinc.shopify.utilities.Helper.validatePassword
 import kotlinx.coroutines.launch
 
 class RegistrationFragment : Fragment() {
@@ -34,7 +39,12 @@ class RegistrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupViewModel()
+        setupRegisterButton()
+        observeViewModel()
+    }
 
+    private fun setupViewModel() {
         val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
@@ -43,6 +53,9 @@ class RegistrationFragment : Fragment() {
         )
         val factory = RegistrationViewModelFactory(repository, requireContext())
         viewModel = ViewModelProvider(this, factory).get(RegistrationViewModel::class.java)
+    }
+
+    private fun setupRegisterButton() {
 
         binding.btnRegister.setOnClickListener {
             val fullName = binding.nameRegisterEditText.text.toString().trim()
@@ -50,32 +63,106 @@ class RegistrationFragment : Fragment() {
             val password = binding.passwordRegisterEditText.text.toString().trim()
             val confirmPassword = binding.confirmPasswordRegisterEditText.text.toString().trim()
 
-            if (password == confirmPassword) {
-                viewModel.registerUser(email, password, fullName)
+            if (validateInputs(fullName, email, password, confirmPassword)) {
+                if (password == confirmPassword) {
+                    if (validatePassword(password)) {
+                        binding.btnRegister.startAnimation()
+                        viewModel.registerUser(email, password, fullName)
+                    } else {
+                        binding.passwordRegisterEditText.error =
+                            getString(R.string.password_validation)
+                    }
+                } else {
+                    binding.confirmPasswordRegisterEditText.error =
+                        getString(R.string.password_not_matching)
+                }
             } else {
-                Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                showMissingFieldsError()
             }
         }
+    }
 
+    private fun validateInputs(
+        fullName: String,
+        email: String,
+        password: String,
+        confirmPassword: String
+    ): Boolean {
+        var isValid = true
+
+        if (fullName.isEmpty()) {
+            binding.nameRegisterEditText.error = getString(R.string.name_is_required)
+            isValid = false
+        }
+
+        if (email.isEmpty()) {
+            binding.emailRegisterEditText.error = getString(R.string.email_is_required)
+            isValid = false
+        } else if (!validateEmail(email)) {
+            binding.emailRegisterEditText.error = getString(R.string.email_invalid)
+            isValid = false
+        }
+
+        if (password.isEmpty()) {
+            binding.passwordRegisterEditText.error = getString(R.string.password_is_required)
+            isValid = false
+        }
+
+        if (confirmPassword.isEmpty()) {
+            binding.confirmPasswordRegisterEditText.error =
+                getString(R.string.confirm_password_is_required)
+            isValid = false
+        }
+
+        return isValid
+    }
+
+    private fun showMissingFieldsError() {
+        if (binding.nameRegisterEditText.text.toString().trim().isEmpty()) {
+            binding.nameRegisterEditText.error = getString(R.string.name_is_required)
+        }
+        if (binding.emailRegisterEditText.text.toString().trim().isEmpty()) {
+            binding.emailRegisterEditText.error = getString(R.string.email_is_required)
+        }
+        if (binding.passwordRegisterEditText.text.toString().trim().isEmpty()) {
+            binding.passwordRegisterEditText.error = getString(R.string.password_is_required)
+        }
+        if (binding.confirmPasswordRegisterEditText.text.toString().trim().isEmpty()) {
+            binding.confirmPasswordRegisterEditText.error =
+                getString(R.string.confirm_password_is_required)
+        }
+    }
+
+    @SuppressLint("StringFormatInvalid")
+    private fun observeViewModel() {
         lifecycleScope.launch {
             viewModel.apiState.collect { state ->
                 when (state) {
                     is ApiState.Success -> {
-                        Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT)
-                            .show()
+                        binding.btnRegister.revertAnimation()
+                        Helper.showAlertDialog(
+                            context = requireContext(),
+                            title = getString(R.string.registration_alert_Header),
+                            message = getString(R.string.registration_successful),
+                            positiveButtonText = getString(R.string.ok)
+                        )
                     }
 
                     is ApiState.Failure -> {
-                        Log.e("RegistrationFragment", "Registration Failed", state.msg)
-                        Toast.makeText(
-                            context,
-                            "Registration Failed: ${state.msg.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val errorMessage =
+                            getString(R.string.registration_failed, state.msg.message)
+                        binding.btnRegister.revertAnimation()
+                        Helper.showAlertDialog(
+                            context = requireContext(),
+                            title = getString(R.string.registration_alert_Header),
+                            message = errorMessage,
+                            positiveButtonText = getString(R.string.ok)
+                        )
                     }
 
                     ApiState.Loading -> {
-                        Toast.makeText(context, "Loading", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, getString(R.string.loading), Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
