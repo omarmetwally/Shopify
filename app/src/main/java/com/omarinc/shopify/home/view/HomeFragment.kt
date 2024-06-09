@@ -1,6 +1,7 @@
 package com.omarinc.shopify.home.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherforecastapplication.favouritesFeature.view.ProductsAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
+import com.omarinc.shopify.home.view.adapters.AdsAdapter
+import com.omarinc.shopify.home.view.adapters.BrandsAdapter
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
@@ -28,6 +31,9 @@ import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
+    companion object{
+        private const val TAG = "HomeFragment"
+    }
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var brandsManager: LinearLayoutManager
@@ -68,6 +74,7 @@ class HomeFragment : Fragment() {
         setUpAdsAdapter()
         setUpBrandsAdapter()
         setUpProductsAdapter()
+        getCoupons()
     }
 
     private fun setUpProductsAdapter() {
@@ -172,6 +179,26 @@ class HomeFragment : Fragment() {
 
         viewModel.getBrands()
         viewModel.getProductsByBrandId("gid://shopify/Collection/308805107891")
+    }
+
+    private fun getCoupons(){
+        viewModel.getCoupons()
+
+        lifecycleScope.launch {
+            viewModel.coupons.collect{result->
+
+
+                when(result){
+                    is ApiState.Failure -> Log.i(TAG, "getCoupons: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "getCoupons: Loading")
+                    is ApiState.Success -> {
+
+                        Log.i(TAG, "getCoupons: ${result.response}")
+                    }
+                }
+
+            }
+        }
     }
 
 
