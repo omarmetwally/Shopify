@@ -21,6 +21,7 @@ import com.omarinc.shopify.home.viewmodel.CategoriesViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.productdetails.view.ProductDetailsFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
@@ -44,11 +45,14 @@ class CategoryProductsFragment : Fragment() {
         val factory = CategoriesViewModel.CategoriesViewModelFactory(
             ShopifyRepositoryImpl(
                 ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-            SharedPreferencesImpl.getInstance(requireContext()),
-            CurrencyRemoteDataSourceImpl.getInstance())
+                SharedPreferencesImpl.getInstance(requireContext()),
+                CurrencyRemoteDataSourceImpl.getInstance(),
+                AdminRemoteDataSourceImpl.getInstance()
+            )
         )
 
-        viewModel = ViewModelProvider(requireParentFragment(), factory).get(CategoriesViewModel::class.java)
+        viewModel =
+            ViewModelProvider(requireParentFragment(), factory).get(CategoriesViewModel::class.java)
 
 
     }
@@ -58,7 +62,8 @@ class CategoryProductsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentCategoryProductsBinding.inflate(layoutInflater, container, false)
-        return binding.root    }
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,24 +71,25 @@ class CategoryProductsFragment : Fragment() {
             requireContext(),
         )
 
-        productsManager = GridLayoutManager(requireContext(),2)
+        productsManager = GridLayoutManager(requireContext(), 2)
         productsManager.orientation = LinearLayoutManager.VERTICAL
         binding.categoryProductsRV.layoutManager = productsManager
         binding.categoryProductsRV.adapter = productsAdapter
 
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.apiState.collect{ result ->
-                    when(result){
-                        is ApiState.Loading ->{
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.apiState.collect { result ->
+                    when (result) {
+                        is ApiState.Loading -> {
 
                         }
 
-                        is ApiState.Success ->{
+                        is ApiState.Success -> {
                             productsAdapter.submitList(result.response)
                         }
-                        is ApiState.Failure ->{
-                            Log.i("TAG", "onViewCreated: error "+result.msg)
+
+                        is ApiState.Failure -> {
+                            Log.i("TAG", "onViewCreated: error " + result.msg)
                         }
                     }
                 }
@@ -91,18 +97,19 @@ class CategoryProductsFragment : Fragment() {
         }
 
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.collectionApiState.collect{ result ->
-                    when(result){
-                        is ApiState.Loading ->{
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.collectionApiState.collect { result ->
+                    when (result) {
+                        is ApiState.Loading -> {
 
                         }
 
-                        is ApiState.Success ->{
+                        is ApiState.Success -> {
                             productsAdapter.submitList(result.response.products)
                         }
-                        is ApiState.Failure ->{
-                            Log.i("TAG", "onViewCreated: error "+result.msg)
+
+                        is ApiState.Failure -> {
+                            Log.i("TAG", "onViewCreated: error " + result.msg)
                         }
                     }
                 }
@@ -135,21 +142,33 @@ class CategoryProductsFragment : Fragment() {
     }
 
 
-    private fun getCurrentCurrency(){
+    private fun getCurrentCurrency() {
 
         viewModel.getRequiredCurrency()
         lifecycleScope.launch {
-            viewModel.requiredCurrency.collect {result->
+            viewModel.requiredCurrency.collect { result ->
 
-                when(result){
-                    is ApiState.Failure -> Log.i(ProductDetailsFragment.TAG, "getCurrentCurrency: ${result.msg}")
-                    ApiState.Loading -> Log.i(ProductDetailsFragment.TAG, "getCurrentCurrency: Loading")
-                    is ApiState.Success -> Log.i(ProductDetailsFragment.TAG, "getCurrentCurrency: ${result.response.data.values}")
+                when (result) {
+                    is ApiState.Failure -> Log.i(
+                        ProductDetailsFragment.TAG,
+                        "getCurrentCurrency: ${result.msg}"
+                    )
+
+                    ApiState.Loading -> Log.i(
+                        ProductDetailsFragment.TAG,
+                        "getCurrentCurrency: Loading"
+                    )
+
+                    is ApiState.Success -> Log.i(
+                        ProductDetailsFragment.TAG,
+                        "getCurrentCurrency: ${result.response.data.values}"
+                    )
                 }
 
             }
         }
     }
+
     private fun toggleFab() {
         if (isFabOpen) {
             binding.mainFab.startAnimation(rotateBackwardAnim)

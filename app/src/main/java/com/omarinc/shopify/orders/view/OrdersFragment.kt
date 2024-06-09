@@ -18,6 +18,7 @@ import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.orders.viewmodel.OrdersViewModel
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
@@ -34,15 +35,17 @@ class OrdersFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-         repo = ShopifyRepositoryImpl(
+        repo = ShopifyRepositoryImpl(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             SharedPreferencesImpl.getInstance(requireContext()),
-            CurrencyRemoteDataSourceImpl.getInstance())
+            CurrencyRemoteDataSourceImpl.getInstance(), AdminRemoteDataSourceImpl.getInstance()
+        )
+
         val factory = OrdersViewModel.OrdersViewModelFactory(
             repo
         )
 
-        viewModel = ViewModelProvider(this,factory).get(OrdersViewModel::class.java)
+        viewModel = ViewModelProvider(this, factory).get(OrdersViewModel::class.java)
 
 
     }
@@ -64,17 +67,18 @@ class OrdersFragment : Fragment() {
         lifecycleScope.launch {
             viewModel
                 .getCutomerOrders(repo.readUserToken())
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.apiState.collect{ result ->
-                    when(result){
-                        is ApiState.Loading ->{
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.apiState.collect { result ->
+                    when (result) {
+                        is ApiState.Loading -> {
 
                         }
 
-                        is ApiState.Success ->{
+                        is ApiState.Success -> {
                             ordersAdapter.submitList(result.response)
                         }
-                        is ApiState.Failure ->{
+
+                        is ApiState.Failure -> {
 
                         }
                     }
@@ -83,7 +87,7 @@ class OrdersFragment : Fragment() {
         }
 
 
-        val onBrandClick = { id : String ->
+        val onBrandClick = { id: String ->
             val action = HomeFragmentDirections
                 .actionHomeFragmentToProductsFragment(
                     id
