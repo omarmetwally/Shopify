@@ -1,19 +1,14 @@
 package com.omarinc.shopify.home.viewmodel
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.omarinc.shopify.login.viewmodel.LoginViewModel
 import com.omarinc.shopify.model.ShopifyRepository
-import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.productdetails.model.Products
-import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModel
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +19,8 @@ import kotlinx.coroutines.launch
 
 class CategoriesViewModel (private val repository: ShopifyRepository) : ViewModel() {
 
+
+     val maxPrice = MutableStateFlow<Int>(10000)
 
     companion object{
         val TAG = "CategoriesViewModel"
@@ -38,8 +35,15 @@ class CategoriesViewModel (private val repository: ShopifyRepository) : ViewMode
     private var _requiredCurrency = MutableStateFlow<ApiState<CurrencyResponse>>(ApiState.Loading)
     val requiredCurrency = _requiredCurrency.asStateFlow()
 
+    fun filterProducts(products: List<Product>)  {
+        val filteredResults = products.filter {
+            val price =
+                 (it.price as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
+            price <= maxPrice.value
+        }
+        _apiState.value  = ApiState.Success(filteredResults)
+    }
     fun getProductsByType(type:String) {
-        Log.i("TAG", "getProductsByType: Viewmodel")
         viewModelScope.launch {
             _collectionApiState.collect{ result ->
                 when(result){
@@ -58,12 +62,8 @@ class CategoriesViewModel (private val repository: ShopifyRepository) : ViewMode
                     }
                 }
             }
-           /* repository.getProductByType(type).collect {
-                _apiState.value = it
-            }*/
         }
     }
-
     fun getCollectionByHandle(handle:String) {
         Log.i("TAG", "getProductsByType: Viewmodel")
         viewModelScope.launch {

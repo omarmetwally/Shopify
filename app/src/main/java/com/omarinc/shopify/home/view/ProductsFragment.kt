@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.appcompat.widget.SearchView
 import androidx.cursoradapter.widget.CursorAdapter
 import androidx.cursoradapter.widget.SimpleCursorAdapter
@@ -23,9 +24,11 @@ import com.example.weatherforecastapplication.favouritesFeature.view.ProductsAda
 import com.omarinc.shopify.databinding.FragmentProductsBinding
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.productdetails.view.ProductDetailsFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,34 +44,20 @@ class ProductsFragment : Fragment() {
     private lateinit var productsAdapter: ProductsAdapter
     private lateinit var viewModel: HomeViewModel
     private lateinit var suggestionsAdapter: CursorAdapter
+    private val maxPrice = MutableStateFlow<Int>(10000)
+    private var isFilter = false
+
 
     private val searchQuery = MutableStateFlow("")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val factory = HomeViewModel.HomeViewModelFactory(
-            ShopifyRepositoryImpl(
-                ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-                SharedPreferencesImpl.getInstance(requireContext()),
-                CurrencyRemoteDataSourceImpl.getInstance()
-            )
-        )
-
-
-        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
-
-        val id = arguments?.getString("id")
-        Log.i("TAG", "onCreate: id" + id)
-
-        viewModel.getProductsByBrandId(id ?: "gid://shopify/Collection/308804419763")
-
+       setupViewModel()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         binding = FragmentProductsBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
@@ -76,15 +65,24 @@ class ProductsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        binding.btnBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
+       setupProductsAdapter()
+        setupSuggestionsAdapter()
+        setupSearchView()
+        collectSearchQuery()
+    }
+
+
+    private fun setupProductsAdapter(){
         productsAdapter = ProductsAdapter(requireContext()) { productId ->
             val action =
                 ProductsFragmentDirections.actionProductsFragmentToProductDetailsFragment(productId)
             findNavController().navigate(action)
         }
-        binding.btnBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
         productsManager = GridLayoutManager(requireContext(), 2)
         productsManager.orientation = LinearLayoutManager.VERTICAL
         binding.productsRV.layoutManager = productsManager
@@ -109,11 +107,7 @@ class ProductsFragment : Fragment() {
                 }
             }
         }
-        setupSuggestionsAdapter()
-        setupSearchView()
-        collectSearchQuery()
     }
-
     private fun setupSearchView() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -177,6 +171,7 @@ class ProductsFragment : Fragment() {
         )
     }
 
+
     private fun updateSuggestions(suggestions: List<String>) {
         val cursor = MatrixCursor(arrayOf(BaseColumns._ID, "suggestion"))
         suggestions.forEachIndexed { index, suggestion ->
@@ -193,6 +188,20 @@ class ProductsFragment : Fragment() {
             }
         }
         return emptyList()
+    }
+
+    private fun setupViewModel(){
+        val factory = HomeViewModel.HomeViewModelFactory(
+            ShopifyRepositoryImpl(
+                ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+                SharedPreferencesImpl.getInstance(requireContext()),
+                CurrencyRemoteDataSourceImpl.getInstance()
+            )
+        )
+
+        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+        val id = arguments?.getString("id")
+        viewModel.getProductsByBrandId(id ?: "gid://shopify/Collection/308804419763")
     }
 
     private fun getCurrentCurrency() {

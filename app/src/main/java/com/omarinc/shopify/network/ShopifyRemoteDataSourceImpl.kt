@@ -207,7 +207,11 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                                 it.node.handle,
                                 it.node.description,
                                 it.node.images.edges[0].node.originalSrc.toString(),
-                                it.node.productType.toString()
+                                it.node.productType.toString(),
+                                it.node.variants.edges[0]
+                                    .node.priceV2.amount.toString(),
+                                it.node.variants.edges[0]
+                                    .node.priceV2.currencyCode.toString(),
                             )
                         )
                     }
@@ -369,7 +373,8 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                                 it.node.handle,
                                 it.node.description,
                                 it.node.images.edges[0].node.originalSrc.toString(),
-                                it.node.productType
+                                it.node.productType,
+                                "0.0",""
                             )
                         )
                     }
@@ -412,9 +417,13 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                                 it.node.handle,
                                 it.node.description,
                                 it.node.images.edges[0].node.originalSrc.toString(),
-                                it.node.productType
+                                it.node.productType,
+                                it.node.variants.edges[0]
+                                    .node.priceV2.amount.toString(),
+                                it.node.variants.edges[0]
+                                    .node.priceV2.currencyCode
+                                    .toString()),
                             )
-                        )
                     }
                     val collection = Collection(
                         response.data?.collectionByHandle?.id ?: "",

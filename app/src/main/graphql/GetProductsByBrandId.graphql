@@ -18,6 +18,21 @@ query GetProductsByBrandId($brandId: ID!) {
                             }
                         }
                     }
+                    variants(first: 10) {
+                        edges {
+                            node {
+                                id
+                                priceV2 {
+                                    amount
+                                    currencyCode
+                                }
+                                selectedOptions {
+                                    name
+                                    value
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
