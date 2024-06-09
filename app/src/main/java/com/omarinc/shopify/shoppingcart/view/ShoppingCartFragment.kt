@@ -15,6 +15,7 @@ import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModel
@@ -56,7 +57,8 @@ class ShoppingCartFragment : Fragment() {
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             SharedPreferencesImpl.getInstance(requireContext()),
-            CurrencyRemoteDataSourceImpl.getInstance()
+            CurrencyRemoteDataSourceImpl.getInstance(),
+            AdminRemoteDataSourceImpl.getInstance()
         )
         val viewModelFactory = ShoppingCartViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ShoppingCartViewModel::class.java)

@@ -9,6 +9,7 @@ import com.omarinc.shopify.login.viewmodel.LoginViewModel
 import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CurrencyResponse
+import com.omarinc.shopify.models.PriceRulesResponse
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.Products
@@ -36,6 +37,9 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
 
     private var _requiredCurrency = MutableStateFlow<ApiState<CurrencyResponse>>(ApiState.Loading)
     val requiredCurrency = _requiredCurrency.asStateFlow()
+
+    private var _coupons = MutableStateFlow<ApiState<PriceRulesResponse>>(ApiState.Loading)
+    val coupons = _coupons.asStateFlow()
 
     fun getBrands() {
         Log.i("TAG", "getBrands: Viewmodel")
@@ -80,6 +84,16 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
                     _requiredCurrency.value =
                         response ?: ApiState.Failure(Throwable("Something went wrong"))
                 }
+        }
+    }
+
+    fun getCoupons() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.getCoupons().collect {
+
+                _coupons.value = it
+            }
         }
     }
 

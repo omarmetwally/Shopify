@@ -21,6 +21,7 @@ import com.omarinc.shopify.home.viewmodel.CategoriesViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.productdetails.view.ProductDetailsFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
@@ -50,10 +51,13 @@ class CategoryProductsFragment : Fragment() {
             ShopifyRepositoryImpl(
                 ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
                 SharedPreferencesImpl.getInstance(requireContext()),
-                CurrencyRemoteDataSourceImpl.getInstance())
+                CurrencyRemoteDataSourceImpl.getInstance(),
+                AdminRemoteDataSourceImpl.getInstance()
+            )
         )
 
-        viewModel = ViewModelProvider(requireParentFragment(), factory).get(CategoriesViewModel::class.java)
+        viewModel =
+            ViewModelProvider(requireParentFragment(), factory).get(CategoriesViewModel::class.java)
 
     }
 
@@ -69,6 +73,7 @@ class CategoryProductsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
        setUpProductsAdapter()
        collectProductsByHandle()
+
 
         binding.fab1.setOnClickListener {
             viewModel.getProductsByType("SHOES")
@@ -154,21 +159,33 @@ class CategoryProductsFragment : Fragment() {
     }
 
 
-    private fun getCurrentCurrency(){
+    private fun getCurrentCurrency() {
 
         viewModel.getRequiredCurrency()
         lifecycleScope.launch {
-            viewModel.requiredCurrency.collect {result->
+            viewModel.requiredCurrency.collect { result ->
 
-                when(result){
-                    is ApiState.Failure -> Log.i(ProductDetailsFragment.TAG, "getCurrentCurrency: ${result.msg}")
-                    ApiState.Loading -> Log.i(ProductDetailsFragment.TAG, "getCurrentCurrency: Loading")
-                    is ApiState.Success -> Log.i(ProductDetailsFragment.TAG, "getCurrentCurrency: ${result.response.data.values}")
+                when (result) {
+                    is ApiState.Failure -> Log.i(
+                        ProductDetailsFragment.TAG,
+                        "getCurrentCurrency: ${result.msg}"
+                    )
+
+                    ApiState.Loading -> Log.i(
+                        ProductDetailsFragment.TAG,
+                        "getCurrentCurrency: Loading"
+                    )
+
+                    is ApiState.Success -> Log.i(
+                        ProductDetailsFragment.TAG,
+                        "getCurrentCurrency: ${result.response.data.values}"
+                    )
                 }
 
             }
         }
     }
+
     private fun toggleFab() {
         if (isFabOpen) {
             binding.mainFab.startAnimation(rotateBackwardAnim)

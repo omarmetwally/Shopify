@@ -1,4 +1,4 @@
-package com.omarinc.shopify.home.view
+package com.omarinc.shopify.home.view.adapters
 
 import android.content.Context
 import android.view.LayoutInflater

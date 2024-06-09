@@ -18,6 +18,7 @@ import com.omarinc.shopify.home.viewmodel.CategoriesViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.launch
@@ -41,7 +42,12 @@ class CategoriesFragment : Fragment() {
             ShopifyRepositoryImpl(
                 ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
                 SharedPreferencesImpl.getInstance(requireContext()),
-                CurrencyRemoteDataSourceImpl.getInstance())
+
+                CurrencyRemoteDataSourceImpl.getInstance(),
+                AdminRemoteDataSourceImpl.getInstance()
+            )
+
+
         )
 
         viewModel = ViewModelProvider(this, factory).get(CategoriesViewModel::class.java)
@@ -139,7 +145,11 @@ class CategoriesFragment : Fragment() {
             binding.kidDivider.visibility = View.GONE
             binding.saleDivider.visibility = View.VISIBLE
         }
+
     }
+
+
+
     private fun setupSeekBar() {
         binding.priceSeekBar.max = 1000
         binding.priceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {

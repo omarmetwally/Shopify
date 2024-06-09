@@ -16,6 +16,7 @@ import com.omarinc.shopify.registration.viewmodel.RegistrationViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.registration.viewModel.RegistrationViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
@@ -49,7 +50,8 @@ class RegistrationFragment : Fragment() {
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             sharedPreferences,
-            CurrencyRemoteDataSourceImpl.getInstance()
+            CurrencyRemoteDataSourceImpl.getInstance(),
+            AdminRemoteDataSourceImpl.getInstance()
         )
         val factory = RegistrationViewModelFactory(repository, requireContext())
         viewModel = ViewModelProvider(this, factory).get(RegistrationViewModel::class.java)

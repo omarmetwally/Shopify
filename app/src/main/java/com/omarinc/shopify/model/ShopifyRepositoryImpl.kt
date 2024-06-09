@@ -7,8 +7,11 @@ import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.Order
+import com.omarinc.shopify.models.PriceRulesResponse
 import com.omarinc.shopify.network.ShopifyRemoteDataSource
 import com.omarinc.shopify.network.ApiState
+import com.omarinc.shopify.network.admin.AdminRemoteDataSource
+import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSource
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
@@ -20,7 +23,8 @@ import kotlinx.coroutines.flow.map
 class ShopifyRepositoryImpl(
     private val shopifyRemoteDataSource: ShopifyRemoteDataSource,
     private val sharedPreferences: ISharedPreferences,
-    private val currencyRemoteDataSource: CurrencyRemoteDataSource
+    private val currencyRemoteDataSource: CurrencyRemoteDataSource,
+    private val adminRemoteDataSource: AdminRemoteDataSource
 ) : ShopifyRepository {
 
     companion object {
@@ -30,13 +34,15 @@ class ShopifyRepositoryImpl(
         fun getInstance(
             shopifyRemoteDataSource: ShopifyRemoteDataSource,
             sharedPreferences: ISharedPreferences,
-            currencyRemoteDataSource: CurrencyRemoteDataSource
+            currencyRemoteDataSource: CurrencyRemoteDataSource,
+            adminRemoteDataSource: AdminRemoteDataSource
         ): ShopifyRepositoryImpl {
             return instance ?: synchronized(this) {
                 instance ?: ShopifyRepositoryImpl(
                     shopifyRemoteDataSource,
                     sharedPreferences,
-                    currencyRemoteDataSource
+                    currencyRemoteDataSource,
+                    adminRemoteDataSource
                 ).also { instance = it }
             }
         }
@@ -145,6 +151,10 @@ class ShopifyRepositoryImpl(
         token: String
     ): Flow<ApiState<String?>> {
         return shopifyRemoteDataSource.createAddress(customerAddress, token)
+    }
+
+    override suspend fun getCoupons(): Flow<ApiState<PriceRulesResponse>> {
+        return adminRemoteDataSource.getCoupons()
     }
 
 
