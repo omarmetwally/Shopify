@@ -25,6 +25,7 @@ import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModelFactory
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModelFactory
@@ -137,7 +138,8 @@ class ProductDetailsFragment : Fragment() {
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             sharedPreferences,
-            CurrencyRemoteDataSourceImpl.getInstance()
+            CurrencyRemoteDataSourceImpl.getInstance(),
+            AdminRemoteDataSourceImpl.getInstance()
         )
 
         val productDetailsFactory =

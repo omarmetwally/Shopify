@@ -42,6 +42,7 @@ import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.async
@@ -102,7 +103,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             SharedPreferencesImpl.getInstance(requireContext()),
-            CurrencyRemoteDataSourceImpl.getInstance()
+            CurrencyRemoteDataSourceImpl.getInstance(),
+            AdminRemoteDataSourceImpl.getInstance()
         )
         val factory = MapViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[MapViewModel::class.java]

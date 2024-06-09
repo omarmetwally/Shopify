@@ -18,6 +18,7 @@ import com.omarinc.shopify.databinding.FragmentCategoriesBinding
 import com.omarinc.shopify.home.viewmodel.CategoriesViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 
@@ -38,7 +39,12 @@ class CategoriesFragment : Fragment() {
             ShopifyRepositoryImpl(
                 ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
                 SharedPreferencesImpl.getInstance(requireContext()),
-                CurrencyRemoteDataSourceImpl.getInstance())
+
+                CurrencyRemoteDataSourceImpl.getInstance(),
+                AdminRemoteDataSourceImpl.getInstance()
+            )
+
+
         )
 
         viewModel = ViewModelProvider(this, factory).get(CategoriesViewModel::class.java)
@@ -95,26 +101,26 @@ class CategoriesFragment : Fragment() {
             binding.kidDivider.visibility = View.GONE
             binding.saleDivider.visibility = View.VISIBLE
         }
-       /* binding.categoriesRV.layoutManager = categoriesManager
-        binding.categoriesRV.adapter = categoriessAdapter
+        /* binding.categoriesRV.layoutManager = categoriesManager
+         binding.categoriesRV.adapter = categoriessAdapter
 
-        val dummyBrands = listOf(
-            Brand(R.drawable.shoe, "Home page"),
-            Brand(R.drawable.shoe, "VANS"),
-            Brand(R.drawable.shoe, "PUMA"),
-            Brand(R.drawable.shoe, "PALLADUIM"),
-            Brand(R.drawable.shoe, "PALLADUIM"),
-            Brand(R.drawable.shoe, "PALLADUIM"),
-            Brand(R.drawable.shoe, "PALLADUIM"),
-            Brand(R.drawable.shoe, "PALLADUIM"),
-            Brand(R.drawable.shoe, "PALLADUIM"),
-            Brand(R.drawable.shoe, "PALLADUIM"),
-            Brand(R.drawable.shoe, "PALLADUIM"),
-            Brand(R.drawable.shoe, "PALLADUIM"),
+         val dummyBrands = listOf(
+             Brand(R.drawable.shoe, "Home page"),
+             Brand(R.drawable.shoe, "VANS"),
+             Brand(R.drawable.shoe, "PUMA"),
+             Brand(R.drawable.shoe, "PALLADUIM"),
+             Brand(R.drawable.shoe, "PALLADUIM"),
+             Brand(R.drawable.shoe, "PALLADUIM"),
+             Brand(R.drawable.shoe, "PALLADUIM"),
+             Brand(R.drawable.shoe, "PALLADUIM"),
+             Brand(R.drawable.shoe, "PALLADUIM"),
+             Brand(R.drawable.shoe, "PALLADUIM"),
+             Brand(R.drawable.shoe, "PALLADUIM"),
+             Brand(R.drawable.shoe, "PALLADUIM"),
 
-            )
+             )
 
-        categoriessAdapter.submitList(dummyBrands)*/
+         categoriessAdapter.submitList(dummyBrands)*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -129,15 +135,17 @@ class CategoriesFragment : Fragment() {
                 findNavController().navigate(R.id.searchFragment)
                 true
             }
+
             R.id.favoritesFragment -> {
                 findNavController().navigate(R.id.favoritesFragment)
                 true
             }
-            R.id.shoppingCartFragment  ->
-            {
+
+            R.id.shoppingCartFragment -> {
                 findNavController().navigate(R.id.shoppingCartFragment)
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }
