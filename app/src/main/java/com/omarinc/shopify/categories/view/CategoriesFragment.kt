@@ -3,24 +3,25 @@ package com.omarinc.shopify.home.view
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.SeekBar
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherforecastapplication.favouritesFeature.view.CategoriesAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentCategoriesBinding
 import com.omarinc.shopify.home.viewmodel.CategoriesViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import kotlinx.coroutines.launch
 
 
 class CategoriesFragment : Fragment() {
@@ -29,12 +30,14 @@ class CategoriesFragment : Fragment() {
     private lateinit var categoriesManager: LinearLayoutManager
     private lateinit var categoriessAdapter: CategoriesAdapter
     private lateinit var viewModel: CategoriesViewModel
-
+    private var isFilter = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
+     setupViewModel()
+    }
 
+    private fun setupViewModel() {
         val factory = CategoriesViewModel.CategoriesViewModelFactory(
             ShopifyRepositoryImpl(
                 ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
@@ -52,6 +55,7 @@ class CategoriesFragment : Fragment() {
         viewModel.getCollectionByHandle("men")
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -64,13 +68,39 @@ class CategoriesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+       setupCategoriesAdapter()
+
+        setupFilterView()
+
+       setupCategoriesView()
+        setupSeekBar()
+    }
+
+    private fun setupCategoriesAdapter() {
         categoriessAdapter = CategoriesAdapter(
             requireContext(),
         )
 
         categoriesManager = LinearLayoutManager(requireContext())
         categoriesManager.orientation = LinearLayoutManager.VERTICAL
+    }
 
+    private fun setupFilterView() {
+        binding.filterView.setOnClickListener {
+            if(isFilter){
+                binding.priceSeekBar.visibility = View.GONE
+                binding.seekBarValueText.visibility = View.GONE
+                isFilter = !isFilter
+            }else {
+                binding.priceSeekBar.visibility = View.VISIBLE
+                binding.seekBarValueText.visibility = View.VISIBLE
+                isFilter = !isFilter
+            }
+        }
+    }
+
+
+    private fun setupCategoriesView(){
         binding.men.setOnClickListener {
             viewModel.getCollectionByHandle("men")
             binding.menText.setTextColor(resources.getColor(R.color.black))
@@ -115,55 +145,35 @@ class CategoriesFragment : Fragment() {
             binding.kidDivider.visibility = View.GONE
             binding.saleDivider.visibility = View.VISIBLE
         }
-        /* binding.categoriesRV.layoutManager = categoriesManager
-         binding.categoriesRV.adapter = categoriessAdapter
 
-         val dummyBrands = listOf(
-             Brand(R.drawable.shoe, "Home page"),
-             Brand(R.drawable.shoe, "VANS"),
-             Brand(R.drawable.shoe, "PUMA"),
-             Brand(R.drawable.shoe, "PALLADUIM"),
-             Brand(R.drawable.shoe, "PALLADUIM"),
-             Brand(R.drawable.shoe, "PALLADUIM"),
-             Brand(R.drawable.shoe, "PALLADUIM"),
-             Brand(R.drawable.shoe, "PALLADUIM"),
-             Brand(R.drawable.shoe, "PALLADUIM"),
-             Brand(R.drawable.shoe, "PALLADUIM"),
-             Brand(R.drawable.shoe, "PALLADUIM"),
-             Brand(R.drawable.shoe, "PALLADUIM"),
-
-             )
-
-         categoriessAdapter.submitList(dummyBrands)*/
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.tool_bar_menu, menu)
-        super.onCreateOptionsMenu(menu, inflater)
     }
 
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.searchFragment -> {
-                findNavController().navigate(R.id.searchFragment)
-                true
+
+    private fun setupSeekBar() {
+        binding.priceSeekBar.max = 1000
+        binding.priceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                viewModel.maxPrice.value = progress
+                binding.seekBarValueText.text = "Max Price: $progress"
+                collectFilteredProducts()
             }
 
-            R.id.favoritesFragment -> {
-                findNavController().navigate(R.id.favoritesFragment)
-                true
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+    private fun collectFilteredProducts(){
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.collectionApiState.collect { results ->
+                        if (results is ApiState.Success)
+                            viewModel.filterProducts(results.response.products)
+                    }
+                }
             }
-
-            R.id.shoppingCartFragment -> {
-                findNavController().navigate(R.id.shoppingCartFragment)
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
         }
-    }
-
     }
 
 
