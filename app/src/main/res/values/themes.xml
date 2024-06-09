@@ -3,6 +3,15 @@
     <style name="Base.Theme.Shopify" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:colorPrimary">@color/primary_color</item>
 
+        <item name="statusBarBackground">@color/white</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">@color/white</item>
+<!--
+        <item name="android:navigationBarColor">@color/white</item>
+-->
+
     </style>
 
     <style name="Theme.Shopify" parent="Base.Theme.Shopify" />

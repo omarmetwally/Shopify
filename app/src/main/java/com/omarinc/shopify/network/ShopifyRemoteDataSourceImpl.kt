@@ -6,6 +6,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
+import com.omarinc.shopify.CreateAddressMutation
 import com.omarinc.shopify.CreateCartMutation
 import com.omarinc.shopify.CreateCustomerAccessTokenMutation
 import com.omarinc.shopify.CreateCustomerMutation
@@ -20,10 +21,13 @@ import com.omarinc.shopify.models.Product
 
 import com.omarinc.shopify.GetProductByIdQuery
 import com.omarinc.shopify.GetProductsByTypeQuery
+import com.omarinc.shopify.GetProductsInCartQuery
 import com.omarinc.shopify.SearchProductsQuery
 import com.omarinc.shopify.models.CartCreateResponse
 import com.omarinc.shopify.models.CartLineInput
+import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
+import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.productdetails.model.Price
 import com.omarinc.shopify.productdetails.model.ProductDetails
@@ -309,19 +313,19 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             } else {
                 val data = response.data?.customer?.orders?.edges
                 if (data != null) {
-                    Log.i("TAG", "getOrders: " + data)
+                    Log.i("TAG", "getOrders: data" + data)
                     var orders: MutableList<Order> = mutableListOf()
                     data.forEach {
                         orders.add(
                             Order(
                                 it.node.id,
                                 it.node.name, it.node.billingAddress?.address1 ?: "",
-                                it.node.currentTotalPrice.amount as Double,
-                                it.node.currentTotalPrice.currencyCode as Int,
-                                it.node.currentSubtotalPrice.amount as Double,
-                                it.node.currentSubtotalPrice.currencyCode as Int,
-                                it.node.currentTotalTax.amount as Double,
-                                it.node.currentTotalTax.currencyCode as Int,
+                                it.node.currentTotalPrice.amount.toString(),
+                                it.node.currentTotalPrice.currencyCode.toString(),
+                                it.node.currentSubtotalPrice.amount.toString(),
+                                it.node.currentSubtotalPrice.currencyCode.toString(),
+                                it.node.currentTotalTax.amount.toString(),
+                                it.node.currentTotalTax.currencyCode.toString(),
                                 it.node.canceledAt.toString()
                             )
                         )
@@ -455,7 +459,94 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         }
     }
 
-    override fun addToCart(cartId: String, lines: List<CartLineInput>) {
+    override suspend fun addToCart(
+        cartId: String,
+        lines: List<CartLineInput>
+    ): Flow<ApiState<CartCreateResponse>> = flow {
+
 
     }
+
+    override suspend fun getProductsCart(cartId: String): Flow<ApiState<List<CartProduct>>> = flow {
+        emit(ApiState.Loading)
+
+        val cartProducts = mutableListOf<CartProduct>()
+        val query = GetProductsInCartQuery(cartId)
+
+        try {
+            val response: ApolloResponse<GetProductsInCartQuery.Data> =
+                apolloClient.query(query).execute()
+
+            response.data?.cart?.lines?.edges?.forEach { line ->
+                val node = line.node
+                val merchandise = node.merchandise.onProductVariant
+                if (merchandise != null) {
+                    val product = merchandise.product
+                    val productId = product.id
+                    val productTitle = product.title ?: ""
+                    val productImageUrl = product.featuredImage?.url ?: ""
+                    val variantId = merchandise.id
+                    val variantTitle = merchandise.title ?: ""
+                    val variantPrice = merchandise.price.amount
+
+                    cartProducts.add(
+                        CartProduct(
+                            id = node.id,
+                            quantity = node.quantity,
+                            productId = productId,
+                            productTitle = productTitle,
+                            productImageUrl = productImageUrl.toString(),
+                            variantId = variantId,
+                            variantTitle = variantTitle,
+                            variantPrice = variantPrice.toString()
+                        )
+                    )
+                }
+            }
+
+            emit(ApiState.Success(cartProducts)) // Emit success state with the list of cart products
+        } catch (e: ApolloException) {
+            emit(ApiState.Failure(Throwable("Error fetching products in cart: ${e.message}"))) // Emit failure state with error message
+        } catch (e: Exception) {
+            emit(ApiState.Failure(Throwable("An unknown error occurred: ${e.message}"))) // Emit failure state for unknown errors
+        }
+    }
+
+    override suspend fun createAddress(
+        customerAddress: CustomerAddress,
+        token: String
+    ): Flow<ApiState<String?>> =
+        flow {
+
+            emit(ApiState.Loading)
+
+            val mutation = CreateAddressMutation(
+                customerAddress.address1,
+                customerAddress.address2 ?:"address",
+                customerAddress.city,
+                customerAddress.country,
+                token
+
+            )
+            try {
+                val response = apolloClient.mutation(mutation).execute()
+
+
+                if (response.hasErrors()) {
+                    val errorMessages =
+                        response.errors?.joinToString { it.message } ?: "Unknown error"
+                    emit(ApiState.Failure(Throwable(errorMessages)))
+                } else {
+
+                    val addressId = response.data?.customerAddressCreate?.customerAddress?.id
+                    emit(ApiState.Success(addressId))
+                }
+
+            } catch (e: ApolloException) {
+                emit(ApiState.Failure(e))
+            } catch (e: Exception) {
+                emit(ApiState.Failure(e))
+            }
+        }
+
 }

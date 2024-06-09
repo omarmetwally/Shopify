@@ -1,4 +1,4 @@
-package com.example.weatherforecastapplication.favouritesFeature.view
+package com.omarinc.shopify.home.view
 
 import android.content.Context
 import android.util.Log
@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.omarinc.shopify.R
-import com.omarinc.shopify.databinding.BrandLayoutBinding
+import com.omarinc.shopify.databinding.BrandsLayoutBinding
 import com.omarinc.shopify.models.Brands
 
 
@@ -21,35 +21,32 @@ class BrandsAdapter(
     BrandsDiffUtil()
 ) {
 
-    private lateinit var binding: BrandLayoutBinding
+    private lateinit var binding: BrandsLayoutBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BrandsViewHolder {
-         binding = BrandLayoutBinding.inflate(
+         binding = BrandsLayoutBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
         return BrandsViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: BrandsViewHolder, position: Int) {
-       // binding.favCard.setCardBackgroundColor( setCardViewBackground(context))
         val current = getItem(position)
-
-        binding.brandName.text = current.title
+        
+        binding.categoryName.text = current.title
         Glide.with(context).load(current.imageUrl)
             .apply(
                 RequestOptions().override(200, 200)
                     .placeholder(R.drawable.ic_launcher_foreground)
                     .error(R.drawable.ic_launcher_background)
             )
-            .into(binding.brandImage)
-        binding.brandConstrainLayout.setOnClickListener {
+            .into(binding.categoryImage)
+        binding.layout.setOnClickListener {
             listener.invoke(current.id)
-            Log.i("TAG", "onBindViewHolder: id current "+current.id)
-
         }
     }
 }
 
-class BrandsViewHolder(val layout: BrandLayoutBinding) : RecyclerView.ViewHolder(layout.root)
+class BrandsViewHolder(private val layout: BrandsLayoutBinding) : RecyclerView.ViewHolder(layout.root)
 class BrandsDiffUtil : DiffUtil.ItemCallback<Brands>() {
     override fun areItemsTheSame(oldItem: Brands, newItem: Brands): Boolean {
         return oldItem.id == newItem.id

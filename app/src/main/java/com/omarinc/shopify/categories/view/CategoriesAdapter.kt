@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.omarinc.shopify.databinding.BrandLayoutBinding
 import com.omarinc.shopify.databinding.CategoriesLayoutBinding
 import com.omarinc.shopify.models.Brand
 
@@ -32,10 +31,7 @@ class CategoriesAdapter(
     override fun onBindViewHolder(holder: CategoriesViewHolder, position: Int) {
        // binding.favCard.setCardBackgroundColor( setCardViewBackground(context))
         val current = getItem(position)
-        if(position !=0)
-           // binding.divider.visibility = View.GONE
-//        binding.brandImage = current.image
-//        binding.brandName = current.name
+
         binding.categoryName.text = current.name
         binding.categoryImage.setImageResource(current.image)
 

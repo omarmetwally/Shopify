@@ -52,6 +52,11 @@
     <string name="totalPrice">"Total Price : "</string>
     <string name="createdAt">"Created At : "</string>
     <string name="addressOrder">"Address : "</string>
+    <string name="choose_a_address_button">Choose an adrress</string>
+    <string name="address_text_view">Address\n</string>
+    <string name="for_you">For You</string>
+    <string name="shopping">Shopping</string>
+    <string name="header">Save Shop and View Orders</string>
 
 
 </resources>

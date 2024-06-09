@@ -1,4 +1,4 @@
-package com.example.weatherforecastapplication.favouritesFeature.view
+package com.omarinc.shopify.home.view
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,8 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.omarinc.shopify.databinding.AdsLayoutBinding
-import com.omarinc.shopify.databinding.BrandLayoutBinding
-import com.omarinc.shopify.models.Brand
 
 
 class AdsAdapter(

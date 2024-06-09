@@ -5,15 +5,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/element"
-    android:layout_width="160dp"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="1dp"
-    android:layout_marginRight="8dp"
-    android:layout_marginBottom="16dp"
+    android:layout_width="157dp"
+    android:layout_height="208dp"
 
-    android:elevation="16dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="24dp"
+    android:layout_marginBottom="16dp"
+    android:elevation="8dp"
     app:cardCornerRadius="16dp"
+    app:cardElevation="8dp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
@@ -25,9 +25,9 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/brandImage"
-            android:layout_width="0dp"
-            android:layout_height="180dp"
-            android:scaleType="center"
+            android:layout_width="141dp"
+            android:layout_height="149dp"
+            android:scaleType="fitCenter"
             android:src="@drawable/shoe"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,16 +38,26 @@
             android:id="@+id/brandName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:lines="1"
             android:text="TextView"
             android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="normal"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/brandImage" />
+
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="857 $"
+            android:textColor="@color/primary_color"
+            android:textColorHint="@color/primary_color"
+            app:layout_constraintStart_toStartOf="@+id/brandName"
+            app:layout_constraintTop_toBottomOf="@+id/brandName" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

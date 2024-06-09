@@ -1,28 +1,20 @@
 package com.omarinc.shopify.orders.view
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weatherforecastapplication.favouritesFeature.view.AdsAdapter
-import com.example.weatherforecastapplication.favouritesFeature.view.BrandsAdapter
 import com.example.weatherforecastapplication.favouritesFeature.view.OrdersAdapter
-import com.omarinc.shopify.R
-import com.omarinc.shopify.databinding.FragmentHomeBinding
 import com.omarinc.shopify.databinding.FragmentOrdersBinding
 import com.omarinc.shopify.home.view.HomeFragmentDirections
-import com.omarinc.shopify.home.view.ZoomOutPageTransformer
-import com.omarinc.shopify.home.viewmodel.HomeViewModel
+import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
@@ -38,20 +30,21 @@ class OrdersFragment : Fragment() {
     private lateinit var ordersManager: LinearLayoutManager
     private lateinit var ordersAdapter: OrdersAdapter
     private lateinit var viewModel: OrdersViewModel
+    private lateinit var repo: ShopifyRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val factory = OrdersViewModel.OrdersViewModelFactory(
-            ShopifyRepositoryImpl(
-                ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+         repo = ShopifyRepositoryImpl(
+            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             SharedPreferencesImpl.getInstance(requireContext()),
             CurrencyRemoteDataSourceImpl.getInstance())
+        val factory = OrdersViewModel.OrdersViewModelFactory(
+            repo
         )
 
         viewModel = ViewModelProvider(this,factory).get(OrdersViewModel::class.java)
 
-        viewModel
-            .getCutomerOrders("a8f035227035120d9baa4a29f3d7b2c3")
+
     }
 
     override fun onCreateView(
@@ -69,6 +62,8 @@ class OrdersFragment : Fragment() {
 
 
         lifecycleScope.launch {
+            viewModel
+                .getCutomerOrders(repo.readUserToken())
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.apiState.collect{ result ->
                     when(result){
