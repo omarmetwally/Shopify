@@ -57,7 +57,6 @@ class CategoryProductsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         binding = FragmentCategoryProductsBinding.inflate(layoutInflater, container, false)
         return binding.root    }
 
@@ -112,13 +111,19 @@ class CategoryProductsFragment : Fragment() {
 
         binding.fab1.setOnClickListener {
             viewModel.getProductsByType("SHOES")
+            toggleFab()
+            binding.mainFab.setImageResource(R.drawable.shoes)
         }
 
         binding.fab2.setOnClickListener {
             viewModel.getProductsByType("T-SHIRTS")
+            toggleFab()
+            binding.mainFab.setImageResource(R.drawable.shirt)
         }
         binding.fab3.setOnClickListener {
             viewModel.getProductsByType("ACCESSORIES")
+            toggleFab()
+            binding.mainFab.setImageResource(R.drawable.accessories)
         }
 
         fabOpenAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.fab_open)
@@ -159,6 +164,7 @@ class CategoryProductsFragment : Fragment() {
             binding.fab3.isClickable = false
             isFabOpen = false
         } else {
+            binding.mainFab.setImageResource(R.drawable.close)
             binding.mainFab.startAnimation(rotateForwardAnim)
             binding.fab1.startAnimation(fabOpenAnim)
             binding.fab2.startAnimation(fabOpenAnim)

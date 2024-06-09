@@ -15,10 +15,15 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="32dp"
-        android:src="@drawable/close"
+        android:background="@color/primary_color"
+        android:src="@drawable/shoes"
         android:visibility="visible"
+        app:backgroundTint="@color/primary_color"
+        app:fabCustomSize="48dp"
+        app:fabSize="mini"
         app:layout_constraintBottom_toBottomOf="@+id/categoryProductsRV"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:rippleColor="@color/secondary_color" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab1"
@@ -26,8 +31,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/cart"
+        android:background="@color/secondary_color"
+        android:src="@drawable/shoes"
         android:visibility="gone"
+        app:backgroundTint="@color/secondary_color"
+        app:fabCustomSize="48dp"
+        app:fabSize="mini"
         app:layout_constraintBottom_toTopOf="@+id/main_fab"
         app:layout_constraintEnd_toEndOf="@+id/main_fab" />
 
@@ -37,8 +46,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/categories"
+        android:background="@color/secondary_color"
+        android:src="@drawable/shirt"
         android:visibility="gone"
+        app:backgroundTint="@color/secondary_color"
+        app:fabCustomSize="48dp"
+        app:fabSize="mini"
         app:layout_constraintBottom_toTopOf="@+id/fab1"
         app:layout_constraintEnd_toEndOf="@+id/main_fab" />
 
@@ -49,8 +62,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="8dp"
-        android:src="@drawable/favourites"
+        android:background="@color/secondary_color"
+        android:src="@drawable/accessories"
         android:visibility="gone"
+        app:backgroundTint="@color/secondary_color"
+        app:fabCustomSize="48dp"
+        app:fabSize="mini"
         app:layout_constraintBottom_toTopOf="@+id/fab2"
         app:layout_constraintEnd_toEndOf="@+id/main_fab" />
 
