@@ -1,7 +1,15 @@
 package com.omarinc.shopify.utilities
 
+import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Color
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+import com.omarinc.shopify.R
 import com.omarinc.shopify.productdetails.model.Comment
+import java.util.regex.Pattern
 
 object Helper {
     fun getRandomComments(comments: List<Comment>, count: Int): List<Comment> {
@@ -32,6 +40,7 @@ object Helper {
             Comment("Reem", "Good, but shipping took too long.", 3.5f),
         )
     }
+
     fun getColorFromName(colorName: String): Int {
         return when (colorName.toLowerCase()) {
             "red" -> Color.RED
@@ -85,5 +94,55 @@ object Helper {
         return encodedEmail.replace(",", ".")
     }
 
+    fun showAlertDialog(
+        context: Context,
+        title: String,
+        message: String,
+        positiveButtonText: String,
+        positiveButtonAction: (() -> Unit)? = null,
+        negativeButtonText: String? = null,
+        negativeButtonAction: (() -> Unit)? = null
+    ) {
+        val builder = AlertDialog.Builder(context, R.style.CustomAlertDialog)
+        val inflater = LayoutInflater.from(context)
+        val view = inflater.inflate(R.layout.alert_dialog, null)
+        builder.setView(view)
 
+        val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
+        val tvMessage = view.findViewById<TextView>(R.id.tvMessage)
+        val btnPositive = view.findViewById<Button>(R.id.btnPositive)
+        val btnNegative = view.findViewById<Button>(R.id.btnNegative)
+
+        tvTitle.text = title
+        tvMessage.text = message
+        btnPositive.text = positiveButtonText
+
+        val dialog = builder.create()
+
+        btnPositive.setOnClickListener {
+            positiveButtonAction?.invoke()
+            dialog.dismiss()
+        }
+
+        if (negativeButtonText != null) {
+            btnNegative.text = negativeButtonText
+            btnNegative.visibility = View.VISIBLE
+            btnNegative.setOnClickListener {
+                negativeButtonAction?.invoke()
+                dialog.dismiss()
+            }
+        }
+
+        dialog.show()
+    }
+
+    fun validateEmail(email: String): Boolean {
+        val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+        return Pattern.compile(emailPattern).matcher(email).matches()
+    }
+
+    fun validatePassword(password: String): Boolean {
+        val passwordPattern = "^(?!.*12345)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$"
+        return password.matches(passwordPattern.toRegex())
+    }
 }
