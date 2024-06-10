@@ -12,7 +12,6 @@ import com.omarinc.shopify.models.PriceRulesResponse
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
-import com.omarinc.shopify.type.CartLineInput
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
 
@@ -55,7 +54,11 @@ interface ShopifyRepository {
 
     suspend fun readEmailFromSharedPreferences(key: String): String
 
-    suspend fun addToCartById(cartId: String?, lines: List<CartLineInput>): Flow<ApiState<String?>>
+    suspend fun addToCartById(
+        cartId: String?,
+        quantity: Int,
+        variantID: String
+    ): Flow<ApiState<String?>>
 
     suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>>
 

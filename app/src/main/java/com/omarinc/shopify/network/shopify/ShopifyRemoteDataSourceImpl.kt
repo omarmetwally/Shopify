@@ -473,14 +473,15 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         }
     }
 
-    override suspend fun addToCartById(
+    override suspend fun addToCartBy(
         cartId: String?,
-        lines: List<CartLineInput>
+        quantity: Int,
+        variantID: String
     ): Flow<ApiState<String?>> = flow {
 
         emit(ApiState.Loading)
 
-        val mutation = AddProductToCartMutation(cartId?:"", lines)
+        val mutation = AddProductToCartMutation(cartId ?: quantity, variantID)
 
         try {
             val response = apolloClient.mutation(mutation).execute()
