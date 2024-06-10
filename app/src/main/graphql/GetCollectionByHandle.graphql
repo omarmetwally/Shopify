@@ -18,8 +18,14 @@ query GetCollectionByHandle($handle:String!){
                         edges {
                             node {
                                 id
-                                title
-                                sku
+                                priceV2 {
+                                    amount
+                                    currencyCode
+                                }
+                                selectedOptions {
+                                    name
+                                    value
+                                }
                             }
                         }
                     }

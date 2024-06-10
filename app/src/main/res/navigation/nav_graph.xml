@@ -23,6 +23,9 @@
       <action
           android:id="@+id/action_homeFragment_to_productDetailsFragment"
           app:destination="@id/productDetailsFragment" />
+      <action
+          android:id="@+id/action_homeFragment_to_searchFragment"
+          app:destination="@id/searchFragment" />
   </fragment>
   
   <fragment
@@ -82,6 +85,9 @@
         <action
             android:id="@+id/action_categoriesFragment_to_shoppingCartFragment"
             app:destination="@id/shoppingCartFragment" />
+        <action
+            android:id="@+id/action_categoriesFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/productDetailsFragment"
