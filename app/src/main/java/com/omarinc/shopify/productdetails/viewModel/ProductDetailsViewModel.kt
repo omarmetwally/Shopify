@@ -8,6 +8,7 @@ import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
+import com.omarinc.shopify.type.CartLineInput
 import com.omarinc.shopify.utilities.Constants.CURRENCY_UNIT
 import com.omarinc.shopify.utilities.Constants.USER_EMAIL
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +40,8 @@ class ProductDetailsViewModel(
     private val _customerCart = MutableStateFlow<ApiState<String?>>(ApiState.Loading)
     val customerCart: StateFlow<ApiState<String?>> = _customerCart
 
+    private val _addingToCart = MutableStateFlow<ApiState<String?>>(ApiState.Loading)
+    val addingToCart: StateFlow<ApiState<String?>> = _addingToCart
     fun getProductById(productId: String) {
         viewModelScope.launch {
             repository.getProductById(productId).collect { state ->
@@ -84,9 +87,7 @@ class ProductDetailsViewModel(
         viewModelScope.launch {
             try {
                 firebaseRepository.addCustomerCart(email, cartId)
-                // You might want to update some state here if needed
             } catch (e: Exception) {
-                // Handle the error appropriately, e.g., log it or update a state flow
                 Log.e(TAG, "Error adding customer cart: ", e)
             }
         }
@@ -106,8 +107,17 @@ class ProductDetailsViewModel(
         }
     }
 
-   suspend fun readCustomerEmail():String{
+    fun addProductToCart(productId: String?, lineInput: List<CartLineInput>) {
 
-       return repository.readEmailFromSharedPreferences(USER_EMAIL)
-   }
+        viewModelScope.launch {
+            repository.addToCartById(productId, lineInput).collect {
+                _addingToCart.value = it
+            }
+        }
+    }
+
+    suspend fun readCustomerEmail(): String {
+
+        return repository.readEmailFromSharedPreferences(USER_EMAIL)
+    }
 }

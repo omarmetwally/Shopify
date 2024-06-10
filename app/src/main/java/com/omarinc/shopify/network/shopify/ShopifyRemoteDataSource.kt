@@ -1,9 +1,8 @@
 package com.omarinc.shopify.network.shopify
 
 import com.omarinc.shopify.model.RegisterUserResponse
+import com.omarinc.shopify.models.AddToCartResponse
 import com.omarinc.shopify.models.Brands
-import com.omarinc.shopify.models.CartCreateResponse
-import com.omarinc.shopify.models.CartLineInput
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.CustomerAddress
@@ -12,6 +11,7 @@ import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
+import com.omarinc.shopify.type.CartLineInput
 import kotlinx.coroutines.flow.Flow
 
 interface ShopifyRemoteDataSource {
@@ -38,10 +38,7 @@ interface ShopifyRemoteDataSource {
 
     suspend fun createCart(email: String): Flow<ApiState<String?>>
 
-    suspend fun addToCart(
-        cartId: String,
-        lines: List<CartLineInput>
-    ): Flow<ApiState<CartCreateResponse>>
+    suspend fun addToCartById(cartId: String?, lines: List<CartLineInput>): Flow<ApiState<String?>>
 
     suspend fun getProductsCart(cartId: String): Flow<ApiState<List<CartProduct>>>
 

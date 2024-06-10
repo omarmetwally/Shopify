@@ -67,7 +67,7 @@ class ShoppingCartFragment : Fragment() {
 
 
     private fun getShoppingCartItems() {
-        viewModel.getShoppingCartItems("gid://shopify/Cart/Z2NwLWV1cm9wZS13ZXN0MTowMUhaTkVUS0Q0SzdYMEc5UldCUEUyWFQxUg?key=3e770edab029ad5953788926d1b84a83")
+        viewModel.getShoppingCartItems("gid://shopify/Cart/Z2NwLWV1cm9wZS13ZXN0MTowMUhaTVBDNERONDdFR1RRNzhHMzVQNDZKTQ?key=22cacec08785daefc1a6a03f924f9017")
         lifecycleScope.launch {
 
             viewModel.cartItems.collect { result ->

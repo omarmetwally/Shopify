@@ -15,6 +15,7 @@ import com.omarinc.shopify.network.currency.CurrencyRemoteDataSource
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
+import com.omarinc.shopify.type.CartLineInput
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -139,6 +140,13 @@ class ShopifyRepositoryImpl(
 
     override suspend fun readEmailFromSharedPreferences(key: String): String {
         return sharedPreferences.readStringFromSharedPreferences(key)
+    }
+
+    override suspend fun addToCartById(
+        cartId: String?,
+        lines: List<CartLineInput>
+    ): Flow<ApiState<String?>> {
+        return shopifyRemoteDataSource.addToCartById(cartId, lines)
     }
 
     override suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>> {

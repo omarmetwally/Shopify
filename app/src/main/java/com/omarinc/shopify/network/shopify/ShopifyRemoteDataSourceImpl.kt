@@ -6,6 +6,7 @@ import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
+import com.omarinc.shopify.AddProductToCartMutation
 import com.omarinc.shopify.CreateAddressMutation
 import com.omarinc.shopify.CreateCartMutation
 import com.omarinc.shopify.CreateCustomerAccessTokenMutation
@@ -23,12 +24,13 @@ import com.omarinc.shopify.GetProductByIdQuery
 import com.omarinc.shopify.GetProductsByTypeQuery
 import com.omarinc.shopify.GetProductsInCartQuery
 import com.omarinc.shopify.SearchProductsQuery
-import com.omarinc.shopify.models.CartCreateResponse
-import com.omarinc.shopify.models.CartLineInput
+import com.omarinc.shopify.models.AddToCartResponse
+import com.omarinc.shopify.models.Cart
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.Order
+import com.omarinc.shopify.models.UserError
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.Price
 import com.omarinc.shopify.productdetails.model.ProductDetails
@@ -36,6 +38,7 @@ import com.omarinc.shopify.productdetails.model.ProductImage
 import com.omarinc.shopify.productdetails.model.ProductVariant
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.productdetails.model.SelectedOption
+import com.omarinc.shopify.type.CartLineInput
 import com.omarinc.shopify.type.CustomerCreateInput
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
@@ -375,7 +378,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                                 it.node.description,
                                 it.node.images.edges[0].node.originalSrc.toString(),
                                 it.node.productType,
-                                "0.0",""
+                                "0.0", ""
                             )
                         )
                     }
@@ -423,8 +426,9 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                                     .node.priceV2.amount.toString(),
                                 it.node.variants.edges[0]
                                     .node.priceV2.currencyCode
-                                    .toString()),
-                            )
+                                    .toString()
+                            ),
+                        )
                     }
                     val collection = Collection(
                         response.data?.collectionByHandle?.id ?: "",
@@ -469,13 +473,36 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         }
     }
 
-    override suspend fun addToCart(
-        cartId: String,
+    override suspend fun addToCartById(
+        cartId: String?,
         lines: List<CartLineInput>
-    ): Flow<ApiState<CartCreateResponse>> = flow {
+    ): Flow<ApiState<String?>> = flow {
 
+        emit(ApiState.Loading)
 
+        val mutation = AddProductToCartMutation(cartId?:"", lines)
+
+        try {
+            val response = apolloClient.mutation(mutation).execute()
+
+            if (response.hasErrors()) {
+                val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
+                emit(ApiState.Failure(Throwable(errorMessages)))
+            } else {
+                val data = response.data
+                if (data != null) {
+                    val cartId = data.cartLinesAdd?.cart?.id
+
+                    emit(ApiState.Success(cartId))
+                } else {
+                    emit(ApiState.Failure(Throwable("Response data is null")))
+                }
+            }
+        } catch (e: ApolloException) {
+            emit(ApiState.Failure(e))
+        }
     }
+
 
     override suspend fun getProductsCart(cartId: String): Flow<ApiState<List<CartProduct>>> = flow {
         emit(ApiState.Loading)
@@ -532,7 +559,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
 
             val mutation = CreateAddressMutation(
                 customerAddress.address1,
-                customerAddress.address2 ?:"address",
+                customerAddress.address2 ?: "address",
                 customerAddress.city,
                 customerAddress.country,
                 token

@@ -17,9 +17,5 @@ mutation AddProductToCart($cartId: ID!, $lines: [CartLineInput!]!) {
                 }
             }
         }
-        userErrors {
-            field
-            message
-        }
     }
 }
