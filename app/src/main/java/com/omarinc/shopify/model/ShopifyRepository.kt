@@ -7,6 +7,7 @@ import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.models.CustomerAddress
+import com.omarinc.shopify.models.DiscountCodesResponse
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.models.PriceRulesResponse
 import com.omarinc.shopify.network.ApiState
@@ -62,4 +63,6 @@ interface ShopifyRepository {
     ): Flow<ApiState<String?>>
 
     suspend fun getCoupons(): Flow<ApiState<PriceRulesResponse>>
+
+    suspend fun getCouponDetails(couponId:String): Flow<ApiState<DiscountCodesResponse>>
 }

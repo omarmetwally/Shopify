@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
-    companion object{
+    companion object {
         private const val TAG = "HomeFragment"
     }
 
@@ -75,6 +75,7 @@ class HomeFragment : Fragment() {
         setUpBrandsAdapter()
         setUpProductsAdapter()
         getCoupons()
+        getCouponDetails()
     }
 
     private fun setUpProductsAdapter() {
@@ -181,14 +182,14 @@ class HomeFragment : Fragment() {
         viewModel.getProductsByBrandId("gid://shopify/Collection/308805107891")
     }
 
-    private fun getCoupons(){
+    private fun getCoupons() {
         viewModel.getCoupons()
 
         lifecycleScope.launch {
-            viewModel.coupons.collect{result->
+            viewModel.coupons.collect { result ->
 
 
-                when(result){
+                when (result) {
                     is ApiState.Failure -> Log.i(TAG, "getCoupons: ${result.msg}")
                     ApiState.Loading -> Log.i(TAG, "getCoupons: Loading")
                     is ApiState.Success -> {
@@ -198,6 +199,25 @@ class HomeFragment : Fragment() {
                 }
 
             }
+        }
+    }
+
+    private fun getCouponDetails(){
+        lifecycleScope.launch {
+            viewModel.getCouponDetails("1119384043699")
+            viewModel.couponDetails.collect{result->
+
+                when(result){
+                    is ApiState.Failure -> Log.i(TAG, "getCouponDetails: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "getCouponDetails: Lodaing")
+                    is ApiState.Success -> {
+
+                        Log.i(TAG, "getCouponDetails: ${result.response}")
+                    }
+                }
+
+            }
+
         }
     }
 
