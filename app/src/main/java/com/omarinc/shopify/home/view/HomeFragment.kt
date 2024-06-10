@@ -89,6 +89,7 @@ class HomeFragment : Fragment() {
         setUpProductsAdapter()
         getCoupons()
         collectProducts()
+
     }
 
     private fun setUpProductsAdapter() {
