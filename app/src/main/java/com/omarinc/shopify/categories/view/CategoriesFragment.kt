@@ -55,10 +55,8 @@ class CategoriesFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         binding = FragmentCategoriesBinding.inflate(layoutInflater, container, false)
-        (activity as? AppCompatActivity)?.setSupportActionBar(binding.toolbar)
         return binding.root
     }
 
@@ -75,6 +73,10 @@ class CategoriesFragment : Fragment() {
 
         binding.men.setOnClickListener {
             viewModel.getCollectionByHandle("men")
+            binding.menText.setTextColor(resources.getColor(R.color.black))
+            binding.womenText.setTextColor(resources.getColor(R.color.dark_grey))
+            binding.kidText.setTextColor(resources.getColor(R.color.dark_grey))
+            binding.saleText.setTextColor(resources.getColor(R.color.dark_grey))
             binding.menDivider.visibility = View.VISIBLE
             binding.womenDivider.visibility = View.GONE
             binding.kidDivider.visibility = View.GONE
@@ -82,6 +84,10 @@ class CategoriesFragment : Fragment() {
         }
         binding.women.setOnClickListener {
             viewModel.getCollectionByHandle("women")
+            binding.menText.setTextColor(resources.getColor(R.color.dark_grey))
+            binding.womenText.setTextColor(resources.getColor(R.color.black))
+            binding.kidText.setTextColor(resources.getColor(R.color.dark_grey))
+            binding.saleText.setTextColor(resources.getColor(R.color.dark_grey))
             binding.menDivider.visibility = View.GONE
             binding.womenDivider.visibility = View.VISIBLE
             binding.kidDivider.visibility = View.GONE
@@ -89,6 +95,10 @@ class CategoriesFragment : Fragment() {
         }
         binding.kid.setOnClickListener {
             viewModel.getCollectionByHandle("kid")
+            binding.menText.setTextColor(resources.getColor(R.color.dark_grey))
+            binding.womenText.setTextColor(resources.getColor(R.color.dark_grey))
+            binding.kidText.setTextColor(resources.getColor(R.color.black))
+            binding.saleText.setTextColor(resources.getColor(R.color.dark_grey))
             binding.menDivider.visibility = View.GONE
             binding.womenDivider.visibility = View.GONE
             binding.kidDivider.visibility = View.VISIBLE
@@ -96,6 +106,10 @@ class CategoriesFragment : Fragment() {
         }
         binding.sale.setOnClickListener {
             viewModel.getCollectionByHandle("sale")
+            binding.menText.setTextColor(resources.getColor(R.color.dark_grey))
+            binding.womenText.setTextColor(resources.getColor(R.color.dark_grey))
+            binding.kidText.setTextColor(resources.getColor(R.color.dark_grey))
+            binding.saleText.setTextColor(resources.getColor(R.color.black))
             binding.menDivider.visibility = View.GONE
             binding.womenDivider.visibility = View.GONE
             binding.kidDivider.visibility = View.GONE
@@ -149,5 +163,8 @@ class CategoriesFragment : Fragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    }
+
 
 }
