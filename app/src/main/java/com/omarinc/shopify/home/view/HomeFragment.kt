@@ -1,11 +1,15 @@
 package com.omarinc.shopify.home.view
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -22,6 +26,10 @@ import com.omarinc.shopify.home.view.adapters.AdsAdapter
 import com.omarinc.shopify.home.view.adapters.BrandsAdapter
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.models.CouponDisplay
+import com.omarinc.shopify.models.PrerequisiteToEntitlementPurchase
+import com.omarinc.shopify.models.PrerequisiteToEntitlementQuantityRatio
+import com.omarinc.shopify.models.PriceRule
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
@@ -38,10 +46,11 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var brandsManager: LinearLayoutManager
     private lateinit var brandsAdapter: BrandsAdapter
-    private lateinit var adsAdapter: AdsAdapter
     private lateinit var viewModel: HomeViewModel
     private lateinit var productsManager: GridLayoutManager
     private lateinit var productsAdapter: ProductsAdapter
+    private lateinit var adsAdapter: AdsAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +71,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        binding.searchView.setOnClickListener{
+        binding.searchView.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
 
         }
@@ -78,8 +87,6 @@ class HomeFragment : Fragment() {
         setUpAdsAdapter()
         setUpBrandsAdapter()
         setUpProductsAdapter()
-        getCoupons()
-        getCouponDetails()
     }
 
     private fun setUpProductsAdapter() {
@@ -154,21 +161,6 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun setUpAdsAdapter() {
-
-        adsAdapter = AdsAdapter(requireContext())
-
-        binding.adsVP.adapter = adsAdapter
-        val images = listOf(
-            R.drawable.shoe,
-            R.drawable.discount,
-            R.drawable.shoe,
-            R.drawable.discount,
-        )
-
-        adsAdapter.submitList(images)
-        binding.adsVP.setPageTransformer(ZoomOutPageTransformer())
-    }
 
     private fun setViewModel() {
         val factory = HomeViewModel.HomeViewModelFactory(
@@ -186,44 +178,104 @@ class HomeFragment : Fragment() {
         viewModel.getProductsByBrandId("gid://shopify/Collection/308805107891")
     }
 
+    private fun setUpAdsAdapter() {
+        adsAdapter = AdsAdapter(requireContext()) { priceRule ->
+            onCouponLongClick(priceRule)
+        }
+        binding.adsVP.adapter = adsAdapter
+
+        val images = listOf(
+            R.drawable.coupon_1,
+            R.drawable.coupon_2,
+
+        )
+
+        viewModel.getCoupons()
+
+        lifecycleScope.launch {
+            viewModel.coupons.collect { result ->
+                when (result) {
+                    is ApiState.Failure -> {
+                        // Handle failure state if needed
+                        Log.e(TAG, "Failed to fetch coupons: ${result.msg}")
+                    }
+                    ApiState.Loading -> {
+                        // Handle loading state if needed
+                        Log.d(TAG, "Fetching coupons...")
+                    }
+                    is ApiState.Success -> {
+                        val coupons = result.response.price_rules
+                        if (coupons.size == images.size) {
+                            // Combine coupons with images
+                            val couponDisplays = coupons.zip(images) { priceRule, image ->
+                                CouponDisplay(priceRule, image)
+                            }
+
+                            // Submit the combined data to the adapter
+                            adsAdapter.submitList(couponDisplays)
+
+                            Log.d(TAG, "Coupons fetched successfully")
+                        } else {
+                            Log.e(TAG, "Number of coupons and images do not match")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun onCouponLongClick(priceRule: PriceRule) {
+        getCouponDetails(priceRule.id.toString())
+
+        Log.i(TAG, "onCouponLongClick: ${priceRule.id.toString()}")
+    }
+
+    private fun getCouponDetails(couponId: String) {
+        viewModel.getCouponDetails(couponId)
+
+        lifecycleScope.launch {
+            viewModel.couponDetails.collect { result ->
+                when (result) {
+                    is ApiState.Failure -> Log.i(TAG, "getCouponsDetails: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "getCouponsDetails: Loading")
+                    is ApiState.Success -> {
+                        Log.i(TAG, "getCouponsDetails: ${result.response}")
+                        // Copy the discount code to clipboard
+                        val discountCode = result.response.discount_codes.firstOrNull()?.code ?: ""
+                        val clipboard =
+                            requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clip = ClipData.newPlainText("Discount Code", discountCode)
+                        clipboard.setPrimaryClip(clip)
+                        Toast.makeText(
+                            requireContext(),
+                            "Discount code copied: $discountCode",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
     private fun getCoupons() {
         viewModel.getCoupons()
 
         lifecycleScope.launch {
             viewModel.coupons.collect { result ->
-
-
                 when (result) {
                     is ApiState.Failure -> Log.i(TAG, "getCoupons: ${result.msg}")
                     ApiState.Loading -> Log.i(TAG, "getCoupons: Loading")
                     is ApiState.Success -> {
-
                         Log.i(TAG, "getCoupons: ${result.response}")
+                        // Update adapter with coupons
+                        setUpAdsAdapter()
                     }
                 }
-
             }
         }
     }
-
-    private fun getCouponDetails(){
-        lifecycleScope.launch {
-            viewModel.getCouponDetails("1119384043699")
-            viewModel.couponDetails.collect{result->
-
-                when(result){
-                    is ApiState.Failure -> Log.i(TAG, "getCouponDetails: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "getCouponDetails: Lodaing")
-                    is ApiState.Success -> {
-
-                        Log.i(TAG, "getCouponDetails: ${result.response}")
-                    }
-                }
-
-            }
-
-        }
-    }
-
-
 }
+
+
+
