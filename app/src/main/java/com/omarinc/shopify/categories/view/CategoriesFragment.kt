@@ -17,7 +17,7 @@ import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentCategoriesBinding
 import com.omarinc.shopify.home.viewmodel.CategoriesViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl

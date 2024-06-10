@@ -2,16 +2,13 @@ package com.omarinc.shopify.login.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.github.leandroborgesferreira.loadingbutton.customViews.CircularProgressButton
 import com.google.android.material.snackbar.Snackbar
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentLoginBinding
@@ -19,7 +16,7 @@ import com.omarinc.shopify.home.view.MainActivity
 import com.omarinc.shopify.login.viewmodel.LoginViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl

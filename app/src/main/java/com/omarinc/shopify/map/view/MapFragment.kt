@@ -41,11 +41,10 @@ import com.omarinc.shopify.map.viewModel.MapViewModelFactory
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
