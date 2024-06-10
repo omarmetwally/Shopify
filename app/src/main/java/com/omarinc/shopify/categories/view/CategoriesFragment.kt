@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherforecastapplication.favouritesFeature.view.CategoriesAdapter
 import com.omarinc.shopify.R
@@ -68,6 +69,10 @@ class CategoriesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.searchView.setOnClickListener{
+            findNavController().navigate(R.id.action_categoriesFragment_to_searchFragment)
+
+        }
        setupCategoriesAdapter()
 
         setupFilterView()

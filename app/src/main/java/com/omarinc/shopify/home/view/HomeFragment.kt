@@ -62,6 +62,10 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+        binding.searchView.setOnClickListener{
+            findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
+
+        }
 
         binding.menu.setOnClickListener {
             if (binding.root.isDrawerOpen(GravityCompat.START)) {
