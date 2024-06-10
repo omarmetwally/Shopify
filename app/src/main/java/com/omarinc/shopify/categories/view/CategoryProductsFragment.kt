@@ -42,6 +42,11 @@ class CategoryProductsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+       setUpViewModel()
+
+    }
+
+    private fun setUpViewModel() {
         val factory = CategoriesViewModel.CategoriesViewModelFactory(
             ShopifyRepositoryImpl(
                 ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
@@ -54,67 +59,21 @@ class CategoryProductsFragment : Fragment() {
         viewModel =
             ViewModelProvider(requireParentFragment(), factory).get(CategoriesViewModel::class.java)
 
-
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentCategoryProductsBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        productsAdapter = CategoryProductsAdapter(
-            requireContext(),
-        )
+       setUpProductsAdapter()
+       collectProductsByHandle()
 
-        productsManager = GridLayoutManager(requireContext(), 2)
-        productsManager.orientation = LinearLayoutManager.VERTICAL
-        binding.categoryProductsRV.layoutManager = productsManager
-        binding.categoryProductsRV.adapter = productsAdapter
-
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.apiState.collect { result ->
-                    when (result) {
-                        is ApiState.Loading -> {
-
-                        }
-
-                        is ApiState.Success -> {
-                            productsAdapter.submitList(result.response)
-                        }
-
-                        is ApiState.Failure -> {
-                            Log.i("TAG", "onViewCreated: error " + result.msg)
-                        }
-                    }
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.collectionApiState.collect { result ->
-                    when (result) {
-                        is ApiState.Loading -> {
-
-                        }
-
-                        is ApiState.Success -> {
-                            productsAdapter.submitList(result.response.products)
-                        }
-
-                        is ApiState.Failure -> {
-                            Log.i("TAG", "onViewCreated: error " + result.msg)
-                        }
-                    }
-                }
-            }
-        }
 
         binding.fab1.setOnClickListener {
             viewModel.getProductsByType("SHOES")
@@ -133,12 +92,70 @@ class CategoryProductsFragment : Fragment() {
             binding.mainFab.setImageResource(R.drawable.accessories)
         }
 
+       setUpFabAnimation()
+        collectProductsBySubCategories()
+        binding.mainFab.setOnClickListener { toggleFab() }
+    }
+
+    private fun collectProductsBySubCategories() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.apiState.collect{ result ->
+                    when(result){
+                        is ApiState.Loading ->{
+
+                        }
+
+                        is ApiState.Success ->{
+                            productsAdapter.submitList(result.response)
+                        }
+                        is ApiState.Failure ->{
+                            Log.i("TAG", "onViewCreated: error "+result.msg)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private fun collectProductsByHandle() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.collectionApiState.collect{ result ->
+                    when(result){
+                        is ApiState.Loading ->{
+
+                        }
+
+                        is ApiState.Success ->{
+                            productsAdapter.submitList(result.response.products)
+                        }
+                        is ApiState.Failure ->{
+                            Log.i("TAG", "onViewCreated: error "+result.msg)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setUpFabAnimation() {
         fabOpenAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.fab_open)
         fabCloseAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.fab_close)
         rotateForwardAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate_forward)
         rotateBackwardAnim = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate_backword)
 
-        binding.mainFab.setOnClickListener { toggleFab() }
+    }
+
+    private fun setUpProductsAdapter() {
+        productsAdapter = CategoryProductsAdapter(
+            requireContext(),
+        )
+
+        productsManager = GridLayoutManager(requireContext(),2)
+        productsManager.orientation = LinearLayoutManager.VERTICAL
+        binding.categoryProductsRV.layoutManager = productsManager
+        binding.categoryProductsRV.adapter = productsAdapter
+
     }
 
 
@@ -195,6 +212,9 @@ class CategoryProductsFragment : Fragment() {
             binding.fab2.isClickable = true
             binding.fab3.isClickable = true
             isFabOpen = true
+
+
         }
     }
+
 }

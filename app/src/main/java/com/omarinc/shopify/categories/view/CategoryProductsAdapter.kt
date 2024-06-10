@@ -35,6 +35,7 @@ class CategoryProductsAdapter(
 //        binding.brandImage = current.image
 //        binding.brandName = current.name
         binding.name.text = current.title
+        binding.price.text = current.price
         Glide.with(context).load(current.imageUrl)
             .apply(
                 RequestOptions().override(200, 200)
