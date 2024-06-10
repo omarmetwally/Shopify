@@ -311,7 +311,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                 apolloClient.query(query).execute()
 
             if (response.hasErrors()) {
-                Log.i("TAG", "get Orders: error")
+                Log.i("TAG", "get Orders: error"+response.errors)
                 val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
                 emit(ApiState.Failure(Throwable(errorMessages)))
             } else {
@@ -320,17 +320,34 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                     Log.i("TAG", "getOrders: data" + data)
                     var orders: MutableList<Order> = mutableListOf()
                     data.forEach {
+                        val products = mutableListOf<Product>()
+                        it.node.lineItems.edges.forEach {
+                            products.add(
+                                Product(
+                                    it.node.variant?.id?:"",
+                                    it.node.title,
+                                    it.node.variant?.product?.handle?:"",
+                                    it.node.variant?.product?.description?:"",
+                                    it.node.variant?.product?.images!!.edges[0].node.url.toString(),
+                                    it.node .variant.product.productType,
+                                    it.node.variant.priceV2.amount.toString(),
+                                    it.node.variant.priceV2.currencyCode.toString()
+                            )
+                            )
+                        }
                         orders.add(
                             Order(
                                 it.node.id,
-                                it.node.name, it.node.billingAddress?.address1 ?: "",
+                                it.node.name, it.node.billingAddress?.address1 ,
                                 it.node.currentTotalPrice.amount.toString(),
                                 it.node.currentTotalPrice.currencyCode.toString(),
                                 it.node.currentSubtotalPrice.amount.toString(),
                                 it.node.currentSubtotalPrice.currencyCode.toString(),
                                 it.node.currentTotalTax.amount.toString(),
                                 it.node.currentTotalTax.currencyCode.toString(),
-                                it.node.canceledAt.toString()
+                                it.node.processedAt.toString(),
+                                it.node.phone,
+                                products
                             )
                         )
                     }

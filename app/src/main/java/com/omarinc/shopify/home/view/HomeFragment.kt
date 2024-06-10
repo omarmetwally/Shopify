@@ -75,6 +75,7 @@ class HomeFragment : Fragment() {
         setUpBrandsAdapter()
         setUpProductsAdapter()
         getCoupons()
+        collectProducts()
     }
 
     private fun setUpProductsAdapter() {
@@ -88,6 +89,10 @@ class HomeFragment : Fragment() {
         binding.productsRv.layoutManager = productsManager
         binding.productsRv.adapter = productsAdapter
 
+
+    }
+
+    private fun collectProducts(){
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.productsApiState.collect { result ->
@@ -108,7 +113,6 @@ class HomeFragment : Fragment() {
             }
         }
     }
-
     private fun setUpBrandsAdapter() {
         val onBrandClick = { it: String ->
             val action = HomeFragmentDirections

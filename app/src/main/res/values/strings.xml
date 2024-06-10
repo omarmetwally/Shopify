@@ -78,6 +78,14 @@
     <string name="for_you">For You</string>
     <string name="shopping">Shopping</string>
     <string name="header">Save Shop and View Orders</string>
+    <string name="order_details">Order Details</string>
+    <string name="order_id">"Order ID : "</string>
+    <string name="order_items">Order Items</string>
+    <string name="home_address">Home Address</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="total_tax">"Total Tax : "</string>
+    <string name="total_cost">Total Cost</string>
+    <string name="orders">Orders</string>
 
 
 </resources>

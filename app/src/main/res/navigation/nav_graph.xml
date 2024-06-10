@@ -117,7 +117,11 @@
         android:id="@+id/ordersFragment"
         android:name="com.omarinc.shopify.orders.view.OrdersFragment"
         android:label="fragment_orders"
-        tools:layout="@layout/fragment_orders" />
+        tools:layout="@layout/fragment_orders" >
+        <action
+            android:id="@+id/action_ordersFragment_to_orderDetailsFragment"
+            app:destination="@id/orderDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/shoppingCartFragment"
         android:name="com.omarinc.shopify.shoppingcart.view.ShoppingCartFragment"
@@ -127,4 +131,13 @@
         android:id="@+id/mapFragment"
         android:name="com.omarinc.shopify.map.view.MapFragment"
         android:label="MapFragment" />
+    <fragment
+        android:id="@+id/orderDetailsFragment"
+        android:name="com.omarinc.shopify.orders.view.OrderDetailsFragment"
+        android:label="fragment_order_details"
+        tools:layout="@layout/fragment_order_details" >
+        <argument
+            android:name="index"
+            app:argType="integer" />
+    </fragment>
 </navigation>
