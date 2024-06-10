@@ -32,7 +32,7 @@ class ProductsAdapter(
         val current = getItem(position)
 
         binding.brandName.text = current.title
-        binding.price.text = current.price
+        binding.price.text = "${current.price} EGP"
         Glide.with(context).load(current.imageUrl)
             .apply(
                 RequestOptions().override(200, 200)

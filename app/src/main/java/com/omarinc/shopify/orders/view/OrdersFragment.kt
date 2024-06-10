@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherforecastapplication.favouritesFeature.view.OrdersAdapter
 import com.omarinc.shopify.databinding.FragmentOrdersBinding
@@ -34,29 +35,15 @@ class OrdersFragment : Fragment() {
     private lateinit var repo: ShopifyRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        repo = ShopifyRepositoryImpl(
-            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-            SharedPreferencesImpl.getInstance(requireContext()),
-            CurrencyRemoteDataSourceImpl.getInstance(), AdminRemoteDataSourceImpl.getInstance()
-        )
-
-        val factory = OrdersViewModel.OrdersViewModelFactory(
-            repo
-        )
-
-        viewModel = ViewModelProvider(this, factory).get(OrdersViewModel::class.java)
-
-
+       setUpViewModel()
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
+    ): View {
         binding = FragmentOrdersBinding.inflate(layoutInflater, container, false)
-
         return binding.root
     }
 
@@ -64,6 +51,28 @@ class OrdersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+       collectOrders()
+
+       setUpOrdersAdapter()
+
+    }
+
+    private fun setUpOrdersAdapter() {
+        ordersAdapter = OrdersAdapter(
+            requireContext()
+        ) { index ->
+            val action =
+                OrdersFragmentDirections.actionOrdersFragmentToOrderDetailsFragment(index)
+            findNavController().navigate(action)
+        }
+
+        ordersManager = LinearLayoutManager(requireContext())
+        ordersManager.orientation = LinearLayoutManager.VERTICAL
+        binding.ordersRV.layoutManager = ordersManager
+        binding.ordersRV.adapter = ordersAdapter
+    }
+
+    private fun collectOrders() {
         lifecycleScope.launch {
             viewModel
                 .getCutomerOrders(repo.readUserToken())
@@ -85,23 +94,20 @@ class OrdersFragment : Fragment() {
                 }
             }
         }
+    }
 
-
-        val onBrandClick = { id: String ->
-            val action = HomeFragmentDirections
-                .actionHomeFragmentToProductsFragment(
-                    id
-                )
-            Navigation.findNavController(requireView()).navigate(action)
-        }
-        ordersAdapter = OrdersAdapter(
-            requireContext(),
+    private fun setUpViewModel() {
+        repo = ShopifyRepositoryImpl(
+            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+            SharedPreferencesImpl.getInstance(requireContext()),
+            CurrencyRemoteDataSourceImpl.getInstance(), AdminRemoteDataSourceImpl.getInstance()
         )
 
-        ordersManager = LinearLayoutManager(requireContext())
-        ordersManager.orientation = LinearLayoutManager.VERTICAL
-        binding.ordersRV.layoutManager = ordersManager
-        binding.ordersRV.adapter = ordersAdapter
+        val factory = OrdersViewModel.OrdersViewModelFactory(
+            repo
+        )
 
+        viewModel = ViewModelProvider(requireActivity(), factory).get(OrdersViewModel::class.java)
     }
+
 }
