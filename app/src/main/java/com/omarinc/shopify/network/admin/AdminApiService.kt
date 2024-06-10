@@ -18,5 +18,5 @@ interface AdminApiService {
     )
 
     @GET("price_rules.json")
-    suspend fun getCoupons():Response<PriceRulesResponse>
+    suspend fun getCoupons(): Response<PriceRulesResponse>
 }
