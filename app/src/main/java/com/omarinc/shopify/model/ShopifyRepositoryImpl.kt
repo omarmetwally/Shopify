@@ -6,12 +6,12 @@ import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.models.CustomerAddress
+import com.omarinc.shopify.models.DiscountCodesResponse
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.models.PriceRulesResponse
-import com.omarinc.shopify.network.ShopifyRemoteDataSource
+import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSource
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSource
-import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSource
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
@@ -155,6 +155,10 @@ class ShopifyRepositoryImpl(
 
     override suspend fun getCoupons(): Flow<ApiState<PriceRulesResponse>> {
         return adminRemoteDataSource.getCoupons()
+    }
+
+    override suspend fun getCouponDetails(couponId:String): Flow<ApiState<DiscountCodesResponse>> {
+        return adminRemoteDataSource.getCouponDetails(couponId)
     }
 
 

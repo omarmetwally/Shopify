@@ -1,4 +1,4 @@
-package com.omarinc.shopify.network
+package com.omarinc.shopify.network.shopify
 
 import android.content.Context
 import android.util.Log
@@ -29,6 +29,7 @@ import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.Order
+import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.Price
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.ProductImage

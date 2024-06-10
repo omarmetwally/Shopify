@@ -1,4 +1,4 @@
-package com.omarinc.shopify.network
+package com.omarinc.shopify.network.shopify
 
 import com.omarinc.shopify.model.RegisterUserResponse
 import com.omarinc.shopify.models.Brands
@@ -9,6 +9,7 @@ import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.models.Product
+import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
 import kotlinx.coroutines.flow.Flow

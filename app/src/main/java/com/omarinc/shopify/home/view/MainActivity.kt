@@ -2,18 +2,12 @@ package com.omarinc.shopify.home.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import android.widget.SearchView
-import android.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.ActivityMainBinding
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.utilities.Constants
 
 class MainActivity : AppCompatActivity() {

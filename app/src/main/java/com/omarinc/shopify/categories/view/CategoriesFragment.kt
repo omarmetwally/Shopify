@@ -10,14 +10,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherforecastapplication.favouritesFeature.view.CategoriesAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentCategoriesBinding
 import com.omarinc.shopify.home.viewmodel.CategoriesViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.network.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
@@ -34,7 +35,7 @@ class CategoriesFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-     setupViewModel()
+        setupViewModel()
     }
 
     private fun setupViewModel() {
@@ -68,11 +69,15 @@ class CategoriesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-       setupCategoriesAdapter()
+        binding.searchView.setOnClickListener {
+            findNavController().navigate(R.id.action_categoriesFragment_to_searchFragment)
+
+        }
+        setupCategoriesAdapter()
 
         setupFilterView()
 
-       setupCategoriesView()
+        setupCategoriesView()
         setupSeekBar()
     }
 
@@ -87,11 +92,11 @@ class CategoriesFragment : Fragment() {
 
     private fun setupFilterView() {
         binding.filterView.setOnClickListener {
-            if(isFilter){
+            if (isFilter) {
                 binding.priceSeekBar.visibility = View.GONE
                 binding.seekBarValueText.visibility = View.GONE
                 isFilter = !isFilter
-            }else {
+            } else {
                 binding.priceSeekBar.visibility = View.VISIBLE
                 binding.seekBarValueText.visibility = View.VISIBLE
                 isFilter = !isFilter
@@ -100,7 +105,7 @@ class CategoriesFragment : Fragment() {
     }
 
 
-    private fun setupCategoriesView(){
+    private fun setupCategoriesView() {
         binding.men.setOnClickListener {
             viewModel.getCollectionByHandle("men")
             binding.menText.setTextColor(resources.getColor(R.color.black))
@@ -149,7 +154,6 @@ class CategoriesFragment : Fragment() {
     }
 
 
-
     private fun setupSeekBar() {
         binding.priceSeekBar.max = 1000
         binding.priceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -163,7 +167,8 @@ class CategoriesFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
-    private fun collectFilteredProducts(){
+
+    private fun collectFilteredProducts() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
@@ -175,6 +180,5 @@ class CategoriesFragment : Fragment() {
             }
         }
     }
-
-
 }
+

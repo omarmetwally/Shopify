@@ -1,5 +1,6 @@
 package com.omarinc.shopify.network.admin
 
+import com.omarinc.shopify.models.DiscountCodesResponse
 import com.omarinc.shopify.models.PriceRulesResponse
 import com.omarinc.shopify.network.ApiState
 import kotlinx.coroutines.flow.Flow
@@ -39,4 +40,24 @@ class AdminRemoteDataSourceImpl : AdminRemoteDataSource {
             emit(ApiState.Failure(Throwable("Network error: ${e.localizedMessage}", e)))
         }
     }
+
+    override suspend fun getCouponDetails(couponId: String): Flow<ApiState<DiscountCodesResponse>> =
+        flow {
+
+            emit(ApiState.Loading)
+
+
+            try {
+                val response = adminApiService.getCouponDetails(couponId)
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        emit(ApiState.Success(it))
+                    } ?: emit(ApiState.Failure(Throwable("Response is empty")))
+                } else {
+                    emit(ApiState.Failure(Throwable("Response error: ${response.code()} - ${response.message()}")))
+                }
+            } catch (e: Exception) {
+                emit(ApiState.Failure(Throwable("Network error: ${e.localizedMessage}", e)))
+            }
+        }
 }
