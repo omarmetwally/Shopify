@@ -142,6 +142,14 @@ class ShopifyRepositoryImpl(
         return sharedPreferences.readStringFromSharedPreferences(key)
     }
 
+    override suspend fun addToCartById(
+        cartId: String,
+        quantity: Int,
+        variantID: String
+    ): Flow<ApiState<String?>> {
+        return shopifyRemoteDataSource.addToCartById(cartId, quantity, variantID)
+    }
+
     override suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>> {
         return shopifyRemoteDataSource.getProductsCart(cartId)
     }

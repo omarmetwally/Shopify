@@ -2,8 +2,6 @@ package com.omarinc.shopify.network.shopify
 
 import com.omarinc.shopify.model.RegisterUserResponse
 import com.omarinc.shopify.models.Brands
-import com.omarinc.shopify.models.CartCreateResponse
-import com.omarinc.shopify.models.CartLineInput
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.CustomerAddress
@@ -38,10 +36,7 @@ interface ShopifyRemoteDataSource {
 
     suspend fun createCart(email: String): Flow<ApiState<String?>>
 
-    suspend fun addToCart(
-        cartId: String,
-        lines: List<CartLineInput>
-    ): Flow<ApiState<CartCreateResponse>>
+    suspend fun addToCartById(cartId: String, quantity: Int, variantID : String): Flow<ApiState<String?>>
 
     suspend fun getProductsCart(cartId: String): Flow<ApiState<List<CartProduct>>>
 

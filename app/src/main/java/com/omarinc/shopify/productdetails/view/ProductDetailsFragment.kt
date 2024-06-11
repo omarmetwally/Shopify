@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.apollographql.apollo3.api.Optional
 import com.google.android.material.chip.Chip
 import com.omarinc.shopify.R
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModel
@@ -50,6 +51,8 @@ class ProductDetailsFragment : Fragment() {
     private lateinit var favoriteViewModel: FavoriteViewModel
     private lateinit var binding: FragmentProductDetailsBinding
 
+    private lateinit var productId: String
+    private lateinit var variantId: String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -69,7 +72,7 @@ class ProductDetailsFragment : Fragment() {
 
         setUpViewModel()
 
-        val productId = arguments?.getString("productId") ?: ""
+        productId = arguments?.getString("productId") ?: ""
 
         val userToken = sharedPreferences.readStringFromSharedPreferences(
             Constants.USER_TOKEN
@@ -78,49 +81,13 @@ class ProductDetailsFragment : Fragment() {
         loadProductDetails(productId)
 
 
-        /*viewModel.isCustomerHasCart("testdfdf@test.com")
-
-        lifecycleScope.launch {
-
-            viewModel.hasCart.collect { result ->
-
-                when(result){
-                    is ApiState.Failure -> Log.i(TAG, "hasCart Failure: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "hasCart Loading: ")
-                    is ApiState.Success -> Log.i(TAG, "hasCart Success: ${result.response} ")
-                }
-            }
-        }*/
 
 
         setListeners()
 
-
-        /*        viewModel.createCart("test@test.com")
-
-                lifecycleScope.launch {
-
-                    viewModel.cartId.collect { result ->
-
-                        when (result) {
-                            is ApiState.Failure -> Log.i(TAG, "onViewCreated: failure ${result.msg}")
-                            ApiState.Loading -> Log.i(TAG, "onViewCreated: Loading")
-                            is ApiState.Success -> Log.i(
-                                TAG,
-                                "onViewCreated: Success ${result.response}"
-                            )
-                        }
-
-                    }
-                }*/
-
         checkFavorite(userToken, productId)
 
-        lifecycleScope.launch {
 
-
-            Log.i(TAG, "onViewCreated: Email ${viewModel.readCustomerEmail()}")
-        }
 
         getCurrentCurrency()
 
@@ -212,11 +179,17 @@ class ProductDetailsFragment : Fragment() {
                     is ApiState.Success -> {
                         val productDetails = state.response
                         Log.e("ProductDetailsFragment ", ": $productDetails")
+                        variantId = productDetails.variants.firstOrNull()?.id.toString()
+                        if (variantId != null) {
+                            Log.i(TAG, "Variant ID: $variantId")
+                        }
+
                         binding.tvProductName.text = productDetails.title
                         binding.tvProductVendor.text = productDetails.vendor
                         binding.tvProductPrice.text = "${productDetails.price} USD"
                         binding.tvProductStock.text = "In Stock: ${productDetails.totalInventory}"
                         binding.tvProductDescription.text = productDetails.description
+
 
                         val imageUrls = productDetails.images.map { it.src }
                         val adapter = ImagesPagerAdapter(requireContext(), imageUrls)
@@ -246,65 +219,93 @@ class ProductDetailsFragment : Fragment() {
         }
     }
 
-
     private fun setListeners() {
-        Log.i(TAG, "setListeners: ")
-
-        binding.btnBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
         binding.btnAddToCart.setOnClickListener {
 
-            val email: Deferred<String>
-            email = lifecycleScope.async {
+            val email: Deferred<String> = lifecycleScope.async {
                 viewModel.readCustomerEmail()
             }
 
-
             lifecycleScope.launch {
+                val userEmail = email.await()
+                Log.i(TAG, "Email: $userEmail")
 
-                viewModel.isCustomerHasCart(email.await())
-                Log.i(TAG, "Email: ${email.await()}")
+                viewModel.isCustomerHasCart(userEmail)
+
                 viewModel.hasCart.collect { result ->
                     when (result) {
                         is ApiState.Failure -> Log.i(TAG, "hasCart Failure: ${result.msg}")
                         ApiState.Loading -> Log.i(TAG, "hasCart Loading: ")
                         is ApiState.Success -> {
-                            Log.i(TAG, "hasCart Success: ${result.response}")
+                            Log.i(TAG, "hasCart Success user has cart: ${result.response}")
                             if (!result.response) {
-                                val cartId = createNewCart(email.await())
 
+                                Log.i(TAG, "hasCart: ${result.response}")
 
+                                val cartId = createNewCart(userEmail)
+                                // val variantId = getFirstVariantId(productId)
+
+                                Log.i(TAG, "variantId 11: $variantId")
+
+                                if (variantId != null) {
+
+                                    Log.i(TAG, "Added to Cart ID: $cartId")
+                                    addProductToCart(
+                                        cartId,
+                                        1, variantId
+                                    )
+
+                                } else {
+                                    Log.e(TAG, "Variant ID not found for product.")
+                                }
                             } else {
-
-                                viewModel.getCartByCustomer(email.await())
+                                viewModel.getCartByCustomer(userEmail)
                                 viewModel.customerCart.collect { result ->
                                     when (result) {
                                         is ApiState.Failure -> Log.i(
                                             TAG,
-                                            "cutomerCart Failure: ${result.msg}"
+                                            "customerCart Failure: ${result.msg}"
                                         )
 
-                                        ApiState.Loading -> Log.i(TAG, "Loading ")
+                                        ApiState.Loading -> Log.i(TAG, "Loading")
                                         is ApiState.Success -> {
 
+                                            Log.i(TAG, "CartId : ${result.response} ")
+                                            val cartId = result.response
+                                            // val variantId = getFirstVariantId(productId)
+                                            if (variantId != null) {
+                                                Log.i(TAG, "customerCart2: variantId $variantId")
+                                                addProductToCart(
+                                                    cartId?:"",
+                                                    1, variantId
+                                                )
+                                            } else {
+                                                Log.e(TAG, "Variant ID not found for product.")
+                                            }
                                         }
                                     }
-
                                 }
-
-
                             }
-
                         }
                     }
                 }
-
             }
         }
-
-
     }
+
+
+    /*private fun getFirstVariantId(productId: String): String? {
+        var variantId: String? = null
+        viewModel.getProductById(productId)
+        lifecycleScope.launch {
+            viewModel.apiState.collect { state ->
+                if (state is ApiState.Success) {
+                    variantId = state.response.variants.firstOrNull()?.id
+                }
+            }
+        }
+        return variantId
+    }*/
 
     private suspend fun createNewCart(email: String): String {
         viewModel.createCart(email)
@@ -372,6 +373,36 @@ class ProductDetailsFragment : Fragment() {
             colorName.text = color
 
             binding.chipGroupColors.addView(chipView)
+        }
+    }
+
+
+    private fun addProductToCart(cartId: String, quantity: Int, variantId: String) {
+        viewModel.addProductToCart(cartId, quantity, variantId)
+
+        lifecycleScope.launch {
+            viewModel.addingToCart.collect { state ->
+                when (state) {
+                    is ApiState.Success -> {
+                        val addedCartId = state
+                        Log.i(
+                            TAG,
+                            "Product added to cart successfully. Cart ID: ${addedCartId.response}"
+                        )
+                        // Handle success (e.g., show a success message to the user)
+                    }
+
+                    is ApiState.Failure -> {
+                        Log.e(TAG, "Failed to add product to cart: ${state.msg}")
+                        // Handle failure (e.g., show an error message to the user)
+                    }
+
+                    ApiState.Loading -> {
+                        Log.i(TAG, "Adding product to cart...")
+                        // Handle loading (e.g., show a loading spinner)
+                    }
+                }
+            }
         }
     }
 

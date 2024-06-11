@@ -22,7 +22,6 @@ import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModel
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModelFactory
 import kotlinx.coroutines.launch
 
-
 class ShoppingCartFragment : Fragment() {
 
     private lateinit var binding: FragmentShoppingCartBinding
@@ -44,16 +43,11 @@ class ShoppingCartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         setupViewModel()
         getShoppingCartItems()
-
-
     }
 
     private fun setupViewModel() {
-
-
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
             SharedPreferencesImpl.getInstance(requireContext()),
@@ -62,42 +56,32 @@ class ShoppingCartFragment : Fragment() {
         )
         val viewModelFactory = ShoppingCartViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ShoppingCartViewModel::class.java)
-
     }
 
-
     private fun getShoppingCartItems() {
-        viewModel.getShoppingCartItems("gid://shopify/Cart/Z2NwLWV1cm9wZS13ZXN0MTowMUhaTkVUS0Q0SzdYMEc5UldCUEUyWFQxUg?key=3e770edab029ad5953788926d1b84a83")
+        viewModel.getShoppingCartItems("gid://shopify/Cart/Z2NwLWV1cm9wZS13ZXN0MTowMUhaTVBDNERONDdFR1RRNzhHMzVQNDZKTQ?key=22cacec08785daefc1a6a03f924f9017")
         lifecycleScope.launch {
-
             viewModel.cartItems.collect { result ->
-
                 when (result) {
                     is ApiState.Failure -> Log.i(TAG, "onViewCreated: ${result.msg}")
                     ApiState.Loading -> Log.i(TAG, "onViewCreated: Loading")
                     is ApiState.Success -> {
                         Log.i(TAG, "onViewCreated: ${result.response.size}")
                         setupRecyclerView(result.response)
-
                     }
                 }
-
             }
         }
     }
 
-
     private fun setupRecyclerView(items: List<CartProduct>) {
-
         val adapter = ShoppingCartAdapter(items)
         binding.shoppingCartRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireActivity()).apply {
                 orientation = RecyclerView.VERTICAL
             }
-
+            this.adapter = adapter
         }
         adapter.notifyDataSetChanged()
-
     }
-
 }

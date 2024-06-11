@@ -55,6 +55,12 @@ interface ShopifyRepository {
 
     suspend fun readEmailFromSharedPreferences(key: String): String
 
+    suspend fun addToCartById(
+        cartId: String,
+        quantity: Int,
+        variantID: String
+    ): Flow<ApiState<String?>>
+
     suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>>
 
     suspend fun createAddress(
