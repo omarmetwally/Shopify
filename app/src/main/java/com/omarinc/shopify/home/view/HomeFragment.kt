@@ -316,6 +316,8 @@ class HomeFragment : Fragment() {
             )
         )
 
+
+
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
         viewModel.getBrands()
