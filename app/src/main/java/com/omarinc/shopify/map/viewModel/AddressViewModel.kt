@@ -9,18 +9,20 @@ import com.omarinc.shopify.network.ApiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class MapViewModel(private val repository: ShopifyRepository) : ViewModel() {
+class AddressViewModel(private val repository: ShopifyRepository) : ViewModel() {
 
-    companion object{
+    companion object {
         private const val TAG = "MapViewModel"
     }
+
     private val _address = MutableStateFlow<ApiState<String?>>(ApiState.Loading)
-    val address: MutableStateFlow<ApiState<String?>>  = _address
+    val address: MutableStateFlow<ApiState<String?>> = _address
+
     fun createAddress(
         customerAddress: CustomerAddress,
     ) {
         viewModelScope.launch {
-            repository.createAddress(customerAddress, repository.readUserToken()).collect{
+            repository.createAddress(customerAddress, repository.readUserToken()).collect {
                 Log.i(TAG, "Token:${repository.readUserToken()} ")
                 _address.value = it
             }

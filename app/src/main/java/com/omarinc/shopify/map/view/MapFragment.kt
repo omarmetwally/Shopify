@@ -21,6 +21,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -36,8 +37,8 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentMapBinding
-import com.omarinc.shopify.map.viewModel.MapViewModel
-import com.omarinc.shopify.map.viewModel.MapViewModelFactory
+import com.omarinc.shopify.map.viewModel.AddressViewModel
+import com.omarinc.shopify.map.viewModel.AddressViewModelFactory
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.network.ApiState
@@ -53,8 +54,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
     private val binding get() = _binding!!
 
 
-    private lateinit var viewModel: MapViewModel
-
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private val cairo = LatLng(30.0, 30.0)
@@ -66,6 +65,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
     private var address: CustomerAddress = CustomerAddress("", "", "", "", "")
 
     private var currentMarker: Marker? = null
+
+    private lateinit var city: String
 
     companion object {
         private const val REQUEST_LOCATION_CODE = 505
@@ -90,7 +91,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
         super.onViewCreated(view, savedInstanceState)
 
 
-        setupViewModel()
+
         setListeners()
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
@@ -98,27 +99,26 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
     }
 
 
-    private fun setupViewModel() {
-        val repository = ShopifyRepositoryImpl.getInstance(
-            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
-            SharedPreferencesImpl.getInstance(requireContext()),
-            CurrencyRemoteDataSourceImpl.getInstance(),
-            AdminRemoteDataSourceImpl.getInstance()
-        )
-        val factory = MapViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, factory)[MapViewModel::class.java]
-    }
-
     private fun setListeners() {
         binding.chooseAddressButton.setOnClickListener {
 
             googleMap.let { map ->
                 val location = getCurrentLocation(map)
                 getCityFromLocation(location.latitude, location.longitude)
-
+                if (!city.isEmpty()) {
+                    val action =
+                        MapFragmentDirections.actionMapFragmentToAddressDetailsFragment(city)
+                    findNavController().navigate(action)
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please select a valid location",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
 
-            viewModel.createAddress(address)
+            /*viewModel.createAddress(address)
 
             Log.i(TAG, "City: ${address.city}")
             lifecycleScope.launch {
@@ -141,7 +141,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
 
                 }
 
-            }
+            }*/
 
         }
         binding.currentLocationButton.setOnClickListener {
@@ -280,16 +280,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
 
         if (!addresses.isNullOrEmpty()) {
             val address = addresses[0]
-            val cityName = address.adminArea ?: "Unknown"
-            val countryName = address.countryName ?: "Unknown"
-            val addressLine = address.getAddressLine(0) ?: "Unknown"
+            city = address.adminArea ?: "Unknown"
 
-            this.address.apply {
-                this.city = cityName
-                this.country = countryName
-                this.address1 = addressLine
 
-            }
         } else {
             showToast("No address found for the provided location.")
         }
