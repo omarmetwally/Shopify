@@ -3,14 +3,15 @@ package com.omarinc.shopify.home.view
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.GravityCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -27,15 +28,18 @@ import com.omarinc.shopify.home.view.adapters.BrandsAdapter
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CouponDisplay
-import com.omarinc.shopify.models.PrerequisiteToEntitlementPurchase
-import com.omarinc.shopify.models.PrerequisiteToEntitlementQuantityRatio
 import com.omarinc.shopify.models.PriceRule
 import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.launch
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt.PromptStateChangeListener
+import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
+
 
 class HomeFragment : Fragment() {
 
@@ -83,6 +87,140 @@ class HomeFragment : Fragment() {
                 binding.root.openDrawer(GravityCompat.START)
             }
         }
+
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.brandConstrainLayout)
+            .setPrimaryText("Button 1")
+            .setSecondaryText("Chnaging Focal Color")
+            .setFocalColour(Color.CYAN) // You Can Also set Custom Focal
+            // Radius of the prompt
+            .setFocalRadius(150.4.toFloat())
+            .setPromptStateChangeListener(PromptStateChangeListener { prompt, state ->
+                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+                    Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
+                }
+            })
+            .show()
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.search_view)
+            .setPrimaryText("Button 2")
+            .setSecondaryText("Chnaging Focal Color")
+            .setFocalColour(Color.GREEN)
+            .setPromptStateChangeListener(PromptStateChangeListener { prompt, state ->
+                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+                    Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
+                }
+            })
+            .show()
+
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(R.id.filter_view)
+            .setPrimaryText("This is Fab")
+            .setSecondaryText("Chnaging Prompt Style")
+            .setPromptBackground(RectanglePromptBackground())
+            .setBackgroundColour(Color.MAGENTA)
+            .setPromptFocal(RectanglePromptFocal())
+            .setPromptStateChangeListener(PromptStateChangeListener { prompt, state ->
+                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+                    Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
+                }
+            })
+            .show()
+        /* TapTargetSequence(this)
+                   .targets(
+                       TapTarget.forView(btn1, "Button 1", "This is Button 1")
+                           .outerCircleColor(R.color.teal_200)
+                           .outerCircleAlpha(0.96f)
+                           .targetCircleColor(R.color.white)
+                           .titleTextSize(20)
+                           .titleTextColor(R.color.white)
+                           .descriptionTextSize(10)
+                           .descriptionTextColor(R.color.black)
+                           .textColor(R.color.black)
+                           .textTypeface(Typeface.SANS_SERIF)
+                           .dimColor(R.color.black)
+                           .drawShadow(true)
+                           .cancelable(false)
+                           .tintTarget(true)
+                           .transparentTarget(true)
+                           .targetRadius(60),
+                       TapTarget.forView(btn2, "Button 2", "This is Button 2")
+                           .outerCircleColor(R.color.teal_200)
+                           .outerCircleAlpha(0.96f)
+                           .targetCircleColor(R.color.white)
+                           .titleTextSize(20)
+                           .titleTextColor(R.color.white)
+                           .descriptionTextSize(10)
+                           .descriptionTextColor(R.color.black)
+                           .textColor(R.color.black)
+                           .textTypeface(Typeface.SANS_SERIF)
+                           .dimColor(R.color.black)
+                           .drawShadow(true)
+                           .cancelable(false)
+                           .tintTarget(true)
+                           .transparentTarget(true)
+                           .targetRadius(60),
+                       TapTarget.forView(btn3, "Button 3", "This is Button 3")
+                           .outerCircleColor(R.color.teal_200)
+                           .outerCircleAlpha(0.96f)
+                           .targetCircleColor(R.color.white)
+                           .titleTextSize(20)
+                           .titleTextColor(R.color.white)
+                           .descriptionTextSize(10)
+                           .descriptionTextColor(R.color.black)
+                           .textColor(R.color.black)
+                           .textTypeface(Typeface.SANS_SERIF)
+                           .dimColor(R.color.black)
+                           .drawShadow(true)
+                           .cancelable(false)
+                           .tintTarget(true)
+                           .transparentTarget(true)
+                           .targetRadius(60),
+                       TapTarget.forView(btn4, "Button 3", "This is Button 3")
+                           .outerCircleColor(R.color.teal_200)
+                           .outerCircleAlpha(0.96f)
+                           .targetCircleColor(R.color.white)
+                           .titleTextSize(20)
+                           .titleTextColor(R.color.white)
+                           .descriptionTextSize(10)
+                           .descriptionTextColor(R.color.black)
+                           .textColor(R.color.black)
+                           .textTypeface(Typeface.SANS_SERIF)
+                           .dimColor(R.color.black)
+                           .drawShadow(true)
+                           .cancelable(false)
+                           .tintTarget(true)
+                           .transparentTarget(true)
+                           .targetRadius(60),
+                       TapTarget.forView(floatingActionButton, "Button 3", "This is Button 3")
+                           .outerCircleColor(R.color.Red)
+                           .outerCircleAlpha(0.96f)
+                           .targetCircleColor(R.color.white)
+                           .titleTextSize(20)
+                           .titleTextColor(R.color.white)
+                           .descriptionTextSize(10)
+                           .descriptionTextColor(R.color.black)
+                           .textColor(R.color.black)
+                           .textTypeface(Typeface.SANS_SERIF)
+                           .dimColor(R.color.black)
+                           .drawShadow(true)
+                           .cancelable(false)
+                           .tintTarget(true)
+                           .transparentTarget(true)
+                           .targetRadius(60)
+                   ).listener(object : Listener() {
+                       fun onSequenceFinish() {
+                           Toast.makeText(this@secondActivity, "Sequence Finished", Toast.LENGTH_SHORT)
+                               .show()
+                       }
+
+                       fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
+                           Toast.makeText(this@secondActivity, "GREAT!", Toast.LENGTH_SHORT).show()
+                       }
+
+                       fun onSequenceCanceled(lastTarget: TapTarget?) {}
+                   }).start()
+       */
 
         setUpAdsAdapter()
         setUpBrandsAdapter()
