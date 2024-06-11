@@ -99,6 +99,16 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
             }
         }
     }
+    fun writeIsFirstTimeUser(key: String, value: Boolean){
+        viewModelScope.launch {
+            repository.writeIsFirstTimeUser(key,value)
+        }
+    }
+
+    suspend   fun readIsFirstTimeUser(key: String):Boolean{
+        return  repository.readIsFirstTimeUser(key)
+
+    }
 
     fun getCouponDetails(couponId: String){
         viewModelScope.launch(Dispatchers.IO) {

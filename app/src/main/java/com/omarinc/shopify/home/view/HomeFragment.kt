@@ -3,14 +3,15 @@ package com.omarinc.shopify.home.view
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.GravityCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -26,21 +27,23 @@ import com.omarinc.shopify.home.view.adapters.AdsAdapter
 import com.omarinc.shopify.home.view.adapters.BrandsAdapter
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
-import com.omarinc.shopify.models.Address
 import com.omarinc.shopify.models.CouponDisplay
-import com.omarinc.shopify.models.Customer
-import com.omarinc.shopify.models.DraftOrder
-import com.omarinc.shopify.models.DraftOrderRequest
-import com.omarinc.shopify.models.LineItem
-import com.omarinc.shopify.models.PrerequisiteToEntitlementPurchase
-import com.omarinc.shopify.models.PrerequisiteToEntitlementQuantityRatio
 import com.omarinc.shopify.models.PriceRule
 import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt.PromptStateChangeListener
+import uk.co.samuelwall.materialtaptargetprompt.extras.PromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.PromptFocal
+import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
+
 
 class HomeFragment : Fragment() {
 
@@ -55,6 +58,7 @@ class HomeFragment : Fragment() {
     private lateinit var productsManager: GridLayoutManager
     private lateinit var productsAdapter: ProductsAdapter
     private lateinit var adsAdapter: AdsAdapter
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,6 +93,11 @@ class HomeFragment : Fragment() {
             }
         }
 
+
+
+
+
+       checkIfIsFirstUserTime(view)
         setUpAdsAdapter()
         setUpBrandsAdapter()
         setUpProductsAdapter()
@@ -96,6 +105,125 @@ class HomeFragment : Fragment() {
         collectProducts()
 
     }
+
+    private fun checkIfIsFirstUserTime(view: View) {
+        val isFirstTimeUser: Deferred<Boolean> = lifecycleScope.async {
+            viewModel.readIsFirstTimeUser("isFirst")
+        }
+
+        lifecycleScope.launch {
+            if (!isFirstTimeUser.await()) {
+                setupTabTargetPrompt(view)
+            }
+        }
+    }
+
+    private fun setupTabTargetPrompt(view: View) {
+        val viewsToDisable = listOf(R.id.filter_view,
+            R.id.homeFragment, R.id.categoriesFragment, R.id.shoppingCartFragment,
+            R.id.search_view)
+
+        view.post {
+           saveToSharedPref()
+            setViewsEnabled(viewsToDisable, false)
+
+            showPrompt(
+                targetId = R.id.filter_view,
+                primaryText = "This is Fab",
+                secondaryText = "Changing Prompt Style",
+                backgroundColor = R.color.primary_color,
+                focal = RectanglePromptFocal(),
+                background = RectanglePromptBackground(),
+                onFocalPressed = {
+                    showPrompt(
+                        targetId = R.id.search_view,
+                        primaryText = "Button 2",
+                        secondaryText = "Changing Focal Color",
+                        backgroundColor = R.color.dark_grey,
+                        focalColor = R.color.primary_color,
+                        onFocalPressed = {
+                            showPrompt(
+                                targetId = R.id.homeFragment,
+                                primaryText = "Button 1",
+                                secondaryText = "Changing Focal Color",
+                                backgroundColor = R.color.primary_color,
+                                focalColor = R.color.white,
+                                focalRadius = 150.4f,
+                                onFocalPressed = {
+                                    showPrompt(
+                                        targetId = R.id.categoriesFragment,
+                                        primaryText = "This is Fab",
+                                        secondaryText = "Changing Prompt Style",
+                                        backgroundColor = R.color.primary_color,
+                                        focal = RectanglePromptFocal(),
+                                        background = RectanglePromptBackground(),
+                                        onFocalPressed = {
+                                            Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
+                                            showPrompt(
+                                                targetId = R.id.shoppingCartFragment,
+                                                primaryText = "This is Fab",
+                                                secondaryText = "Changing Prompt Style",
+                                                backgroundColor = R.color.primary_color,
+                                                focal = RectanglePromptFocal(),
+                                                background = RectanglePromptBackground(),
+                                                onFocalPressed = {
+                                                    Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    )
+                }
+            )
+        }
+        setViewsEnabled(viewsToDisable, true)
+
+    }
+
+    private fun saveToSharedPref() {
+        lifecycleScope.launch {
+            viewModel.writeIsFirstTimeUser("isFirst",true)
+        }
+    }
+
+    private fun setViewsEnabled(viewIds: List<Int>, enabled: Boolean) {
+        viewIds.forEach { id ->
+            requireActivity().findViewById<View>(id)?.isEnabled = enabled
+        }
+    }
+    private fun showPrompt(
+        targetId: Int,
+        primaryText: String,
+        secondaryText: String,
+        backgroundColor: Int,
+        focalColor: Int? = null,
+        focalRadius: Float? = null,
+        focal: PromptFocal? = null,
+        background: PromptBackground? = null,
+        onFocalPressed: () -> Unit
+    ) {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(targetId)
+            .setPrimaryText(primaryText)
+            .setSecondaryText(secondaryText)
+            .setBackgroundColour(requireActivity().resources.getColor(backgroundColor))
+            .apply {
+                focalColor?.let { setFocalColour(requireActivity().resources.getColor(it)) }
+                focalRadius?.let { setFocalRadius(it) }
+                focal?.let { setPromptFocal(it) }
+                background?.let { setPromptBackground(it) }
+            }
+            .setPromptStateChangeListener { prompt, state ->
+                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+                    onFocalPressed()
+                }
+            }
+            .show()
+    }
+
 
     private fun setUpProductsAdapter() {
         productsAdapter = ProductsAdapter(requireContext()) { productId ->
@@ -182,9 +310,6 @@ class HomeFragment : Fragment() {
                 AdminRemoteDataSourceImpl.getInstance()
             )
         )
-
-
-
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
         viewModel.getBrands()
