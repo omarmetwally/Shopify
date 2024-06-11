@@ -60,6 +60,7 @@ interface ShopifyRepository {
         quantity: Int,
         variantID: String
     ): Flow<ApiState<String?>>
+    suspend fun removeProductFromCart(cartId: String, lineId: String): Flow<ApiState<String?>>
 
     suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>>
 

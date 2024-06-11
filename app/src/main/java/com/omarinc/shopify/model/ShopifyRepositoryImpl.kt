@@ -150,6 +150,13 @@ class ShopifyRepositoryImpl(
         return shopifyRemoteDataSource.addToCartById(cartId, quantity, variantID)
     }
 
+    override suspend fun removeProductFromCart(
+        cartId: String,
+        lineId: String
+    ): Flow<ApiState<String?>> {
+        return shopifyRemoteDataSource.removeProductFromCart(cartId, lineId)
+    }
+
     override suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>> {
         return shopifyRemoteDataSource.getProductsCart(cartId)
     }
@@ -165,7 +172,7 @@ class ShopifyRepositoryImpl(
         return adminRemoteDataSource.getCoupons()
     }
 
-    override suspend fun getCouponDetails(couponId:String): Flow<ApiState<DiscountCodesResponse>> {
+    override suspend fun getCouponDetails(couponId: String): Flow<ApiState<DiscountCodesResponse>> {
         return adminRemoteDataSource.getCouponDetails(couponId)
     }
 
