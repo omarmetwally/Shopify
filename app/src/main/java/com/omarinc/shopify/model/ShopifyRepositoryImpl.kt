@@ -1,5 +1,6 @@
 package com.omarinc.shopify.model
 
+import android.util.Log
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
@@ -7,6 +8,8 @@ import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.DiscountCodesResponse
+import com.omarinc.shopify.models.DraftOrderRequest
+import com.omarinc.shopify.models.DraftOrderResponse
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.models.PriceRulesResponse
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSource
@@ -167,6 +170,19 @@ class ShopifyRepositoryImpl(
 
     override suspend fun getCouponDetails(couponId:String): Flow<ApiState<DiscountCodesResponse>> {
         return adminRemoteDataSource.getCouponDetails(couponId)
+    }
+
+    override suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>> {
+        Log.i("TAG", "createDraftOrder: repo")
+        return adminRemoteDataSource.createDraftOrder(draftOrder)
+    }
+
+    override suspend fun completeDraftOrder(orderId: Long): Flow<ApiState<DraftOrderResponse>> {
+        return adminRemoteDataSource.completeDraftOrder(orderId)
+    }
+
+    override suspend fun sendInvoice(orderId: Long): Flow<ApiState<DraftOrderResponse>> {
+        return adminRemoteDataSource.sendInvoice(orderId)
     }
 
 

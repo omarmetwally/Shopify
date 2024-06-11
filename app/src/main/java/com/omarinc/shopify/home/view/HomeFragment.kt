@@ -26,7 +26,12 @@ import com.omarinc.shopify.home.view.adapters.AdsAdapter
 import com.omarinc.shopify.home.view.adapters.BrandsAdapter
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.models.Address
 import com.omarinc.shopify.models.CouponDisplay
+import com.omarinc.shopify.models.Customer
+import com.omarinc.shopify.models.DraftOrder
+import com.omarinc.shopify.models.DraftOrderRequest
+import com.omarinc.shopify.models.LineItem
 import com.omarinc.shopify.models.PrerequisiteToEntitlementPurchase
 import com.omarinc.shopify.models.PrerequisiteToEntitlementQuantityRatio
 import com.omarinc.shopify.models.PriceRule
@@ -177,6 +182,8 @@ class HomeFragment : Fragment() {
                 AdminRemoteDataSourceImpl.getInstance()
             )
         )
+
+
 
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
