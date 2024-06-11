@@ -55,7 +55,7 @@ interface ShopifyRepository {
     suspend fun readEmailFromSharedPreferences(key: String): String
 
     suspend fun addToCartById(
-        cartId: String?,
+        cartId: String,
         quantity: Int,
         variantID: String
     ): Flow<ApiState<String?>>

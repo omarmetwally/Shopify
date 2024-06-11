@@ -8,7 +8,6 @@ import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
-import com.omarinc.shopify.type.CartLineInput
 import com.omarinc.shopify.utilities.Constants.CURRENCY_UNIT
 import com.omarinc.shopify.utilities.Constants.USER_EMAIL
 import kotlinx.coroutines.Dispatchers
@@ -107,10 +106,10 @@ class ProductDetailsViewModel(
         }
     }
 
-    fun addProductToCart(productId: String?, lineInput: List<CartLineInput>) {
+    fun addProductToCart(productId: String, quantity: Int, variantId: String) {
 
         viewModelScope.launch {
-            repository.addToCartById(productId, lineInput).collect {
+            repository.addToCartById(productId, quantity, variantId).collect {
                 _addingToCart.value = it
             }
         }

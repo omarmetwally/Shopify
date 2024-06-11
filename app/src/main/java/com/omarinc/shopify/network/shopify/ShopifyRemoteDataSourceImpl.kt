@@ -38,7 +38,6 @@ import com.omarinc.shopify.productdetails.model.ProductImage
 import com.omarinc.shopify.productdetails.model.ProductVariant
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.productdetails.model.SelectedOption
-import com.omarinc.shopify.type.CartLineInput
 import com.omarinc.shopify.type.CustomerCreateInput
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
@@ -473,15 +472,14 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         }
     }
 
-    override suspend fun addToCartBy(
-        cartId: String?,
+    override suspend fun addToCartById(
+        cartId: String,
         quantity: Int,
         variantID: String
     ): Flow<ApiState<String?>> = flow {
-
         emit(ApiState.Loading)
 
-        val mutation = AddProductToCartMutation(cartId ?: quantity, variantID)
+        val mutation = AddProductToCartMutation(cartId, quantity, variantID)
 
         try {
             val response = apolloClient.mutation(mutation).execute()
@@ -492,7 +490,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             } else {
                 val data = response.data
                 if (data != null) {
-                    val cartId = data.cartLinesAdd?.cart?.id
+                    val cartId = data.cartLinesAdd.toString()
 
                     emit(ApiState.Success(cartId))
                 } else {

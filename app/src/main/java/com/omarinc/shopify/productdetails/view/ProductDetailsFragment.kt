@@ -31,7 +31,6 @@ import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
-import com.omarinc.shopify.type.CartLineInput
 import com.omarinc.shopify.utilities.Constants
 import com.omarinc.shopify.utilities.Helper
 import kotlinx.coroutines.Deferred
@@ -53,6 +52,7 @@ class ProductDetailsFragment : Fragment() {
     private lateinit var binding: FragmentProductDetailsBinding
 
     private lateinit var productId: String
+    private lateinit var variantId: String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -179,7 +179,7 @@ class ProductDetailsFragment : Fragment() {
                     is ApiState.Success -> {
                         val productDetails = state.response
                         Log.e("ProductDetailsFragment ", ": $productDetails")
-                        val variantId = productDetails.variants.firstOrNull()?.id
+                        variantId = productDetails.variants.firstOrNull()?.id.toString()
                         if (variantId != null) {
                             Log.i(TAG, "Variant ID: $variantId")
                         }
@@ -243,19 +243,18 @@ class ProductDetailsFragment : Fragment() {
                                 Log.i(TAG, "hasCart: ${result.response}")
 
                                 val cartId = createNewCart(userEmail)
-                                val variantId = getFirstVariantId(productId)
+                                // val variantId = getFirstVariantId(productId)
 
-                                Log.i(TAG, "variantId 22: $variantId")
+                                Log.i(TAG, "variantId 11: $variantId")
 
                                 if (variantId != null) {
-                                    val lineInput = listOf(
-                                        CartLineInput(
-                                            merchandiseId = variantId,
-                                            quantity = Optional.Present(1)
-                                        )
-                                    )
+
                                     Log.i(TAG, "Added to Cart ID: $cartId")
-                                    addProductToCart(cartId, lineInput)
+                                    addProductToCart(
+                                        cartId,
+                                        1, variantId
+                                    )
+
                                 } else {
                                     Log.e(TAG, "Variant ID not found for product.")
                                 }
@@ -273,15 +272,13 @@ class ProductDetailsFragment : Fragment() {
 
                                             Log.i(TAG, "CartId : ${result.response} ")
                                             val cartId = result.response
-                                            val variantId = getFirstVariantId(productId)
+                                            // val variantId = getFirstVariantId(productId)
                                             if (variantId != null) {
-                                                val lineInput = listOf(
-                                                    CartLineInput(
-                                                        merchandiseId = variantId,
-                                                        quantity = Optional.Present(1)
-                                                    )
+                                                Log.i(TAG, "customerCart2: variantId $variantId")
+                                                addProductToCart(
+                                                    cartId?:"",
+                                                    1, variantId
                                                 )
-                                                addProductToCart(cartId, lineInput)
                                             } else {
                                                 Log.e(TAG, "Variant ID not found for product.")
                                             }
@@ -297,7 +294,7 @@ class ProductDetailsFragment : Fragment() {
     }
 
 
-    private fun getFirstVariantId(productId: String): String? {
+    /*private fun getFirstVariantId(productId: String): String? {
         var variantId: String? = null
         viewModel.getProductById(productId)
         lifecycleScope.launch {
@@ -308,7 +305,7 @@ class ProductDetailsFragment : Fragment() {
             }
         }
         return variantId
-    }
+    }*/
 
     private suspend fun createNewCart(email: String): String {
         viewModel.createCart(email)
@@ -380,8 +377,8 @@ class ProductDetailsFragment : Fragment() {
     }
 
 
-    private fun addProductToCart(cartId: String?, lines: List<CartLineInput>) {
-        viewModel.addProductToCart(cartId, lines)
+    private fun addProductToCart(cartId: String, quantity: Int, variantId: String) {
+        viewModel.addProductToCart(cartId, quantity, variantId)
 
         lifecycleScope.launch {
             viewModel.addingToCart.collect { state ->
