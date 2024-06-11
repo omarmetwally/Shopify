@@ -77,4 +77,8 @@ interface ShopifyRepository {
     suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>>
     suspend fun completeDraftOrder(orderId: Long): Flow<ApiState<DraftOrderResponse>>
     suspend fun sendInvoice(orderId: Long): Flow<ApiState<DraftOrderResponse>>
+
+    suspend fun writeIsFirstTimeUser(key: String, value: Boolean)
+
+    suspend fun readIsFirstTimeUser(key: String): Boolean
 }

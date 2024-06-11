@@ -34,9 +34,13 @@ import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt.PromptStateChangeListener
+import uk.co.samuelwall.materialtaptargetprompt.extras.PromptBackground
+import uk.co.samuelwall.materialtaptargetprompt.extras.PromptFocal
 import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
 
@@ -54,6 +58,7 @@ class HomeFragment : Fragment() {
     private lateinit var productsManager: GridLayoutManager
     private lateinit var productsAdapter: ProductsAdapter
     private lateinit var adsAdapter: AdsAdapter
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,140 +93,11 @@ class HomeFragment : Fragment() {
             }
         }
 
-        MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.brandConstrainLayout)
-            .setPrimaryText("Button 1")
-            .setSecondaryText("Chnaging Focal Color")
-            .setFocalColour(Color.CYAN) // You Can Also set Custom Focal
-            // Radius of the prompt
-            .setFocalRadius(150.4.toFloat())
-            .setPromptStateChangeListener(PromptStateChangeListener { prompt, state ->
-                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
-                    Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
-                }
-            })
-            .show()
-        MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.search_view)
-            .setPrimaryText("Button 2")
-            .setSecondaryText("Chnaging Focal Color")
-            .setFocalColour(Color.GREEN)
-            .setPromptStateChangeListener(PromptStateChangeListener { prompt, state ->
-                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
-                    Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
-                }
-            })
-            .show()
 
-        MaterialTapTargetPrompt.Builder(requireActivity())
-            .setTarget(R.id.filter_view)
-            .setPrimaryText("This is Fab")
-            .setSecondaryText("Chnaging Prompt Style")
-            .setPromptBackground(RectanglePromptBackground())
-            .setBackgroundColour(Color.MAGENTA)
-            .setPromptFocal(RectanglePromptFocal())
-            .setPromptStateChangeListener(PromptStateChangeListener { prompt, state ->
-                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
-                    Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
-                }
-            })
-            .show()
-        /* TapTargetSequence(this)
-                   .targets(
-                       TapTarget.forView(btn1, "Button 1", "This is Button 1")
-                           .outerCircleColor(R.color.teal_200)
-                           .outerCircleAlpha(0.96f)
-                           .targetCircleColor(R.color.white)
-                           .titleTextSize(20)
-                           .titleTextColor(R.color.white)
-                           .descriptionTextSize(10)
-                           .descriptionTextColor(R.color.black)
-                           .textColor(R.color.black)
-                           .textTypeface(Typeface.SANS_SERIF)
-                           .dimColor(R.color.black)
-                           .drawShadow(true)
-                           .cancelable(false)
-                           .tintTarget(true)
-                           .transparentTarget(true)
-                           .targetRadius(60),
-                       TapTarget.forView(btn2, "Button 2", "This is Button 2")
-                           .outerCircleColor(R.color.teal_200)
-                           .outerCircleAlpha(0.96f)
-                           .targetCircleColor(R.color.white)
-                           .titleTextSize(20)
-                           .titleTextColor(R.color.white)
-                           .descriptionTextSize(10)
-                           .descriptionTextColor(R.color.black)
-                           .textColor(R.color.black)
-                           .textTypeface(Typeface.SANS_SERIF)
-                           .dimColor(R.color.black)
-                           .drawShadow(true)
-                           .cancelable(false)
-                           .tintTarget(true)
-                           .transparentTarget(true)
-                           .targetRadius(60),
-                       TapTarget.forView(btn3, "Button 3", "This is Button 3")
-                           .outerCircleColor(R.color.teal_200)
-                           .outerCircleAlpha(0.96f)
-                           .targetCircleColor(R.color.white)
-                           .titleTextSize(20)
-                           .titleTextColor(R.color.white)
-                           .descriptionTextSize(10)
-                           .descriptionTextColor(R.color.black)
-                           .textColor(R.color.black)
-                           .textTypeface(Typeface.SANS_SERIF)
-                           .dimColor(R.color.black)
-                           .drawShadow(true)
-                           .cancelable(false)
-                           .tintTarget(true)
-                           .transparentTarget(true)
-                           .targetRadius(60),
-                       TapTarget.forView(btn4, "Button 3", "This is Button 3")
-                           .outerCircleColor(R.color.teal_200)
-                           .outerCircleAlpha(0.96f)
-                           .targetCircleColor(R.color.white)
-                           .titleTextSize(20)
-                           .titleTextColor(R.color.white)
-                           .descriptionTextSize(10)
-                           .descriptionTextColor(R.color.black)
-                           .textColor(R.color.black)
-                           .textTypeface(Typeface.SANS_SERIF)
-                           .dimColor(R.color.black)
-                           .drawShadow(true)
-                           .cancelable(false)
-                           .tintTarget(true)
-                           .transparentTarget(true)
-                           .targetRadius(60),
-                       TapTarget.forView(floatingActionButton, "Button 3", "This is Button 3")
-                           .outerCircleColor(R.color.Red)
-                           .outerCircleAlpha(0.96f)
-                           .targetCircleColor(R.color.white)
-                           .titleTextSize(20)
-                           .titleTextColor(R.color.white)
-                           .descriptionTextSize(10)
-                           .descriptionTextColor(R.color.black)
-                           .textColor(R.color.black)
-                           .textTypeface(Typeface.SANS_SERIF)
-                           .dimColor(R.color.black)
-                           .drawShadow(true)
-                           .cancelable(false)
-                           .tintTarget(true)
-                           .transparentTarget(true)
-                           .targetRadius(60)
-                   ).listener(object : Listener() {
-                       fun onSequenceFinish() {
-                           Toast.makeText(this@secondActivity, "Sequence Finished", Toast.LENGTH_SHORT)
-                               .show()
-                       }
 
-                       fun onSequenceStep(lastTarget: TapTarget?, targetClicked: Boolean) {
-                           Toast.makeText(this@secondActivity, "GREAT!", Toast.LENGTH_SHORT).show()
-                       }
 
-                       fun onSequenceCanceled(lastTarget: TapTarget?) {}
-                   }).start()
-       */
 
+       checkIfIsFirstUserTime(view)
         setUpAdsAdapter()
         setUpBrandsAdapter()
         setUpProductsAdapter()
@@ -229,6 +105,125 @@ class HomeFragment : Fragment() {
         collectProducts()
 
     }
+
+    private fun checkIfIsFirstUserTime(view: View) {
+        val isFirstTimeUser: Deferred<Boolean> = lifecycleScope.async {
+            viewModel.readIsFirstTimeUser("isFirst")
+        }
+
+        lifecycleScope.launch {
+            if (!isFirstTimeUser.await()) {
+                setupTabTargetPrompt(view)
+            }
+        }
+    }
+
+    private fun setupTabTargetPrompt(view: View) {
+        val viewsToDisable = listOf(R.id.filter_view,
+            R.id.homeFragment, R.id.categoriesFragment, R.id.shoppingCartFragment,
+            R.id.search_view)
+
+        view.post {
+           saveToSharedPref()
+            setViewsEnabled(viewsToDisable, false)
+
+            showPrompt(
+                targetId = R.id.filter_view,
+                primaryText = "This is Fab",
+                secondaryText = "Changing Prompt Style",
+                backgroundColor = R.color.primary_color,
+                focal = RectanglePromptFocal(),
+                background = RectanglePromptBackground(),
+                onFocalPressed = {
+                    showPrompt(
+                        targetId = R.id.search_view,
+                        primaryText = "Button 2",
+                        secondaryText = "Changing Focal Color",
+                        backgroundColor = R.color.dark_grey,
+                        focalColor = R.color.primary_color,
+                        onFocalPressed = {
+                            showPrompt(
+                                targetId = R.id.homeFragment,
+                                primaryText = "Button 1",
+                                secondaryText = "Changing Focal Color",
+                                backgroundColor = R.color.primary_color,
+                                focalColor = R.color.white,
+                                focalRadius = 150.4f,
+                                onFocalPressed = {
+                                    showPrompt(
+                                        targetId = R.id.categoriesFragment,
+                                        primaryText = "This is Fab",
+                                        secondaryText = "Changing Prompt Style",
+                                        backgroundColor = R.color.primary_color,
+                                        focal = RectanglePromptFocal(),
+                                        background = RectanglePromptBackground(),
+                                        onFocalPressed = {
+                                            Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
+                                            showPrompt(
+                                                targetId = R.id.shoppingCartFragment,
+                                                primaryText = "This is Fab",
+                                                secondaryText = "Changing Prompt Style",
+                                                backgroundColor = R.color.primary_color,
+                                                focal = RectanglePromptFocal(),
+                                                background = RectanglePromptBackground(),
+                                                onFocalPressed = {
+                                                    Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
+                                                }
+                                            )
+                                        }
+                                    )
+                                }
+                            )
+                        }
+                    )
+                }
+            )
+        }
+        setViewsEnabled(viewsToDisable, true)
+
+    }
+
+    private fun saveToSharedPref() {
+        lifecycleScope.launch {
+            viewModel.writeIsFirstTimeUser("isFirst",true)
+        }
+    }
+
+    private fun setViewsEnabled(viewIds: List<Int>, enabled: Boolean) {
+        viewIds.forEach { id ->
+            requireActivity().findViewById<View>(id)?.isEnabled = enabled
+        }
+    }
+    private fun showPrompt(
+        targetId: Int,
+        primaryText: String,
+        secondaryText: String,
+        backgroundColor: Int,
+        focalColor: Int? = null,
+        focalRadius: Float? = null,
+        focal: PromptFocal? = null,
+        background: PromptBackground? = null,
+        onFocalPressed: () -> Unit
+    ) {
+        MaterialTapTargetPrompt.Builder(requireActivity())
+            .setTarget(targetId)
+            .setPrimaryText(primaryText)
+            .setSecondaryText(secondaryText)
+            .setBackgroundColour(requireActivity().resources.getColor(backgroundColor))
+            .apply {
+                focalColor?.let { setFocalColour(requireActivity().resources.getColor(it)) }
+                focalRadius?.let { setFocalRadius(it) }
+                focal?.let { setPromptFocal(it) }
+                background?.let { setPromptBackground(it) }
+            }
+            .setPromptStateChangeListener { prompt, state ->
+                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+                    onFocalPressed()
+                }
+            }
+            .show()
+    }
+
 
     private fun setUpProductsAdapter() {
         productsAdapter = ProductsAdapter(requireContext()) { productId ->
@@ -315,9 +310,6 @@ class HomeFragment : Fragment() {
                 AdminRemoteDataSourceImpl.getInstance()
             )
         )
-
-
-
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
         viewModel.getBrands()

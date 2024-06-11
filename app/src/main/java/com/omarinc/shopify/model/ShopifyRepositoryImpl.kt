@@ -185,5 +185,13 @@ class ShopifyRepositoryImpl(
         return adminRemoteDataSource.sendInvoice(orderId)
     }
 
+    override suspend fun writeIsFirstTimeUser(key: String, value: Boolean) {
+        sharedPreferences.writeBooleanToSharedPreferences(key,value)
+    }
+
+    override suspend fun readIsFirstTimeUser(key: String): Boolean {
+        return sharedPreferences.readBooleanFromSharedPreferences(key)
+    }
+
 
 }
