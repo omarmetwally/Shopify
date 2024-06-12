@@ -580,6 +580,9 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                 customerAddress.address2 ?: "address",
                 customerAddress.city,
                 customerAddress.country,
+                customerAddress.phone,
+                customerAddress.firstName,
+                customerAddress.lastName,
                 token
 
             )

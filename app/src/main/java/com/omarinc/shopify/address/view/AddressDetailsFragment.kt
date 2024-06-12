@@ -75,7 +75,7 @@ class AddressDetailsFragment : Fragment() {
         val city = args.city
 
 
-        return CustomerAddress("", address1, "", city, "Egypt", phone, firstName, lastName)
+        return CustomerAddress("", address1, "", city, "Egypt", firstName, lastName, phone)
 
     }
 
@@ -109,6 +109,7 @@ class AddressDetailsFragment : Fragment() {
                             Toast.LENGTH_SHORT
                         ).show()
                         popFragment()
+
                     }
 
                 }

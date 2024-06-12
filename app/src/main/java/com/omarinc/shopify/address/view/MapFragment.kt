@@ -93,8 +93,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
                 getCityFromLocation(location.latitude, location.longitude)
                 if (city.isNotEmpty()) {
                     val action =
-                        MapFragmentDirections.actionMapFragmentToAddressDetailsFragment(city)
-                    findNavController().navigate(action)
+                    MapFragmentDirections.actionMapFragmentToAddressDetailsFragment(city)
+                        findNavController().navigate(action)
 
                 } else {
                     Toast.makeText(

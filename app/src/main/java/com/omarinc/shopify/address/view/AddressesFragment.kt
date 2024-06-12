@@ -90,8 +90,29 @@ class AddressesFragment : Fragment() {
         }
     }
 
+    private fun deleteAddress(addressId: String) {
+
+        viewModel.deleteAddress(addressId)
+
+        lifecycleScope.launch {
+            viewModel.addressDelete.collect { result ->
+
+                when (result) {
+                    is ApiState.Failure -> Log.i(TAG, "deleteAddress: Failure ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "deleteAddress: Loading")
+                    is ApiState.Success -> {
+                        getAddresses()
+                    }
+                }
+
+            }
+        }
+    }
+
     private fun setupRecyclerView(items: List<CustomerAddress?>) {
-        val adapter = AddressesAdapter(items)
+        val adapter = AddressesAdapter(items) { addressId ->
+            deleteAddress(addressId)
+        }
         binding.addressesRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireActivity()).apply {
                 orientation = RecyclerView.VERTICAL
@@ -100,6 +121,7 @@ class AddressesFragment : Fragment() {
         }
         adapter.notifyDataSetChanged()
     }
+
 
     private fun setupListeners() {
         binding.goToMapButton.setOnClickListener {
