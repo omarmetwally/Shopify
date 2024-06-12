@@ -60,7 +60,6 @@ class HomeFragment : Fragment() {
     private lateinit var adsAdapter: AdsAdapter
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -97,8 +96,8 @@ class HomeFragment : Fragment() {
 
 
 
-       checkIfIsFirstUserTime(view)
-        setUpAdsAdapter()
+        checkIfIsFirstUserTime(view)
+       // setUpAdsAdapter()
         setUpBrandsAdapter()
         setUpProductsAdapter()
         getCoupons()
@@ -119,12 +118,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupTabTargetPrompt(view: View) {
-        val viewsToDisable = listOf(R.id.filter_view,
+        val viewsToDisable = listOf(
+            R.id.filter_view,
             R.id.homeFragment, R.id.categoriesFragment, R.id.shoppingCartFragment,
-            R.id.search_view)
+            R.id.search_view
+        )
 
         view.post {
-           saveToSharedPref()
+            saveToSharedPref()
             setViewsEnabled(viewsToDisable, false)
 
             showPrompt(
@@ -158,7 +159,11 @@ class HomeFragment : Fragment() {
                                         focal = RectanglePromptFocal(),
                                         background = RectanglePromptBackground(),
                                         onFocalPressed = {
-                                            Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Hello",
+                                                Toast.LENGTH_LONG
+                                            ).show()
                                             showPrompt(
                                                 targetId = R.id.shoppingCartFragment,
                                                 primaryText = "This is Fab",
@@ -167,7 +172,11 @@ class HomeFragment : Fragment() {
                                                 focal = RectanglePromptFocal(),
                                                 background = RectanglePromptBackground(),
                                                 onFocalPressed = {
-                                                    Toast.makeText(requireContext(), "Hello", Toast.LENGTH_LONG).show()
+                                                    Toast.makeText(
+                                                        requireContext(),
+                                                        "Hello",
+                                                        Toast.LENGTH_LONG
+                                                    ).show()
                                                 }
                                             )
                                         }
@@ -185,7 +194,7 @@ class HomeFragment : Fragment() {
 
     private fun saveToSharedPref() {
         lifecycleScope.launch {
-            viewModel.writeIsFirstTimeUser("isFirst",true)
+            viewModel.writeIsFirstTimeUser("isFirst", true)
         }
     }
 
@@ -194,6 +203,7 @@ class HomeFragment : Fragment() {
             requireActivity().findViewById<View>(id)?.isEnabled = enabled
         }
     }
+
     private fun showPrompt(
         targetId: Int,
         primaryText: String,
@@ -239,7 +249,7 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun collectProducts(){
+    private fun collectProducts() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.productsApiState.collect { result ->
@@ -260,6 +270,7 @@ class HomeFragment : Fragment() {
             }
         }
     }
+
     private fun setUpBrandsAdapter() {
         val onBrandClick = { it: String ->
             val action = HomeFragmentDirections
@@ -317,6 +328,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setUpAdsAdapter() {
+        Log.i(TAG, "setUpAdsAdapter: 1")
         adsAdapter = AdsAdapter(requireContext()) { priceRule ->
             onCouponLongClick(priceRule)
         }
@@ -325,33 +337,25 @@ class HomeFragment : Fragment() {
         val images = listOf(
             R.drawable.coupon_1,
             R.drawable.coupon_2,
-
         )
-
-        viewModel.getCoupons()
 
         lifecycleScope.launch {
             viewModel.coupons.collect { result ->
                 when (result) {
                     is ApiState.Failure -> {
-                        // Handle failure state if needed
                         Log.e(TAG, "Failed to fetch coupons: ${result.msg}")
                     }
                     ApiState.Loading -> {
-                        // Handle loading state if needed
                         Log.d(TAG, "Fetching coupons...")
                     }
                     is ApiState.Success -> {
+                        Log.i(TAG, "setUpAdsAdapter: Success")
                         val coupons = result.response.price_rules
                         if (coupons.size == images.size) {
-                            // Combine coupons with images
                             val couponDisplays = coupons.zip(images) { priceRule, image ->
                                 CouponDisplay(priceRule, image)
                             }
-
-                            // Submit the combined data to the adapter
                             adsAdapter.submitList(couponDisplays)
-
                             Log.d(TAG, "Coupons fetched successfully")
                         } else {
                             Log.e(TAG, "Number of coupons and images do not match")
@@ -362,16 +366,13 @@ class HomeFragment : Fragment() {
         }
     }
 
-
     private fun onCouponLongClick(priceRule: PriceRule) {
         getCouponDetails(priceRule.id.toString())
-
         Log.i(TAG, "onCouponLongClick: ${priceRule.id.toString()}")
     }
 
     private fun getCouponDetails(couponId: String) {
         viewModel.getCouponDetails(couponId)
-
         lifecycleScope.launch {
             viewModel.couponDetails.collect { result ->
                 when (result) {
@@ -398,7 +399,6 @@ class HomeFragment : Fragment() {
 
     private fun getCoupons() {
         viewModel.getCoupons()
-
         lifecycleScope.launch {
             viewModel.coupons.collect { result ->
                 when (result) {
@@ -414,6 +414,5 @@ class HomeFragment : Fragment() {
         }
     }
 }
-
 
 
