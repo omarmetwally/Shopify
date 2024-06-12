@@ -44,6 +44,7 @@ interface ShopifyRemoteDataSource {
         variantID: String
     ): Flow<ApiState<String?>>
 
+    suspend fun removeProductFromCart(cartId: String, lineId: String): Flow<ApiState<String?>>
     suspend fun getProductsCart(cartId: String): Flow<ApiState<List<CartProduct>>>
 
     suspend fun createAddress(

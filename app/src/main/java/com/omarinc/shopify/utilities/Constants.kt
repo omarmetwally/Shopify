@@ -21,6 +21,7 @@ object Constants {
     const val CUSTOMER_CART_ROOT = "Customer Cart"
     const val ADMIN_ACCESS_TOKEN = "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"
     const val ADMIN_BASE_URL = "https://mad44-sv-and.myshopify.com/admin/api/2024-04/"
+    const val CART_ID = "cart_id"
     val fragmentsWithHiddenBottomNav = setOf(
         R.id.homeFragment,
         R.id.profileFragment,

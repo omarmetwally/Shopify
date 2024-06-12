@@ -45,6 +45,11 @@ class ShoppingCartFragment : Fragment() {
 
         setupViewModel()
         getShoppingCartItems()
+        setListeners()
+    }
+
+    private fun setListeners() {
+
     }
 
     private fun setupViewModel() {
@@ -59,7 +64,8 @@ class ShoppingCartFragment : Fragment() {
     }
 
     private fun getShoppingCartItems() {
-        viewModel.getShoppingCartItems("gid://shopify/Cart/Z2NwLWV1cm9wZS13ZXN0MTowMUhaTVBDNERONDdFR1RRNzhHMzVQNDZKTQ?key=22cacec08785daefc1a6a03f924f9017")
+        viewModel.getShoppingCartItems(viewModel.readCartId())
+        Log.i(TAG, "getShoppingCartItems: ${viewModel.readCartId()}")
         lifecycleScope.launch {
             viewModel.cartItems.collect { result ->
                 when (result) {
@@ -75,7 +81,13 @@ class ShoppingCartFragment : Fragment() {
     }
 
     private fun setupRecyclerView(items: List<CartProduct>) {
-        val adapter = ShoppingCartAdapter(items)
+
+        val adapter = ShoppingCartAdapter(items) { itemId ->
+            val cartId = viewModel.readCartId()
+            Log.i(TAG, "setupRecyclerView: $cartId")
+            removeItemFromCart(cartId, itemId)
+        }
+
         binding.shoppingCartRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireActivity()).apply {
                 orientation = RecyclerView.VERTICAL
@@ -83,5 +95,26 @@ class ShoppingCartFragment : Fragment() {
             this.adapter = adapter
         }
         adapter.notifyDataSetChanged()
+
     }
+
+    private fun removeItemFromCart(cartId: String, lineId: String) {
+
+        viewModel.removeProductFromCart(cartId, lineId)
+
+        lifecycleScope.launch {
+            viewModel.cartItemRemove.collect { result ->
+
+                when (result) {
+                    is ApiState.Failure -> Log.i(TAG, "removeItemFromCart: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "removeItemFromCart: Loading")
+                    is ApiState.Success -> {
+                        getShoppingCartItems()
+
+                    }
+                }
+            }
+        }
+    }
+
 }

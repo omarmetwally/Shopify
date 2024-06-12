@@ -1,6 +1,7 @@
 package com.omarinc.shopify.model
 
 import android.util.Log
+
 import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
@@ -21,6 +22,7 @@ import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.utilities.Constants
+import com.omarinc.shopify.utilities.Constants.CART_ID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -155,6 +157,13 @@ class ShopifyRepositoryImpl(
         return shopifyRemoteDataSource.addToCartById(cartId, quantity, variantID)
     }
 
+    override suspend fun removeProductFromCart(
+        cartId: String,
+        lineId: String
+    ): Flow<ApiState<String?>> {
+        return shopifyRemoteDataSource.removeProductFromCart(cartId, lineId)
+    }
+
     override suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>> {
         return shopifyRemoteDataSource.getProductsCart(cartId)
     }
@@ -166,11 +175,21 @@ class ShopifyRepositoryImpl(
         return shopifyRemoteDataSource.createAddress(customerAddress, token)
     }
 
+    override suspend fun writeCartIdToSharedPreferences(key: String, value: String) {
+        Log.i("ShoppingCartFragment", "writeCartIdToSharedPreferences: ")
+        sharedPreferences.writeStringToSharedPreferences(key, value)
+    }
+
+    override fun readCartIdFromSharedPreferences(): String {
+        Log.i("ShoppingCartFragment", "readCartIdFromSharedPreferences: ")
+        return sharedPreferences.readStringFromSharedPreferences(CART_ID)
+    }
+
     override suspend fun getCoupons(): Flow<ApiState<PriceRulesResponse>> {
         return adminRemoteDataSource.getCoupons()
     }
 
-    override suspend fun getCouponDetails(couponId:String): Flow<ApiState<DiscountCodesResponse>> {
+    override suspend fun getCouponDetails(couponId: String): Flow<ApiState<DiscountCodesResponse>> {
         return adminRemoteDataSource.getCouponDetails(couponId)
     }
 

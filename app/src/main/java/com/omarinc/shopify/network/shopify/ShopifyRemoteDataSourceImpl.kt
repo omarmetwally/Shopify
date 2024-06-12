@@ -27,6 +27,7 @@ import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.GetProductByIdQuery
 import com.omarinc.shopify.GetProductsByTypeQuery
 import com.omarinc.shopify.GetProductsInCartQuery
+import com.omarinc.shopify.RemoveProductFromCartMutation
 import com.omarinc.shopify.SearchProductsQuery
 import com.omarinc.shopify.models.AddToCartResponse
 import com.omarinc.shopify.models.Cart
@@ -525,6 +526,34 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                     val cartId = data.cartLinesAdd.toString()
 
                     emit(ApiState.Success(cartId))
+                } else {
+                    emit(ApiState.Failure(Throwable("Response data is null")))
+                }
+            }
+        } catch (e: ApolloException) {
+            emit(ApiState.Failure(e))
+        }
+    }
+
+    override suspend fun removeProductFromCart(
+        cartId: String,
+        lineId: String
+    ): Flow<ApiState<String?>> = flow {
+        emit(ApiState.Loading)
+
+        val mutation = RemoveProductFromCartMutation(cartId, lineId)
+
+        try {
+            val response: ApolloResponse<RemoveProductFromCartMutation.Data> =
+                apolloClient.mutation(mutation).execute()
+
+            if (response.hasErrors()) {
+                val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
+                emit(ApiState.Failure(Throwable(errorMessages)))
+            } else {
+                val data = response.data
+                if (data != null) {
+                    emit(ApiState.Success(data.cartLinesRemove.toString()))
                 } else {
                     emit(ApiState.Failure(Throwable("Response data is null")))
                 }

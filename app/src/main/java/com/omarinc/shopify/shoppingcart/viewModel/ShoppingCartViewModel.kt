@@ -13,6 +13,9 @@ class ShoppingCartViewModel(private val repository: ShopifyRepository) : ViewMod
     private val _cartItems = MutableStateFlow<ApiState<List<CartProduct>>>(ApiState.Loading)
     val cartItems: MutableStateFlow<ApiState<List<CartProduct>>> = _cartItems
 
+    private val _cartItemRemove = MutableStateFlow<ApiState<String?>>(ApiState.Loading)
+    val cartItemRemove: MutableStateFlow<ApiState<String?>> = _cartItemRemove
+
     fun getShoppingCartItems(cartId: String) {
 
         viewModelScope.launch {
@@ -23,5 +26,17 @@ class ShoppingCartViewModel(private val repository: ShopifyRepository) : ViewMod
         }
     }
 
+    fun removeProductFromCart(cartId: String, lineId: String) {
+        viewModelScope.launch {
+            repository.removeProductFromCart(cartId, lineId)
+                .collect {
+                    _cartItemRemove.value = it
+                }
+        }
+    }
+
+    fun readCartId(): String {
+        return repository.readCartIdFromSharedPreferences()
+    }
 
 }

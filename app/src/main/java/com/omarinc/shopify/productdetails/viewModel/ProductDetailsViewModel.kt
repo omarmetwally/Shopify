@@ -8,6 +8,7 @@ import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
+import com.omarinc.shopify.utilities.Constants.CART_ID
 import com.omarinc.shopify.utilities.Constants.CURRENCY_UNIT
 import com.omarinc.shopify.utilities.Constants.USER_EMAIL
 import kotlinx.coroutines.Dispatchers
@@ -118,5 +119,11 @@ class ProductDetailsViewModel(
     suspend fun readCustomerEmail(): String {
 
         return repository.readEmailFromSharedPreferences(USER_EMAIL)
+    }
+
+    fun writeCartId(cartId: String) {
+        viewModelScope.launch {
+            repository.writeCartIdToSharedPreferences(cartId, CART_ID)
+        }
     }
 }
