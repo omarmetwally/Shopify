@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentRegistrationBinding
 import com.omarinc.shopify.registration.viewmodel.RegistrationViewModel
@@ -42,6 +43,9 @@ class RegistrationFragment : Fragment() {
         setupViewModel()
         setupRegisterButton()
         observeViewModel()
+        binding.imgBackInRegister.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun setupViewModel() {
@@ -63,12 +67,13 @@ class RegistrationFragment : Fragment() {
             val email = binding.emailRegisterEditText.text.toString().trim()
             val password = binding.passwordRegisterEditText.text.toString().trim()
             val confirmPassword = binding.confirmPasswordRegisterEditText.text.toString().trim()
+            val  phoneNumber = binding.PhoneEditText.text.toString().trim()
 
-            if (validateInputs(fullName, email, password, confirmPassword)) {
+            if (validateInputs(fullName, email, password, confirmPassword,phoneNumber)) {
                 if (password == confirmPassword) {
                     if (validatePassword(password)) {
                         binding.btnRegister.startAnimation()
-                        viewModel.registerUser(email, password, fullName)
+                        viewModel.registerUser(email, password, fullName, phoneNumber)
                     } else {
                         binding.passwordRegisterEditText.error =
                             getString(R.string.password_validation)
@@ -87,12 +92,21 @@ class RegistrationFragment : Fragment() {
         fullName: String,
         email: String,
         password: String,
-        confirmPassword: String
+        confirmPassword: String,
+        phoneNumber: String
     ): Boolean {
         var isValid = true
 
         if (fullName.isEmpty()) {
             binding.nameRegisterEditText.error = getString(R.string.name_is_required)
+            isValid = false
+        }
+
+        if (phoneNumber.isEmpty()) {
+            binding.PhoneEditText.error = getString(R.string.phone_number_is_required)
+            isValid = false
+        } else if (!Helper.validatePhoneNumber(phoneNumber)) {
+            binding.PhoneEditText.error = getString(R.string.phone_invalid)
             isValid = false
         }
 

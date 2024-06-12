@@ -22,7 +22,8 @@ interface ShopifyRepository {
     suspend fun registerUser(
         email: String,
         password: String,
-        firstName: String
+        firstName: String,
+        phoneNumber: String
     ): Flow<ApiState<RegisterUserResponse>>
 
     fun getBrands(): Flow<ApiState<List<Brands>>>

@@ -54,9 +54,10 @@ class ShopifyRepositoryImpl(
     override suspend fun registerUser(
         email: String,
         password: String,
-        fullName: String
+        fullName: String,
+        phoneNumber: String
     ): Flow<ApiState<RegisterUserResponse>> {
-        return shopifyRemoteDataSource.registerUser(email, password, fullName)
+        return shopifyRemoteDataSource.registerUser(email, password, fullName,phoneNumber)
     }
 
     override fun getBrands(): Flow<ApiState<List<Brands>>> {

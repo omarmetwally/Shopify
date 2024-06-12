@@ -31,6 +31,8 @@
     <string name="ok">OK</string>
     <string name="loading">Loading</string>
     <string name="name_is_required">Name is required</string>
+    <string name="phone_number_is_required">Phone Number is required</string>
+    <string name="phone_invalid">Enter a valid phone number with country code (e.g., +1234567890)</string>
     <string name="email_is_required">Email is required</string>
     <string name="password_is_required">Password is required</string>
     <string name="confirm_password_is_required">Confirm Password is required</string>
