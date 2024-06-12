@@ -69,6 +69,9 @@ interface ShopifyRepository {
         token: String
     ): Flow<ApiState<String?>>
 
+    suspend fun writeCartIdToSharedPreferences(key: String, value: String)
+    fun readCartIdFromSharedPreferences(): String
+
     suspend fun getCoupons(): Flow<ApiState<PriceRulesResponse>>
 
     suspend fun getCouponDetails(couponId:String): Flow<ApiState<DiscountCodesResponse>>

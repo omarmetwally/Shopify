@@ -32,6 +32,7 @@ import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
+import com.omarinc.shopify.utilities.Constants.CART_ID
 import com.omarinc.shopify.utilities.Helper
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -243,6 +244,8 @@ class ProductDetailsFragment : Fragment() {
                                 Log.i(TAG, "hasCart: ${result.response}")
 
                                 val cartId = createNewCart(userEmail)
+                                sharedPreferences.writeStringToSharedPreferences(CART_ID, cartId)
+                               // viewModel.writeCartId(cartId)
                                 // val variantId = getFirstVariantId(productId)
 
                                 Log.i(TAG, "variantId 11: $variantId")
@@ -272,11 +275,18 @@ class ProductDetailsFragment : Fragment() {
 
                                             Log.i(TAG, "CartId : ${result.response} ")
                                             val cartId = result.response
+                                           // viewModel.writeCartId(cartId!!)
+                                            sharedPreferences.writeStringToSharedPreferences(
+                                                CART_ID,
+                                                cartId!!
+                                            )
+                                            Log.i(TAG, "customerCart Success: $cartId")
+
                                             // val variantId = getFirstVariantId(productId)
                                             if (variantId != null) {
                                                 Log.i(TAG, "customerCart2: variantId $variantId")
                                                 addProductToCart(
-                                                    cartId?:"",
+                                                    cartId ?: "",
                                                     1, variantId
                                                 )
                                             } else {
@@ -294,33 +304,17 @@ class ProductDetailsFragment : Fragment() {
     }
 
 
-    /*private fun getFirstVariantId(productId: String): String? {
-        var variantId: String? = null
-        viewModel.getProductById(productId)
-        lifecycleScope.launch {
-            viewModel.apiState.collect { state ->
-                if (state is ApiState.Success) {
-                    variantId = state.response.variants.firstOrNull()?.id
-                }
-            }
-        }
-        return variantId
-    }*/
-
     private suspend fun createNewCart(email: String): String {
         viewModel.createCart(email)
 
-        // Variable to hold the cartId
         var cartId: String? = null
 
-        // Collect only one result from the flow
         viewModel.cartId
             .filterIsInstance<ApiState.Success<String>>()
             .firstOrNull()?.let { result ->
                 cartId = result.response
             }
 
-        // Make sure the cartId is not null before proceeding
         cartId?.let {
             viewModel.addCustomerCart(email, it)
             return it
@@ -389,17 +383,14 @@ class ProductDetailsFragment : Fragment() {
                             TAG,
                             "Product added to cart successfully. Cart ID: ${addedCartId.response}"
                         )
-                        // Handle success (e.g., show a success message to the user)
                     }
 
                     is ApiState.Failure -> {
                         Log.e(TAG, "Failed to add product to cart: ${state.msg}")
-                        // Handle failure (e.g., show an error message to the user)
                     }
 
                     ApiState.Loading -> {
                         Log.i(TAG, "Adding product to cart...")
-                        // Handle loading (e.g., show a loading spinner)
                     }
                 }
             }

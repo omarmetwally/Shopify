@@ -33,7 +33,10 @@ class ShoppingCartViewModel(private val repository: ShopifyRepository) : ViewMod
                     _cartItemRemove.value = it
                 }
         }
-
-
     }
+
+    fun readCartId(): String {
+        return repository.readCartIdFromSharedPreferences()
+    }
+
 }

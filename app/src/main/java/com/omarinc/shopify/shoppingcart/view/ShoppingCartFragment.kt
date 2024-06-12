@@ -64,7 +64,8 @@ class ShoppingCartFragment : Fragment() {
     }
 
     private fun getShoppingCartItems() {
-        viewModel.getShoppingCartItems("gid://shopify/Cart/Z2NwLWV1cm9wZS13ZXN0MTowMUhaTVBDNERONDdFR1RRNzhHMzVQNDZKTQ?key=22cacec08785daefc1a6a03f924f9017")
+        viewModel.getShoppingCartItems(viewModel.readCartId())
+        Log.i(TAG, "getShoppingCartItems: ${viewModel.readCartId()}")
         lifecycleScope.launch {
             viewModel.cartItems.collect { result ->
                 when (result) {
@@ -80,10 +81,13 @@ class ShoppingCartFragment : Fragment() {
     }
 
     private fun setupRecyclerView(items: List<CartProduct>) {
+
         val adapter = ShoppingCartAdapter(items) { itemId ->
-            val cartId = "gid://shopify/Cart/Z2NwLWV1cm9wZS13ZXN0MTowMUhaTVBDNERONDdFR1RRNzhHMzVQNDZKTQ?key=22cacec08785daefc1a6a03f924f9017" // Replace with your actual cart ID logic
+            val cartId = viewModel.readCartId()
+            Log.i(TAG, "setupRecyclerView: $cartId")
             removeItemFromCart(cartId, itemId)
         }
+
         binding.shoppingCartRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireActivity()).apply {
                 orientation = RecyclerView.VERTICAL
@@ -91,6 +95,7 @@ class ShoppingCartFragment : Fragment() {
             this.adapter = adapter
         }
         adapter.notifyDataSetChanged()
+
     }
 
     private fun removeItemFromCart(cartId: String, lineId: String) {

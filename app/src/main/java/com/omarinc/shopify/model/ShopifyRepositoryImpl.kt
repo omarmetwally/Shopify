@@ -1,5 +1,6 @@
 package com.omarinc.shopify.model
 
+import android.util.Log
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
@@ -17,6 +18,7 @@ import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.utilities.Constants
+import com.omarinc.shopify.utilities.Constants.CART_ID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -166,6 +168,16 @@ class ShopifyRepositoryImpl(
         token: String
     ): Flow<ApiState<String?>> {
         return shopifyRemoteDataSource.createAddress(customerAddress, token)
+    }
+
+    override suspend fun writeCartIdToSharedPreferences(key: String, value: String) {
+        Log.i("ShoppingCartFragment", "writeCartIdToSharedPreferences: ")
+        sharedPreferences.writeStringToSharedPreferences(key, value)
+    }
+
+    override fun readCartIdFromSharedPreferences(): String {
+        Log.i("ShoppingCartFragment", "readCartIdFromSharedPreferences: ")
+        return sharedPreferences.readStringFromSharedPreferences(CART_ID)
     }
 
     override suspend fun getCoupons(): Flow<ApiState<PriceRulesResponse>> {
