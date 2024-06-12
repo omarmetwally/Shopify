@@ -21,6 +21,7 @@
     <string name="payment_text_view">Payment</string>
     <string name="shipping_to_text_view">Shipping to</string>
     <string name="add_address_text_view">Add Address</string>
+    <string name="hello">Hello, </string>
 
 
     <!--strings for authentication screens-->

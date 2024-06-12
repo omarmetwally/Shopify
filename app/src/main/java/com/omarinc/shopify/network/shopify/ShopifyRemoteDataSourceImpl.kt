@@ -12,6 +12,7 @@ import com.omarinc.shopify.CreateAddressMutation
 import com.omarinc.shopify.CreateCartMutation
 import com.omarinc.shopify.CreateCustomerAccessTokenMutation
 import com.omarinc.shopify.CreateCustomerMutation
+import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.CustomerOrdersQuery
 import com.omarinc.shopify.GetBrandsQuery
 import com.omarinc.shopify.GetCollectionByHandleQuery
@@ -613,5 +614,28 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                 emit(ApiState.Failure(e))
             }
         }
+
+    override fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>> = flow {
+        val query = CustomerDetailsQuery(token)
+        try {
+            emit(ApiState.Loading)
+            val response = apolloClient.query(query).execute()
+
+            if (response.hasErrors()) {
+                val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
+                emit(ApiState.Failure(Throwable(errorMessages)))
+            } else {
+                val customer = response.data?.customer
+                if (customer != null) {
+                    emit(ApiState.Success(customer))
+                } else {
+                    emit(ApiState.Failure(Throwable("Customer data is null")))
+                }
+            }
+        } catch (e: ApolloException) {
+            emit(ApiState.Failure(e))
+        }
+    }
+
 
 }

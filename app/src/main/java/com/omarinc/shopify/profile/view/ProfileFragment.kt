@@ -19,6 +19,7 @@ import com.omarinc.shopify.SplashScreenFragment
 import com.omarinc.shopify.databinding.FragmentProfileBinding
 import com.omarinc.shopify.home.view.MainActivity
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
@@ -55,6 +56,7 @@ class ProfileFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setViewModel()
+        viewModel.getCustomerDetails()
     }
 
     private fun setViewModel() {
@@ -76,8 +78,25 @@ class ProfileFragment : Fragment() {
 
         setListeners()
 
+        observeViewModel()
     }
-
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            viewModel.customerDetailsState.collect { state ->
+                when (state) {
+                    is ApiState.Success -> {
+                        val customer = state.response.firstName
+                        binding.emailtxt.text = "${getString(R.string.hello)} $customer"
+                    }
+                    is ApiState.Failure -> {
+                        binding.emailtxt.text = "${getString(R.string.hello)}"
+                    }
+                    ApiState.Loading -> {
+                    }
+                }
+            }
+        }
+    }
     private fun setListeners() {
         binding.settingsLinearLayout.setOnClickListener {
             val action = ProfileFragmentDirections.actionProfileFragmentToSettingsFragment()
