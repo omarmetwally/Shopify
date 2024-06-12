@@ -44,6 +44,8 @@
     <string name="are_you_sure_to_unfavorite">Are you sure you want to remove this product from your favorites?</string>
     <string name="skip_alert_title">Skip Login</string>
     <string name="skip_alert_message">You will miss out many features. Are you sure you want to continue?</string>
+     <string name="logout_pressed">Logout</string>
+    <string name="logout_pressed_message">Are you sure you want to logout?</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
     <string name="login">Login</string>

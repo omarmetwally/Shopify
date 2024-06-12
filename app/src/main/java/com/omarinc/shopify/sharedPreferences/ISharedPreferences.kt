@@ -14,5 +14,6 @@ interface ISharedPreferences {
     fun readCurrencyRateFromSharedPreferences(key: String): Long
 
     fun readCurrencyUnitFromSharedPreferences(key: String): String
+    fun clearAllData()
 
 }

@@ -52,4 +52,7 @@ class SharedPreferencesImpl private constructor(context: Context) : ISharedPrefe
     override fun readCurrencyUnitFromSharedPreferences(key: String): String {
         return sharedPreferences.getString(key, "null") ?: "null"
     }
+    override fun clearAllData() {
+        sharedPreferences.edit().clear().apply()
+    }
 }
