@@ -194,4 +194,7 @@ class ShopifyRepositoryImpl(
     }
 
 
+    override suspend fun clearAllData() {
+        sharedPreferences.clearAllData()
+    }
 }

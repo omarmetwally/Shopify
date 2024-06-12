@@ -68,6 +68,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/wish_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -96,6 +97,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/delivery_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -152,6 +154,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/log_out"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"

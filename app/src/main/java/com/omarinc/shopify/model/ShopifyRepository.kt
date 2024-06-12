@@ -81,4 +81,5 @@ interface ShopifyRepository {
     suspend fun writeIsFirstTimeUser(key: String, value: Boolean)
 
     suspend fun readIsFirstTimeUser(key: String): Boolean
+    suspend fun clearAllData()
 }
