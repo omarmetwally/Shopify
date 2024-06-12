@@ -12,8 +12,10 @@ import com.omarinc.shopify.CreateAddressMutation
 import com.omarinc.shopify.CreateCartMutation
 import com.omarinc.shopify.CreateCustomerAccessTokenMutation
 import com.omarinc.shopify.CreateCustomerMutation
+import com.omarinc.shopify.CustomerAddressesQuery
 import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.CustomerOrdersQuery
+import com.omarinc.shopify.DeleteAddressMutation
 import com.omarinc.shopify.GetBrandsQuery
 import com.omarinc.shopify.GetCollectionByHandleQuery
 import com.omarinc.shopify.GetProductsByBrandIdQuery
@@ -591,6 +593,9 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                 customerAddress.address2 ?: "address",
                 customerAddress.city,
                 customerAddress.country,
+                customerAddress.phone,
+                customerAddress.firstName,
+                customerAddress.lastName,
                 token
 
             )
@@ -615,6 +620,70 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             }
         }
 
+    override suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>> =
+        flow {
+            emit(ApiState.Loading)
+
+            val query = CustomerAddressesQuery(token)
+            try {
+                val response = apolloClient.query(query).execute()
+                if (response.hasErrors()) {
+                    val errorMessages =
+                        response.errors?.joinToString { it.message } ?: "Unknown error"
+                    emit(ApiState.Failure(Throwable(errorMessages)))
+
+                } else {
+                    val addresses = response.data?.customer?.addresses?.edges?.map { edge ->
+                        val address = edge?.node
+                        CustomerAddress(
+                            address?.id.toString(),
+                            address?.address1.toString(),
+                            address?.address2.toString(),
+                            address?.city.toString(),
+                            address?.country.toString(),
+                            address?.phone.toString(),
+                            address?.firstName.toString(),
+                            address?.lastName.toString()
+
+
+                        )
+                    } ?: emptyList()
+
+                    emit(ApiState.Success(addresses))
+                }
+            } catch (e: ApolloException) {
+                emit(ApiState.Failure(e))
+            }
+
+        }
+
+    override suspend fun deleteCustomerAddress(
+        addressId: String,
+        token: String
+    ): Flow<ApiState<String?>> = flow {
+
+        emit(ApiState.Loading)
+
+        val mutation = DeleteAddressMutation(addressId, token)
+
+        try {
+            val response = apolloClient.mutation(mutation).execute()
+            if (response.hasErrors()) {
+                val errorMessages =
+                    response.errors?.joinToString { it.message } ?: "Unknown error"
+                emit(ApiState.Failure(Throwable(errorMessages)))
+            } else {
+                val addressId = response.data?.customerAddressDelete?.deletedCustomerAddressId
+                emit(ApiState.Success(addressId))
+            }
+
+        } catch (e: ApolloException) {
+            emit(ApiState.Failure(e))
+        }
+
+    }
+
+
     override fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>> = flow {
         val query = CustomerDetailsQuery(token)
         try {
@@ -636,6 +705,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             emit(ApiState.Failure(e))
         }
     }
+
 
 
 }

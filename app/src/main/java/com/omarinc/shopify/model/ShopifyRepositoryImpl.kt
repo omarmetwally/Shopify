@@ -174,6 +174,18 @@ class ShopifyRepositoryImpl(
         return adminRemoteDataSource.getCouponDetails(couponId)
     }
 
+    override suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>> {
+        return shopifyRemoteDataSource.getCustomerAddresses(token)
+    }
+
+    override suspend fun deleteCustomerAddress(
+        addressId: String,
+        token: String
+    ): Flow<ApiState<String?>> {
+        return shopifyRemoteDataSource.deleteCustomerAddress(addressId, token)
+    }
+
+
     override suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>> {
         Log.i("TAG", "createDraftOrder: repo")
         return adminRemoteDataSource.createDraftOrder(draftOrder)
@@ -202,5 +214,6 @@ class ShopifyRepositoryImpl(
     override fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>> {
         return shopifyRemoteDataSource.getCustomerDetails(token)
     }
+
 
 }

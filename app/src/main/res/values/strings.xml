@@ -91,6 +91,11 @@
     <string name="total_tax">"Total Tax : "</string>
     <string name="total_cost">Total Cost</string>
     <string name="orders">Orders</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name\n</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="street_name">Street</string>
+    <string name="submit_address">Submit Address</string>
 
 
 </resources>

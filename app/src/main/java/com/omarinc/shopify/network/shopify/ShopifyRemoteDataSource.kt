@@ -38,7 +38,11 @@ interface ShopifyRemoteDataSource {
 
     suspend fun createCart(email: String): Flow<ApiState<String?>>
 
-    suspend fun addToCartById(cartId: String, quantity: Int, variantID : String): Flow<ApiState<String?>>
+    suspend fun addToCartById(
+        cartId: String,
+        quantity: Int,
+        variantID: String
+    ): Flow<ApiState<String?>>
 
     suspend fun getProductsCart(cartId: String): Flow<ApiState<List<CartProduct>>>
 
@@ -47,5 +51,12 @@ interface ShopifyRemoteDataSource {
         token: String
     ): Flow<ApiState<String?>>
 
+
+    suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>>
+
+    suspend fun deleteCustomerAddress(addressId: String, token: String): Flow<ApiState<String?>>
+}
+
     fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>>
 }
+
