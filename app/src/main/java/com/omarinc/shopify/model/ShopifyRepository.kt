@@ -1,5 +1,6 @@
 package com.omarinc.shopify.model
 
+import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
@@ -83,4 +84,5 @@ interface ShopifyRepository {
 
     suspend fun readIsFirstTimeUser(key: String): Boolean
     suspend fun clearAllData()
+    fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>>
 }

@@ -1,5 +1,6 @@
 package com.omarinc.shopify.network.shopify
 
+import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.model.RegisterUserResponse
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
@@ -46,4 +47,5 @@ interface ShopifyRemoteDataSource {
         token: String
     ): Flow<ApiState<String?>>
 
+    fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>>
 }

@@ -1,6 +1,7 @@
 package com.omarinc.shopify.model
 
 import android.util.Log
+import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
@@ -198,4 +199,8 @@ class ShopifyRepositoryImpl(
     override suspend fun clearAllData() {
         sharedPreferences.clearAllData()
     }
+    override fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>> {
+        return shopifyRemoteDataSource.getCustomerDetails(token)
+    }
+
 }
