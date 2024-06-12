@@ -145,4 +145,8 @@ object Helper {
         val passwordPattern = "^(?!.*12345)(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$"
         return password.matches(passwordPattern.toRegex())
     }
+    fun validatePhoneNumber(phoneNumber: String): Boolean {
+        val phonePattern = "^\\+?[1-9]\\d{1,14}\$"
+        return phoneNumber.matches(phonePattern.toRegex())
+    }
 }

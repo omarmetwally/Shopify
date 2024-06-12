@@ -1,6 +1,7 @@
 package com.omarinc.shopify.network.shopify
 
 import android.content.Context
+import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.util.Log
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
@@ -69,13 +70,15 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
     override fun registerUser(
         email: String,
         password: String,
-        fullName: String
+        fullName: String,
+        phoneNumber: String
     ): Flow<ApiState<RegisterUserResponse>> = flow {
         val input = CustomerCreateInput(
             email = email,
             password = password,
             firstName = Optional.Present(fullName),
-            lastName = Optional.Present(fullName)
+            lastName = Optional.Present(fullName),
+            phone = Optional.Present(phoneNumber)
         )
 
         val mutation = CreateCustomerMutation(input)
@@ -84,11 +87,14 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             emit(ApiState.Loading)
             val response = apolloClient.mutation(mutation).execute()
 
+            Log.e(TAG, "registerUser: $response")
             if (response.hasErrors()) {
                 val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
+                Log.e(TAG, "registerUser: $errorMessages")
                 emit(ApiState.Failure(Throwable(errorMessages)))
             } else {
                 val data = response.data?.customerCreate
+                Log.e(TAG, "registerUser: $data")
                 if (data != null) {
                     val customer = data.customer?.let {
                         CreateCustomerMutation.Customer(
@@ -105,16 +111,21 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                             message = it.message
                         )
                     }
-                    emit(
-                        ApiState.Success(
-                            RegisterUserResponse(
-                                CustomerCreateData(
-                                    customer,
-                                    userErrors
+                    if (customer == null) {
+                        val errorMessage = userErrors.joinToString { it.message }
+                        emit(ApiState.Failure(Throwable(errorMessage)))
+                    } else {
+                        emit(
+                            ApiState.Success(
+                                RegisterUserResponse(
+                                    CustomerCreateData(
+                                        customer,
+                                        userErrors
+                                    )
                                 )
                             )
                         )
-                    )
+                    }
                 } else {
                     emit(ApiState.Failure(Throwable("Response data is null")))
                 }
@@ -124,6 +135,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             emit(ApiState.Failure(e))
         }
     }
+
 
     override fun loginUser(email: String, password: String): Flow<ApiState<String>> = flow {
         val mutation = CreateCustomerAccessTokenMutation(email, password)
@@ -314,7 +326,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                 apolloClient.query(query).execute()
 
             if (response.hasErrors()) {
-                Log.i("TAG", "get Orders: error"+response.errors)
+                Log.i("TAG", "get Orders: error" + response.errors)
                 val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
                 emit(ApiState.Failure(Throwable(errorMessages)))
             } else {
@@ -327,21 +339,21 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                         it.node.lineItems.edges.forEach {
                             products.add(
                                 Product(
-                                    it.node.variant?.id?:"",
+                                    it.node.variant?.id ?: "",
                                     it.node.title,
-                                    it.node.variant?.product?.handle?:"",
-                                    it.node.variant?.product?.description?:"",
+                                    it.node.variant?.product?.handle ?: "",
+                                    it.node.variant?.product?.description ?: "",
                                     it.node.variant?.product?.images!!.edges[0].node.url.toString(),
-                                    it.node .variant.product.productType,
+                                    it.node.variant.product.productType,
                                     it.node.variant.priceV2.amount.toString(),
                                     it.node.variant.priceV2.currencyCode.toString()
-                            )
+                                )
                             )
                         }
                         orders.add(
                             Order(
                                 it.node.id,
-                                it.node.name, it.node.billingAddress?.address1 ,
+                                it.node.name, it.node.billingAddress?.address1,
                                 it.node.currentTotalPrice.amount.toString(),
                                 it.node.currentTotalPrice.currencyCode.toString(),
                                 it.node.currentSubtotalPrice.amount.toString(),

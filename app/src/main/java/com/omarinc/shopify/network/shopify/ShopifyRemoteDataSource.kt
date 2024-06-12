@@ -16,7 +16,8 @@ interface ShopifyRemoteDataSource {
     fun registerUser(
         email: String,
         password: String,
-        fullName: String
+        fullName: String,
+        phoneNumber: String
     ): Flow<ApiState<RegisterUserResponse>>
 
     fun loginUser(email: String, password: String): Flow<ApiState<String>>
