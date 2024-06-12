@@ -93,6 +93,9 @@ class ProductDetailsFragment : Fragment() {
 
         clickFavorite(userToken, productId)
 
+        binding.btnBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
 
     }
 
@@ -206,6 +209,7 @@ class ProductDetailsFragment : Fragment() {
                         binding.rvCustomerComments.layoutManager =
                             LinearLayoutManager(requireContext())
                         setupChips(productDetails)
+                        stopAnimations()
 
                     }
 
@@ -217,6 +221,15 @@ class ProductDetailsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun stopAnimations() {
+        binding.imagesShimmer.hideShimmer()
+        binding.imagesShimmer.stopShimmer()
+        binding.deatilsShimmer.hideShimmer()
+        binding.deatilsShimmer.stopShimmer()
+        binding.reviewsShimmer.hideShimmer()
+        binding.reviewsShimmer.stopShimmer()
     }
 
     private fun setListeners() {

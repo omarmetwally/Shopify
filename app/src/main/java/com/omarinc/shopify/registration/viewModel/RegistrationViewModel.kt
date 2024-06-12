@@ -14,9 +14,9 @@ class RegistrationViewModel(private val repository: ShopifyRepository) : ViewMod
     private val _apiState = MutableStateFlow<ApiState<RegisterUserResponse>>(ApiState.Loading)
     val apiState: StateFlow<ApiState<RegisterUserResponse>> = _apiState
 
-    fun registerUser(email: String, password: String, firstName: String) {
+    fun registerUser(email: String, password: String, firstName: String, phoneNumber :String) {
         viewModelScope.launch {
-            repository.registerUser(email, password, firstName).collect { response ->
+            repository.registerUser(email, password, firstName, phoneNumber).collect { response ->
                 _apiState.value = response
             }
         }

@@ -53,6 +53,12 @@ android {
 
 dependencies {
 
+    //Tab target view
+    implementation ("com.google.android.material:material:1.12.0")
+    implementation ("androidx.viewpager2:viewpager2:1.1.0")
+    implementation ("uk.co.samuelwall:material-tap-target-prompt:3.3.2")
+
+
 
     //Room
     implementation ("androidx.room:room-ktx:2.6.1")

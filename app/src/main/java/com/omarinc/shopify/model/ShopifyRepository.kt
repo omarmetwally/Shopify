@@ -1,5 +1,6 @@
 package com.omarinc.shopify.model
 
+import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
@@ -8,6 +9,8 @@ import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.DiscountCodesResponse
+import com.omarinc.shopify.models.DraftOrderRequest
+import com.omarinc.shopify.models.DraftOrderResponse
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.models.PriceRulesResponse
 import com.omarinc.shopify.network.ApiState
@@ -20,7 +23,8 @@ interface ShopifyRepository {
     suspend fun registerUser(
         email: String,
         password: String,
-        firstName: String
+        firstName: String,
+        phoneNumber: String
     ): Flow<ApiState<RegisterUserResponse>>
 
     fun getBrands(): Flow<ApiState<List<Brands>>>
@@ -75,4 +79,19 @@ interface ShopifyRepository {
     suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>>
 
     suspend fun deleteCustomerAddress(addressId: String, token: String): Flow<ApiState<String?>>
+
+    suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>>
+    
+    suspend fun completeDraftOrder(orderId: Long): Flow<ApiState<DraftOrderResponse>>
+    
+    suspend fun sendInvoice(orderId: Long): Flow<ApiState<DraftOrderResponse>>
+
+    suspend fun writeIsFirstTimeUser(key: String, value: Boolean)
+
+    suspend fun readIsFirstTimeUser(key: String): Boolean
+    
+    suspend fun clearAllData()
+    
+    fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>>
+
 }

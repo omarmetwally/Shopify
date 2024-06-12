@@ -1,5 +1,6 @@
 package com.omarinc.shopify.network.shopify
 
+import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.model.RegisterUserResponse
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
@@ -16,7 +17,8 @@ interface ShopifyRemoteDataSource {
     fun registerUser(
         email: String,
         password: String,
-        fullName: String
+        fullName: String,
+        phoneNumber: String
     ): Flow<ApiState<RegisterUserResponse>>
 
     fun loginUser(email: String, password: String): Flow<ApiState<String>>
@@ -49,7 +51,12 @@ interface ShopifyRemoteDataSource {
         token: String
     ): Flow<ApiState<String?>>
 
+
     suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>>
 
     suspend fun deleteCustomerAddress(addressId: String, token: String): Flow<ApiState<String?>>
 }
+
+    fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>>
+}
+
