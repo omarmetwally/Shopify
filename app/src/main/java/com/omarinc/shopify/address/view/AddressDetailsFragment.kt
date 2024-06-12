@@ -1,4 +1,4 @@
-package com.omarinc.shopify.map.view
+package com.omarinc.shopify.address.view
 
 import android.os.Bundle
 import android.util.Log
@@ -11,8 +11,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.omarinc.shopify.databinding.FragmentAddressDetailsBinding
-import com.omarinc.shopify.map.viewModel.AddressViewModel
-import com.omarinc.shopify.map.viewModel.AddressViewModelFactory
+import com.omarinc.shopify.address.viewModel.AddressViewModel
+import com.omarinc.shopify.address.viewModel.AddressViewModelFactory
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.network.ApiState
@@ -73,7 +73,7 @@ class AddressDetailsFragment : Fragment() {
         val address1 = binding.streetEditText.text.toString()
         val phone = binding.phoneEditText.text.toString()
         val city = args.city
-        
+
 
         return CustomerAddress("", address1, "", city, "Egypt", phone, firstName, lastName)
 

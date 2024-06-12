@@ -1,4 +1,4 @@
-package com.omarinc.shopify.map.viewModel
+package com.omarinc.shopify.address.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

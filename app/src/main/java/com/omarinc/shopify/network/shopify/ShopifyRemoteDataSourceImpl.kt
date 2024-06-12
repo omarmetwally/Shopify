@@ -13,6 +13,7 @@ import com.omarinc.shopify.CreateCustomerAccessTokenMutation
 import com.omarinc.shopify.CreateCustomerMutation
 import com.omarinc.shopify.CustomerAddressesQuery
 import com.omarinc.shopify.CustomerOrdersQuery
+import com.omarinc.shopify.DeleteAddressMutation
 import com.omarinc.shopify.GetBrandsQuery
 import com.omarinc.shopify.GetCollectionByHandleQuery
 import com.omarinc.shopify.GetProductsByBrandIdQuery
@@ -639,5 +640,31 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             }
 
         }
+
+    override suspend fun deleteCustomerAddress(
+        addressId: String,
+        token: String
+    ): Flow<ApiState<String?>> = flow {
+
+        emit(ApiState.Loading)
+
+        val mutation = DeleteAddressMutation(addressId, token)
+
+        try {
+            val response = apolloClient.mutation(mutation).execute()
+            if (response.hasErrors()) {
+                val errorMessages =
+                    response.errors?.joinToString { it.message } ?: "Unknown error"
+                emit(ApiState.Failure(Throwable(errorMessages)))
+            } else {
+                val addressId = response.data?.customerAddressDelete?.deletedCustomerAddressId
+                emit(ApiState.Success(addressId))
+            }
+
+        } catch (e: ApolloException) {
+            emit(ApiState.Failure(e))
+        }
+
+    }
 
 }

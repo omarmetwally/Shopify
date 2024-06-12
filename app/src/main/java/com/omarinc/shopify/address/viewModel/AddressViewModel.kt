@@ -1,4 +1,4 @@
-package com.omarinc.shopify.map.viewModel
+package com.omarinc.shopify.address.viewModel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -21,6 +21,8 @@ class AddressViewModel(private val repository: ShopifyRepository) : ViewModel() 
     private val _addressList = MutableStateFlow<ApiState<List<CustomerAddress>?>>(ApiState.Loading)
     val addressList: MutableStateFlow<ApiState<List<CustomerAddress>?>> = _addressList
 
+    private val _addressDelete = MutableStateFlow<ApiState<String?>>(ApiState.Loading)
+    val addressDelete: MutableStateFlow<ApiState<String?>> = _addressDelete
     fun createAddress(
         customerAddress: CustomerAddress,
     ) {
@@ -41,6 +43,16 @@ class AddressViewModel(private val repository: ShopifyRepository) : ViewModel() 
                 _addressList.value = it
             }
 
+        }
+
+    }
+
+    fun deleteAddress(addressId: String) {
+
+        viewModelScope.launch {
+            repository.deleteCustomerAddress(addressId, repository.readUserToken()).collect {
+                _addressDelete.value = it
+            }
         }
 
     }

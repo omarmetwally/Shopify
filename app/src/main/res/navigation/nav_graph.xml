@@ -56,8 +56,8 @@
         android:label="SettingsFragment"
         tools:layout="fragment_settings">
         <action
-            android:id="@+id/action_settingsFragment_to_mapFragment"
-            app:destination="@id/mapFragment" />
+            android:id="@+id/action_settingsFragment_to_addressesFragment"
+            app:destination="@id/addressesFragment" />
     </fragment>
 
 
@@ -135,7 +135,7 @@
         tools:layout="@layout/fragment_shopping_cart" />
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.omarinc.shopify.map.view.MapFragment"
+        android:name="com.omarinc.shopify.address.view.MapFragment"
         android:label="MapFragment">
         <action
             android:id="@+id/action_mapFragment_to_addressDetailsFragment"
@@ -152,11 +152,20 @@
     </fragment>
     <fragment
         android:id="@+id/addressDetailsFragment"
-        android:name="com.omarinc.shopify.map.view.AddressDetailsFragment"
+        android:name="com.omarinc.shopify.address.view.AddressDetailsFragment"
         android:label="fragment_address_details"
         tools:layout="@layout/fragment_address_details">
         <argument
             android:name="city"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/addressesFragment"
+        android:name="com.omarinc.shopify.address.view.AddressesFragment"
+        android:label="fragment_addresses"
+        tools:layout="@layout/fragment_addresses" >
+        <action
+            android:id="@+id/action_addressesFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
 </navigation>

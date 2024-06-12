@@ -173,5 +173,12 @@ class ShopifyRepositoryImpl(
         return shopifyRemoteDataSource.getCustomerAddresses(token)
     }
 
+    override suspend fun deleteCustomerAddress(
+        addressId: String,
+        token: String
+    ): Flow<ApiState<String?>> {
+        return shopifyRemoteDataSource.deleteCustomerAddress(addressId, token)
+    }
+
 
 }

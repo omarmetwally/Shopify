@@ -1,4 +1,4 @@
-package com.omarinc.shopify.map.view
+package com.omarinc.shopify.address.view
 
 import android.Manifest
 import android.content.Context
@@ -34,8 +34,6 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentMapBinding
-import androidx.navigation.fragment.findNavController
-import com.omarinc.shopify.map.view.MapFragmentDirections
 
 class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -97,7 +95,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
                     val action =
                         MapFragmentDirections.actionMapFragmentToAddressDetailsFragment(city)
                     findNavController().navigate(action)
-                    findNavController().popBackStack()
+
                 } else {
                     Toast.makeText(
                         requireContext(),
