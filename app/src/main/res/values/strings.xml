@@ -21,6 +21,7 @@
     <string name="payment_text_view">Payment</string>
     <string name="shipping_to_text_view">Shipping to</string>
     <string name="add_address_text_view">Add Address</string>
+    <string name="hello">Hello, </string>
 
 
     <!--strings for authentication screens-->
@@ -31,6 +32,8 @@
     <string name="ok">OK</string>
     <string name="loading">Loading</string>
     <string name="name_is_required">Name is required</string>
+    <string name="phone_number_is_required">Phone Number is required</string>
+    <string name="phone_invalid">Enter a valid phone number with country code (e.g., +1234567890)</string>
     <string name="email_is_required">Email is required</string>
     <string name="password_is_required">Password is required</string>
     <string name="confirm_password_is_required">Confirm Password is required</string>
@@ -44,6 +47,8 @@
     <string name="are_you_sure_to_unfavorite">Are you sure you want to remove this product from your favorites?</string>
     <string name="skip_alert_title">Skip Login</string>
     <string name="skip_alert_message">You will miss out many features. Are you sure you want to continue?</string>
+     <string name="logout_pressed">Logout</string>
+    <string name="logout_pressed_message">Are you sure you want to logout?</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
     <string name="login">Login</string>
@@ -86,6 +91,11 @@
     <string name="total_tax">"Total Tax : "</string>
     <string name="total_cost">Total Cost</string>
     <string name="orders">Orders</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name\n</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="street_name">Street</string>
+    <string name="submit_address">Submit Address</string>
 
 
 </resources>

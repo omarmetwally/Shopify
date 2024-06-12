@@ -5,5 +5,8 @@ data class CustomerAddress(
     var address1: String,
     val address2: String?,
     var city: String,
-    var country: String
+    var country: String,
+    var phone: String,
+    var firstName: String,
+    var lastName: String
 )

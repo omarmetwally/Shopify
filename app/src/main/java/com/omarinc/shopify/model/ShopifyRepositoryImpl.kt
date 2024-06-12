@@ -1,6 +1,8 @@
 package com.omarinc.shopify.model
 
 import android.util.Log
+
+import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Collection
@@ -8,6 +10,8 @@ import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.DiscountCodesResponse
+import com.omarinc.shopify.models.DraftOrderRequest
+import com.omarinc.shopify.models.DraftOrderResponse
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.models.PriceRulesResponse
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSource
@@ -53,9 +57,10 @@ class ShopifyRepositoryImpl(
     override suspend fun registerUser(
         email: String,
         password: String,
-        fullName: String
+        fullName: String,
+        phoneNumber: String
     ): Flow<ApiState<RegisterUserResponse>> {
-        return shopifyRemoteDataSource.registerUser(email, password, fullName)
+        return shopifyRemoteDataSource.registerUser(email, password, fullName,phoneNumber)
     }
 
     override fun getBrands(): Flow<ApiState<List<Brands>>> {
@@ -186,6 +191,47 @@ class ShopifyRepositoryImpl(
 
     override suspend fun getCouponDetails(couponId: String): Flow<ApiState<DiscountCodesResponse>> {
         return adminRemoteDataSource.getCouponDetails(couponId)
+    }
+
+    override suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>> {
+        return shopifyRemoteDataSource.getCustomerAddresses(token)
+    }
+
+    override suspend fun deleteCustomerAddress(
+        addressId: String,
+        token: String
+    ): Flow<ApiState<String?>> {
+        return shopifyRemoteDataSource.deleteCustomerAddress(addressId, token)
+    }
+
+
+    override suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>> {
+        Log.i("TAG", "createDraftOrder: repo")
+        return adminRemoteDataSource.createDraftOrder(draftOrder)
+    }
+
+    override suspend fun completeDraftOrder(orderId: Long): Flow<ApiState<DraftOrderResponse>> {
+        return adminRemoteDataSource.completeDraftOrder(orderId)
+    }
+
+    override suspend fun sendInvoice(orderId: Long): Flow<ApiState<DraftOrderResponse>> {
+        return adminRemoteDataSource.sendInvoice(orderId)
+    }
+
+    override suspend fun writeIsFirstTimeUser(key: String, value: Boolean) {
+        sharedPreferences.writeBooleanToSharedPreferences(key,value)
+    }
+
+    override suspend fun readIsFirstTimeUser(key: String): Boolean {
+        return sharedPreferences.readBooleanFromSharedPreferences(key)
+    }
+
+
+    override suspend fun clearAllData() {
+        sharedPreferences.clearAllData()
+    }
+    override fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>> {
+        return shopifyRemoteDataSource.getCustomerDetails(token)
     }
 
 
