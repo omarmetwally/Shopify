@@ -1,29 +1,40 @@
 package com.omarinc.shopify.map.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import com.omarinc.shopify.R
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.navArgs
 import com.omarinc.shopify.databinding.FragmentAddressDetailsBinding
 import com.omarinc.shopify.map.viewModel.AddressViewModel
 import com.omarinc.shopify.map.viewModel.AddressViewModelFactory
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.models.CustomerAddress
+import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import kotlinx.coroutines.launch
 
 
 class AddressDetailsFragment : Fragment() {
+
+    companion object {
+        private const val TAG = "AddressDetailsFragment"
+    }
 
     private var _binding: FragmentAddressDetailsBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var viewModel: AddressViewModel
 
+    private val args: AddressDetailsFragmentArgs by navArgs()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,7 +53,29 @@ class AddressDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         setupViewModel()
+        setListeners()
+
+    }
+
+    private fun setListeners() {
+        binding.submitAddressButton.setOnClickListener {
+            val addressDetails = extractAddressDetails()
+            setAddress(addressDetails)
+        }
+    }
+
+    private fun extractAddressDetails(): CustomerAddress {
+
+        val firstName = binding.FirstNameEditText.text.toString()
+        val lastName = binding.lastNameEditText.text.toString()
+        val address1 = binding.streetEditText.text.toString()
+        val phone = binding.phoneEditText.text.toString()
+        val city = args.city
+        
+
+        return CustomerAddress("", address1, "", city, "Egypt", phone, firstName, lastName)
 
     }
 
@@ -56,5 +89,36 @@ class AddressDetailsFragment : Fragment() {
         )
         val factory = AddressViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[AddressViewModel::class.java]
+    }
+
+    private fun setAddress(address: CustomerAddress) {
+        viewModel.createAddress(address)
+
+        Log.i(TAG, "City: ${address.city}")
+        lifecycleScope.launch {
+            viewModel.address.collect { result ->
+
+                when (result) {
+                    is ApiState.Failure -> Log.i(TAG, "Address failure ${result.msg} ")
+                    ApiState.Loading -> Log.i(TAG, "Address loading")
+                    is ApiState.Success -> {
+                        Log.i(TAG, "ID:${result.response} ")
+                        Toast.makeText(
+                            requireContext(),
+                            "Address added",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        popFragment()
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+    private fun popFragment() {
+        parentFragmentManager.popBackStack()
     }
 }

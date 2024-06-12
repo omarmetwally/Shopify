@@ -59,7 +59,7 @@
             android:id="@+id/action_settingsFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
     </fragment>
-    tools:layout="@layout/fragment_profile" />
+
 
     <fragment
         android:id="@+id/productsFragment"

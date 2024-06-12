@@ -11,6 +11,7 @@ import com.omarinc.shopify.CreateAddressMutation
 import com.omarinc.shopify.CreateCartMutation
 import com.omarinc.shopify.CreateCustomerAccessTokenMutation
 import com.omarinc.shopify.CreateCustomerMutation
+import com.omarinc.shopify.CustomerAddressesQuery
 import com.omarinc.shopify.CustomerOrdersQuery
 import com.omarinc.shopify.GetBrandsQuery
 import com.omarinc.shopify.GetCollectionByHandleQuery
@@ -314,7 +315,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                 apolloClient.query(query).execute()
 
             if (response.hasErrors()) {
-                Log.i("TAG", "get Orders: error"+response.errors)
+                Log.i("TAG", "get Orders: error" + response.errors)
                 val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
                 emit(ApiState.Failure(Throwable(errorMessages)))
             } else {
@@ -327,21 +328,21 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                         it.node.lineItems.edges.forEach {
                             products.add(
                                 Product(
-                                    it.node.variant?.id?:"",
+                                    it.node.variant?.id ?: "",
                                     it.node.title,
-                                    it.node.variant?.product?.handle?:"",
-                                    it.node.variant?.product?.description?:"",
+                                    it.node.variant?.product?.handle ?: "",
+                                    it.node.variant?.product?.description ?: "",
                                     it.node.variant?.product?.images!!.edges[0].node.url.toString(),
-                                    it.node .variant.product.productType,
+                                    it.node.variant.product.productType,
                                     it.node.variant.priceV2.amount.toString(),
                                     it.node.variant.priceV2.currencyCode.toString()
-                            )
+                                )
                             )
                         }
                         orders.add(
                             Order(
                                 it.node.id,
-                                it.node.name, it.node.billingAddress?.address1 ,
+                                it.node.name, it.node.billingAddress?.address1,
                                 it.node.currentTotalPrice.amount.toString(),
                                 it.node.currentTotalPrice.currencyCode.toString(),
                                 it.node.currentSubtotalPrice.amount.toString(),
@@ -600,6 +601,43 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             } catch (e: Exception) {
                 emit(ApiState.Failure(e))
             }
+        }
+
+    override suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>> =
+        flow {
+            emit(ApiState.Loading)
+
+            val query = CustomerAddressesQuery(token)
+            try {
+                val response = apolloClient.query(query).execute()
+                if (response.hasErrors()) {
+                    val errorMessages =
+                        response.errors?.joinToString { it.message } ?: "Unknown error"
+                    emit(ApiState.Failure(Throwable(errorMessages)))
+
+                } else {
+                    val addresses = response.data?.customer?.addresses?.edges?.map { edge ->
+                        val address = edge?.node
+                        CustomerAddress(
+                            address?.id.toString(),
+                            address?.address1.toString(),
+                            address?.address2.toString(),
+                            address?.city.toString(),
+                            address?.country.toString(),
+                            address?.phone.toString(),
+                            address?.firstName.toString(),
+                            address?.lastName.toString()
+
+
+                        )
+                    } ?: emptyList()
+
+                    emit(ApiState.Success(addresses))
+                }
+            } catch (e: ApolloException) {
+                emit(ApiState.Failure(e))
+            }
+
         }
 
 }

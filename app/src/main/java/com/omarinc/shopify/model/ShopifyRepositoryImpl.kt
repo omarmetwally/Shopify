@@ -169,5 +169,9 @@ class ShopifyRepositoryImpl(
         return adminRemoteDataSource.getCouponDetails(couponId)
     }
 
+    override suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>> {
+        return shopifyRemoteDataSource.getCustomerAddresses(token)
+    }
+
 
 }

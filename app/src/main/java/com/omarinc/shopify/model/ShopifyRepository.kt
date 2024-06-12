@@ -71,4 +71,7 @@ interface ShopifyRepository {
     suspend fun getCoupons(): Flow<ApiState<PriceRulesResponse>>
 
     suspend fun getCouponDetails(couponId:String): Flow<ApiState<DiscountCodesResponse>>
+
+    suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>>
+
 }

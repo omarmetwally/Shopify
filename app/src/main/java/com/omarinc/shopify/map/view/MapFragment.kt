@@ -12,15 +12,12 @@ import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -37,16 +34,8 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentMapBinding
-import com.omarinc.shopify.map.viewModel.AddressViewModel
-import com.omarinc.shopify.map.viewModel.AddressViewModelFactory
-import com.omarinc.shopify.model.ShopifyRepositoryImpl
-import com.omarinc.shopify.models.CustomerAddress
-import com.omarinc.shopify.network.ApiState
-import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
-import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
-import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
-import kotlinx.coroutines.launch
+import androidx.navigation.fragment.findNavController
+import com.omarinc.shopify.map.view.MapFragmentDirections
 
 class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -62,7 +51,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
     private var longitude: Double = 0.0
     private var latitude: Double = 0.0
 
-    private var address: CustomerAddress = CustomerAddress("", "", "", "", "")
 
     private var currentMarker: Marker? = null
 
@@ -105,10 +93,11 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
             googleMap.let { map ->
                 val location = getCurrentLocation(map)
                 getCityFromLocation(location.latitude, location.longitude)
-                if (!city.isEmpty()) {
+                if (city.isNotEmpty()) {
                     val action =
                         MapFragmentDirections.actionMapFragmentToAddressDetailsFragment(city)
                     findNavController().navigate(action)
+                    findNavController().popBackStack()
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -117,32 +106,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
                     ).show()
                 }
             }
-
-            /*viewModel.createAddress(address)
-
-            Log.i(TAG, "City: ${address.city}")
-            lifecycleScope.launch {
-                viewModel.address.collect { result ->
-
-                    when (result) {
-                        is ApiState.Failure -> Log.i(TAG, "Address failure ${result.msg} ")
-                        ApiState.Loading -> Log.i(TAG, "Address loading")
-                        is ApiState.Success -> {
-                            Log.i(TAG, "ID:${result.response} ")
-                            Toast.makeText(
-                                requireContext(),
-                                "Address added",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            popFragment()
-                        }
-
-                    }
-
-                }
-
-            }*/
-
         }
         binding.currentLocationButton.setOnClickListener {
 
@@ -296,7 +259,5 @@ class MapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapClickListener
         return LatLng(cameraPosition.latitude, cameraPosition.longitude)
     }
 
-    private fun popFragment() {
-        parentFragmentManager.popBackStack()
-    }
+
 }

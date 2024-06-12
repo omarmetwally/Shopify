@@ -18,6 +18,9 @@ class AddressViewModel(private val repository: ShopifyRepository) : ViewModel() 
     private val _address = MutableStateFlow<ApiState<String?>>(ApiState.Loading)
     val address: MutableStateFlow<ApiState<String?>> = _address
 
+    private val _addressList = MutableStateFlow<ApiState<List<CustomerAddress>?>>(ApiState.Loading)
+    val addressList: MutableStateFlow<ApiState<List<CustomerAddress>?>> = _addressList
+
     fun createAddress(
         customerAddress: CustomerAddress,
     ) {
@@ -26,6 +29,18 @@ class AddressViewModel(private val repository: ShopifyRepository) : ViewModel() 
                 Log.i(TAG, "Token:${repository.readUserToken()} ")
                 _address.value = it
             }
+        }
+
+    }
+
+    fun getCustomersAddresses() {
+
+        viewModelScope.launch {
+
+            repository.getCustomerAddresses(repository.readUserToken()).collect {
+                _addressList.value = it
+            }
+
         }
 
     }

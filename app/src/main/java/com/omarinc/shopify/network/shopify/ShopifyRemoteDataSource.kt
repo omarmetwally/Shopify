@@ -45,4 +45,6 @@ interface ShopifyRemoteDataSource {
         token: String
     ): Flow<ApiState<String?>>
 
+    suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>>
+
 }
