@@ -44,6 +44,11 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
 
     private var _couponDetails = MutableStateFlow<ApiState<DiscountCodesResponse>>(ApiState.Loading)
     val couponDetails = _couponDetails.asStateFlow()
+
+    private val _currencyUnit = MutableStateFlow<String>("USD")
+    val currencyUnit = _currencyUnit.asStateFlow()
+
+
     fun getBrands() {
         Log.i("TAG", "getBrands: Viewmodel")
         viewModelScope.launch {
@@ -75,6 +80,14 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
     }
 
 
+    fun getCurrencyUnit() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            _currencyUnit.value = repository.readCurrencyUnit(Constants.CURRENCY_UNIT)
+        }
+    }
+
+
     fun getRequiredCurrency() {
         Log.i(TAG, "getRequiredCurrency: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -90,6 +103,7 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
         }
     }
 
+
     fun getCoupons() {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -99,20 +113,21 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
             }
         }
     }
-    fun writeIsFirstTimeUser(key: String, value: Boolean){
+
+    fun writeIsFirstTimeUser(key: String, value: Boolean) {
         viewModelScope.launch {
-            repository.writeIsFirstTimeUser(key,value)
+            repository.writeIsFirstTimeUser(key, value)
         }
     }
 
-    suspend   fun readIsFirstTimeUser(key: String):Boolean{
-        return  repository.readIsFirstTimeUser(key)
+    suspend fun readIsFirstTimeUser(key: String): Boolean {
+        return repository.readIsFirstTimeUser(key)
 
     }
 
-    fun getCouponDetails(couponId: String){
+    fun getCouponDetails(couponId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getCouponDetails(couponId).collect{
+            repository.getCouponDetails(couponId).collect {
                 _couponDetails.value = it
             }
         }
