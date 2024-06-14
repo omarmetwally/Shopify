@@ -18,13 +18,14 @@ import kotlinx.coroutines.withContext
 
 class SettingsViewModel(private val repository: ShopifyRepository) : ViewModel() {
 
+    private val _currencyResponse = MutableStateFlow<String>("USD")
+    val currencyResponse = _currencyResponse.asStateFlow()
 
-    suspend fun getCurrencyUnit(): String {
-        val currencyUnit = viewModelScope.async(Dispatchers.IO) {
-            repository.readCurrencyUnit(CURRENCY_UNIT)
+    suspend fun getCurrencyUnit() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            _currencyResponse.value = repository.readCurrencyUnit(CURRENCY_UNIT)
         }
-
-        return currencyUnit.await()
     }
 
     fun setCurrency(unit: String) {

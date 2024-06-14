@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SeekBar
 import androidx.appcompat.widget.SearchView
 import androidx.cursoradapter.widget.CursorAdapter
 import androidx.cursoradapter.widget.SimpleCursorAdapter
@@ -20,16 +19,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weatherforecastapplication.favouritesFeature.view.ProductsAdapter
+import com.omarinc.shopify.home.view.adapters.ProductsAdapter
 import com.omarinc.shopify.databinding.FragmentProductsBinding
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
-import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.productdetails.view.ProductDetailsFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.flow.MutableStateFlow

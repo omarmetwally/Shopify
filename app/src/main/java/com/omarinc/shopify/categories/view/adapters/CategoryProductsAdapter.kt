@@ -1,4 +1,4 @@
-package com.example.weatherforecastapplication.favouritesFeature.view
+package com.omarinc.shopify.categories.view
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -12,48 +12,54 @@ import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.CategoryProductsLayoutBinding
 import com.omarinc.shopify.models.Product
 
-
 class CategoryProductsAdapter(
     val context: Context,
-   // private val listener: (weather: Favourites)->Unit,
-    //private val favListener: (latitude:Double, longitude:Double)->Unit
 ) : ListAdapter<Product, CategoryProductsViewHolder>(
     CategoryProductsDiffUtil()
 ) {
 
     private lateinit var binding: CategoryProductsLayoutBinding
+    private var convertedPrices: MutableMap<String, Double> = mutableMapOf()
+    private var currencyUnit: String = "USD"
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryProductsViewHolder {
-         binding = CategoryProductsLayoutBinding.inflate(
+        binding = CategoryProductsLayoutBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
         return CategoryProductsViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CategoryProductsViewHolder, position: Int) {
-       // binding.favCard.setCardBackgroundColor( setCardViewBackground(context))
         val current = getItem(position)
-//        binding.brandImage = current.image
-//        binding.brandName = current.name
-        binding.name.text = current.title
-        binding.price.text = current.price
-        Glide.with(context).load(current.imageUrl)
+        val convertedPrice = convertedPrices[current.id] ?: current.price.toDouble()
+
+        holder.bind(current, convertedPrice, currencyUnit)
+    }
+
+    fun updateCurrentCurrency(rate: Double, unit: String) {
+        currencyUnit = unit
+        val newPrices = currentList.map { product ->
+            product.id to product.price.toDouble() * rate
+        }.toMap()
+        convertedPrices.putAll(newPrices)
+        notifyDataSetChanged()
+    }
+}
+
+class CategoryProductsViewHolder(private val binding: CategoryProductsLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
+    fun bind(product: Product, convertedPrice: Double, currencyUnit: String) {
+        binding.name.text = product.title
+        binding.price.text = String.format("%.2f %s", convertedPrice, currencyUnit)
+        Glide.with(binding.root.context).load(product.imageUrl)
             .apply(
                 RequestOptions().override(200, 200)
                     .placeholder(R.drawable.ic_launcher_foreground)
                     .error(R.drawable.ic_launcher_background)
             )
             .into(binding.image)
-
-//        binding.favConstraint.setOnClickListener {
-//            favListener.invoke(
-//                current.latitude,
-//                current.longitude
-//            )
-//        }
     }
 }
 
-class CategoryProductsViewHolder(private val layout: CategoryProductsLayoutBinding) : RecyclerView.ViewHolder(layout.root)
 class CategoryProductsDiffUtil : DiffUtil.ItemCallback<Product>() {
     override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
         return oldItem.id == newItem.id
@@ -62,5 +68,4 @@ class CategoryProductsDiffUtil : DiffUtil.ItemCallback<Product>() {
     override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
         return oldItem == newItem
     }
-
 }

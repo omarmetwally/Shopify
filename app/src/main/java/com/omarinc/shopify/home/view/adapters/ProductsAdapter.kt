@@ -1,4 +1,4 @@
-package com.example.weatherforecastapplication.favouritesFeature.view
+package com.omarinc.shopify.home.view.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -12,15 +12,17 @@ import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.ProductLayoutBinding
 import com.omarinc.shopify.models.Product
 
-
 class ProductsAdapter(
     val context: Context,
-    private val listener: (id: String)->Unit,
+    private val listener: (id: String) -> Unit,
 ) : ListAdapter<Product, ProductsViewHolder>(
     ProductsDiffUtil()
 ) {
 
     private lateinit var binding: ProductLayoutBinding
+    private var convertedPrices: MutableMap<String, Double> = mutableMapOf()
+    private var currencyUnit: String = "USD"
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductsViewHolder {
         binding = ProductLayoutBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
@@ -30,10 +32,32 @@ class ProductsAdapter(
 
     override fun onBindViewHolder(holder: ProductsViewHolder, position: Int) {
         val current = getItem(position)
+        val convertedPrice = convertedPrices[current.id] ?: current.price.toDouble()
 
-        binding.brandName.text = current.title
-        binding.price.text = "${current.price} EGP"
-        Glide.with(context).load(current.imageUrl)
+        holder.bind(current, convertedPrice, currencyUnit, listener)
+    }
+
+    fun updateCurrentCurrency(rate: Double, unit: String) {
+        currencyUnit = unit
+        val newPrices = currentList.map { product ->
+            product.id to product.price.toDouble() * rate
+        }.toMap()
+        convertedPrices.putAll(newPrices)
+        notifyDataSetChanged()
+    }
+}
+
+class ProductsViewHolder(val binding: ProductLayoutBinding) :
+    RecyclerView.ViewHolder(binding.root) {
+    fun bind(
+        product: Product,
+        convertedPrice: Double,
+        currencyUnit: String,
+        listener: (id: String) -> Unit
+    ) {
+        binding.brandName.text = product.title
+        binding.price.text = String.format("%.2f %s", convertedPrice, currencyUnit)
+        Glide.with(binding.root.context).load(product.imageUrl)
             .apply(
                 RequestOptions().override(200, 200)
                     .placeholder(R.drawable.ic_launcher_foreground)
@@ -41,13 +65,11 @@ class ProductsAdapter(
             )
             .into(binding.brandImage)
         binding.brandConstrainLayout.setOnClickListener {
-            listener.invoke(current.id)
-
+            listener.invoke(product.id)
         }
     }
 }
 
-class ProductsViewHolder(val layout: ProductLayoutBinding) : RecyclerView.ViewHolder(layout.root)
 class ProductsDiffUtil : DiffUtil.ItemCallback<Product>() {
     override fun areItemsTheSame(oldItem: Product, newItem: Product): Boolean {
         return oldItem.id == newItem.id
@@ -56,5 +78,4 @@ class ProductsDiffUtil : DiffUtil.ItemCallback<Product>() {
     override fun areContentsTheSame(oldItem: Product, newItem: Product): Boolean {
         return oldItem == newItem
     }
-
 }

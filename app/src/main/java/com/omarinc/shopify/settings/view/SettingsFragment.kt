@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.omarinc.shopify.databinding.FragmentSettingsBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
@@ -18,6 +19,7 @@ import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.settings.viewModel.SettingsViewModel
 import com.omarinc.shopify.settings.viewModel.SettingsViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
@@ -35,7 +37,6 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         _binding = FragmentSettingsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -51,7 +52,7 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
         setUpViewModel()
         setUpSpinner()
         setUpListeners()
-
+        observeCurrency()
     }
 
     private fun setUpListeners() {
@@ -77,20 +78,30 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val currencies = Currencies.values()
         val currencyNames = currencies.map { it.name }
 
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencyNames)
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencyNames)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         binding.spinnerCurrencies.adapter = adapter
         binding.spinnerCurrencies.onItemSelectedListener = this
     }
 
+    private fun observeCurrency() {
+        lifecycleScope.launch {
+            settingsViewModel.currencyResponse.collect { currency ->
+                if (currency.isNotEmpty()) {
+                    val position = Currencies.valueOf(currency).ordinal
+                    binding.spinnerCurrencies.setSelection(position)
+                }
+            }
+        }
+    }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val selectedCurrency = Currencies.values()[position].name
         settingsViewModel.setCurrency(selectedCurrency)
     }
 
-    override fun onNothingSelected(parent: AdapterView<*>?) {
+    override fun onNothingSelected(parent: AdapterView<*>?) {}
 
-    }
 }

@@ -14,10 +14,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weatherforecastapplication.favouritesFeature.view.CategoryProductsAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentCategoryProductsBinding
-import com.omarinc.shopify.home.viewmodel.CategoriesViewModel
+import com.omarinc.shopify.categories.viewmodel.CategoriesViewModel
+import com.omarinc.shopify.home.view.HomeFragment
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
@@ -25,9 +25,14 @@ import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.productdetails.view.ProductDetailsFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class CategoryProductsFragment : Fragment() {
+
+    companion object {
+        const val TAG = "CategoryProductsFragment"
+    }
 
     private lateinit var binding: FragmentCategoryProductsBinding
     private lateinit var productsManager: GridLayoutManager
@@ -42,7 +47,7 @@ class CategoryProductsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-       setUpViewModel()
+        setUpViewModel()
 
     }
 
@@ -71,8 +76,8 @@ class CategoryProductsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       setUpProductsAdapter()
-       collectProductsByHandle()
+        setUpProductsAdapter()
+        collectProductsByHandle()
 
 
         binding.fab1.setOnClickListener {
@@ -92,45 +97,51 @@ class CategoryProductsFragment : Fragment() {
             binding.mainFab.setImageResource(R.drawable.accessories)
         }
 
-       setUpFabAnimation()
+        setUpFabAnimation()
         collectProductsBySubCategories()
         binding.mainFab.setOnClickListener { toggleFab() }
     }
 
     private fun collectProductsBySubCategories() {
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.apiState.collect{ result ->
-                    when(result){
-                        is ApiState.Loading ->{
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.apiState.collect { result ->
+                    when (result) {
+                        is ApiState.Loading -> {
 
                         }
 
-                        is ApiState.Success ->{
+                        is ApiState.Success -> {
                             productsAdapter.submitList(result.response)
+                            Log.i(TAG, "collectProductsBySubCategories: ")
+                            getCurrentCurrency()
                         }
-                        is ApiState.Failure ->{
-                            Log.i("TAG", "onViewCreated: error "+result.msg)
+
+                        is ApiState.Failure -> {
+                            Log.i("TAG", "onViewCreated: error " + result.msg)
                         }
                     }
                 }
             }
         }
     }
+
     private fun collectProductsByHandle() {
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                viewModel.collectionApiState.collect{ result ->
-                    when(result){
-                        is ApiState.Loading ->{
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.collectionApiState.collect { result ->
+                    when (result) {
+                        is ApiState.Loading -> {
 
                         }
 
-                        is ApiState.Success ->{
+                        is ApiState.Success -> {
                             productsAdapter.submitList(result.response.products)
+                            getCurrentCurrency()
                         }
-                        is ApiState.Failure ->{
-                            Log.i("TAG", "onViewCreated: error "+result.msg)
+
+                        is ApiState.Failure -> {
+                            Log.i("TAG", "onViewCreated: error " + result.msg)
                         }
                     }
                 }
@@ -151,40 +162,13 @@ class CategoryProductsFragment : Fragment() {
             requireContext(),
         )
 
-        productsManager = GridLayoutManager(requireContext(),2)
+        productsManager = GridLayoutManager(requireContext(), 2)
         productsManager.orientation = LinearLayoutManager.VERTICAL
         binding.categoryProductsRV.layoutManager = productsManager
         binding.categoryProductsRV.adapter = productsAdapter
 
     }
 
-
-    private fun getCurrentCurrency() {
-
-        viewModel.getRequiredCurrency()
-        lifecycleScope.launch {
-            viewModel.requiredCurrency.collect { result ->
-
-                when (result) {
-                    is ApiState.Failure -> Log.i(
-                        ProductDetailsFragment.TAG,
-                        "getCurrentCurrency: ${result.msg}"
-                    )
-
-                    ApiState.Loading -> Log.i(
-                        ProductDetailsFragment.TAG,
-                        "getCurrentCurrency: Loading"
-                    )
-
-                    is ApiState.Success -> Log.i(
-                        ProductDetailsFragment.TAG,
-                        "getCurrentCurrency: ${result.response.data.values}"
-                    )
-                }
-
-            }
-        }
-    }
 
     private fun toggleFab() {
         if (isFabOpen) {
@@ -214,6 +198,40 @@ class CategoryProductsFragment : Fragment() {
             isFabOpen = true
 
 
+        }
+    }
+
+    private fun getCurrentCurrency() {
+        viewModel.getCurrencyUnit()
+        viewModel.getRequiredCurrency()
+
+        lifecycleScope.launch {
+            combine(
+                viewModel.currencyUnit,
+                viewModel.requiredCurrency
+            ) { currencyUnit, requiredCurrency ->
+                Pair(currencyUnit, requiredCurrency)
+            }.collect { (currencyUnit, requiredCurrency) ->
+                Log.i(TAG, "getCurrentCurrency 000: $currencyUnit")
+                when (requiredCurrency) {
+                    is ApiState.Failure -> Log.i(
+                        TAG,
+                        "getCurrentCurrency: ${requiredCurrency.msg}"
+                    )
+
+                    ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
+                    is ApiState.Success -> {
+                        Log.i(
+                            TAG,
+                            "getCurrentCurrency: ${requiredCurrency.response.data[currencyUnit]?.code}"
+                        )
+                        requiredCurrency.response.data[currencyUnit]?.let { currency ->
+                            Log.i(TAG, "getCurrentCurrency: ${currency.value}")
+                            productsAdapter.updateCurrentCurrency(currency.value, currency.code)
+                        }
+                    }
+                }
+            }
         }
     }
 
