@@ -110,7 +110,7 @@ class AddressesFragment : Fragment() {
     }
 
     private fun setupRecyclerView(items: List<CustomerAddress?>) {
-        val adapter = AddressesAdapter(items) { addressId ->
+        val adapter = AddressesAdapter(requireActivity(), items) { addressId ->
             deleteAddress(addressId)
         }
         binding.addressesRecyclerView.apply {

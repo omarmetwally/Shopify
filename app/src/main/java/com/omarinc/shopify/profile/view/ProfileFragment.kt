@@ -80,6 +80,7 @@ class ProfileFragment : Fragment() {
 
         observeViewModel()
     }
+
     private fun observeViewModel() {
         lifecycleScope.launch {
             viewModel.customerDetailsState.collect { state ->
@@ -88,15 +89,18 @@ class ProfileFragment : Fragment() {
                         val customer = state.response.firstName
                         binding.emailtxt.text = "${getString(R.string.hello)} $customer"
                     }
+
                     is ApiState.Failure -> {
                         binding.emailtxt.text = "${getString(R.string.hello)}"
                     }
+
                     ApiState.Loading -> {
                     }
                 }
             }
         }
     }
+
     private fun setListeners() {
         binding.settingsLinearLayout.setOnClickListener {
             val action = ProfileFragmentDirections.actionProfileFragmentToSettingsFragment()
@@ -115,6 +119,11 @@ class ProfileFragment : Fragment() {
 
             showLogoutAlertDialog()
         }
+
+        binding.deliveryAddress.setOnClickListener {
+            val action = ProfileFragmentDirections.actionProfileFragmentToAddressesFragment()
+            findNavController().navigate(action)
+        }
     }
 
     private fun showLogoutAlertDialog() {
@@ -129,6 +138,7 @@ class ProfileFragment : Fragment() {
             negativeButtonText = getString(R.string.no)
         )
     }
+
     private fun logout() {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.clearData()
