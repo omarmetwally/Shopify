@@ -1,9 +1,10 @@
-package com.omarinc.shopify.home.viewmodel
+package com.omarinc.shopify.categories.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.omarinc.shopify.home.viewmodel.HomeViewModel
 import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.CurrencyResponse
@@ -17,12 +18,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class CategoriesViewModel (private val repository: ShopifyRepository) : ViewModel() {
+class CategoriesViewModel(private val repository: ShopifyRepository) : ViewModel() {
 
 
-     val maxPrice = MutableStateFlow<Int>(10000)
+    val maxPrice = MutableStateFlow<Int>(10000)
 
-    companion object{
+
+    companion object {
         val TAG = "CategoriesViewModel"
     }
 
@@ -35,36 +37,42 @@ class CategoriesViewModel (private val repository: ShopifyRepository) : ViewMode
     private var _requiredCurrency = MutableStateFlow<ApiState<CurrencyResponse>>(ApiState.Loading)
     val requiredCurrency = _requiredCurrency.asStateFlow()
 
-    fun filterProducts(products: List<Product>)  {
+    private val _currencyUnit = MutableStateFlow<String>("USD")
+    val currencyUnit = _currencyUnit.asStateFlow()
+
+    fun filterProducts(products: List<Product>) {
         val filteredResults = products.filter {
             val price =
-                 (it.price as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
+                (it.price as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
             price <= maxPrice.value
         }
-        _apiState.value  = ApiState.Success(filteredResults)
+        _apiState.value = ApiState.Success(filteredResults)
     }
-    fun getProductsByType(type:String) {
+
+    fun getProductsByType(type: String) {
         viewModelScope.launch {
-            _collectionApiState.collect{ result ->
-                when(result){
-                    is ApiState.Loading ->{
+            _collectionApiState.collect { result ->
+                when (result) {
+                    is ApiState.Loading -> {
 
                     }
 
-                    is ApiState.Success ->{
-                       val products = result.response.products.filter {
+                    is ApiState.Success -> {
+                        val products = result.response.products.filter {
                             it.productType.equals(type)
                         }
                         _apiState.value = ApiState.Success(products)
                     }
-                    is ApiState.Failure ->{
-                        Log.i("TAG", "onViewCreated: error "+result.msg)
+
+                    is ApiState.Failure -> {
+                        Log.i("TAG", "onViewCreated: error " + result.msg)
                     }
                 }
             }
         }
     }
-    fun getCollectionByHandle(handle:String) {
+
+    fun getCollectionByHandle(handle: String) {
         Log.i("TAG", "getProductsByType: Viewmodel")
         viewModelScope.launch {
             repository.getCollectionByHandle(handle).collect {
@@ -73,8 +81,16 @@ class CategoriesViewModel (private val repository: ShopifyRepository) : ViewMode
         }
     }
 
+    fun getCurrencyUnit() {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            _currencyUnit.value = repository.readCurrencyUnit(Constants.CURRENCY_UNIT)
+        }
+    }
+
+
     fun getRequiredCurrency() {
-        Log.i(TAG, "getRequiredCurrency: ")
+        Log.i(HomeViewModel.TAG, "getRequiredCurrency: ")
         viewModelScope.launch(Dispatchers.IO) {
 
             repository.getCurrencyRate(repository.readCurrencyUnit(Constants.CURRENCY_UNIT))
@@ -87,7 +103,6 @@ class CategoriesViewModel (private val repository: ShopifyRepository) : ViewMode
                 }
         }
     }
-
 
 
     class CategoriesViewModelFactory(

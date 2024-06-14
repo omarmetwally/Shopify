@@ -1,6 +1,7 @@
 package com.omarinc.shopify.home.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,13 +16,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.weatherforecastapplication.favouritesFeature.view.CategoriesAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentCategoriesBinding
-import com.omarinc.shopify.home.viewmodel.CategoriesViewModel
+import com.omarinc.shopify.categories.viewmodel.CategoriesViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 
@@ -180,5 +182,8 @@ class CategoriesFragment : Fragment() {
             }
         }
     }
+
+
+
 }
 
