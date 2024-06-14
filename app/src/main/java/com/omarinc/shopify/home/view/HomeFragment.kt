@@ -3,7 +3,6 @@ package com.omarinc.shopify.home.view
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,7 +19,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weatherforecastapplication.favouritesFeature.view.ProductsAdapter
+import com.omarinc.shopify.home.view.adapters.ProductsAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
 import com.omarinc.shopify.home.view.adapters.AdsAdapter
@@ -36,9 +35,9 @@ import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
-import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt.PromptStateChangeListener
 import uk.co.samuelwall.materialtaptargetprompt.extras.PromptBackground
 import uk.co.samuelwall.materialtaptargetprompt.extras.PromptFocal
 import uk.co.samuelwall.materialtaptargetprompt.extras.backgrounds.RectanglePromptBackground
@@ -97,7 +96,7 @@ class HomeFragment : Fragment() {
 
 
         checkIfIsFirstUserTime(view)
-       // setUpAdsAdapter()
+
         setUpBrandsAdapter()
         setUpProductsAdapter()
         getCoupons()
@@ -260,6 +259,7 @@ class HomeFragment : Fragment() {
 
                         is ApiState.Success -> {
                             productsAdapter.submitList(result.response)
+                            getCurrentCurrency()
                         }
 
                         is ApiState.Failure -> {
@@ -345,9 +345,11 @@ class HomeFragment : Fragment() {
                     is ApiState.Failure -> {
                         Log.e(TAG, "Failed to fetch coupons: ${result.msg}")
                     }
+
                     ApiState.Loading -> {
                         Log.d(TAG, "Fetching coupons...")
                     }
+
                     is ApiState.Success -> {
                         Log.i(TAG, "setUpAdsAdapter: Success")
                         val coupons = result.response.price_rules
@@ -413,6 +415,40 @@ class HomeFragment : Fragment() {
             }
         }
     }
+
+
+    private fun getCurrentCurrency() {
+        viewModel.getCurrencyUnit()
+        viewModel.getRequiredCurrency()
+
+        lifecycleScope.launch {
+            // Combine currencyUnit and requiredCurrency flows
+            combine(
+                viewModel.currencyUnit,
+                viewModel.requiredCurrency
+            ) { currencyUnit, requiredCurrency ->
+                Pair(currencyUnit, requiredCurrency)
+            }.collect { (currencyUnit, requiredCurrency) ->
+                Log.i(TAG, "getCurrentCurrency 000: $currencyUnit")
+                when (requiredCurrency) {
+                    is ApiState.Failure -> Log.i(TAG, "getCurrentCurrency: ${requiredCurrency.msg}")
+                    ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
+                    is ApiState.Success -> {
+                        Log.i(
+                            TAG,
+                            "getCurrentCurrency: ${requiredCurrency.response.data[currencyUnit]?.code}"
+                        )
+                        // Call your method to set up products adapter or any other necessary logic
+                        requiredCurrency.response.data[currencyUnit]?.let { currency ->
+                            Log.i(TAG, "getCurrentCurrency: ${currency.value}")
+                            productsAdapter.updateCurrentCurrency(currency.value, currency.code)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 

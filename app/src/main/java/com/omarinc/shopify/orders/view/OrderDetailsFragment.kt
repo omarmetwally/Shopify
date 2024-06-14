@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.weatherforecastapplication.favouritesFeature.view.ProductsAdapter
+import com.omarinc.shopify.home.view.adapters.ProductsAdapter
 import com.omarinc.shopify.databinding.FragmentOrderDetailsBinding
 import com.omarinc.shopify.home.view.HomeFragmentDirections
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
