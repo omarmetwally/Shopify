@@ -1,4 +1,4 @@
-package com.example.weatherforecastapplication.favouritesFeature.view
+package com.omarinc.shopify.orders.view
 
 import android.content.Context
 import android.util.Log
@@ -12,7 +12,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.OrderLayoutBinding
 import com.omarinc.shopify.models.Order
-
 
 class OrdersAdapter(
     val context: Context,
@@ -37,7 +36,7 @@ class OrdersAdapter(
         val convertedTotalPrice = convertedPrices["totalPrice${current.id}"] ?: current.totalPriceAmount.toDouble()
         val convertedSubTotalPrice = convertedPrices["subTotalPrice${current.id}"] ?: current.subTotalPriceAmount.toDouble()
 
-        binding.totalPrice.text = String.format("%.2f %s - %d items", convertedTotalPrice, currencyUnit, current.subTotalPriceAmount)
+        binding.totalPrice.text = String.format("%.2f %s - %d items", convertedTotalPrice, currencyUnit, current.products.size)
         binding.dateCreated.text = current.processedAt
 
         Glide.with(context).load(current.products[0].imageUrl)
@@ -48,13 +47,17 @@ class OrdersAdapter(
             )
             .into(binding.productImage1)
 
-        Glide.with(context).load(current.products[1].imageUrl)
-            .apply(
-                RequestOptions().override(200, 200)
-                    .placeholder(R.drawable.ic_launcher_foreground)
-                    .error(R.drawable.ic_launcher_background)
-            )
-            .into(binding.productImage2)
+        if (current.products.size > 1) {
+            Glide.with(context).load(current.products[1].imageUrl)
+                .apply(
+                    RequestOptions().override(200, 200)
+                        .placeholder(R.drawable.ic_launcher_foreground)
+                        .error(R.drawable.ic_launcher_background)
+                )
+                .into(binding.productImage2)
+        } else {
+            binding.productImage2.setImageResource(R.drawable.ic_launcher_foreground) // Placeholder image
+        }
 
         binding.orderConstrainLayout.setOnClickListener {
             listener.invoke(position)
