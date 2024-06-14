@@ -82,7 +82,7 @@ class ShoppingCartFragment : Fragment() {
 
     private fun setupRecyclerView(items: List<CartProduct>) {
 
-        val adapter = ShoppingCartAdapter(items) { itemId ->
+        val adapter = ShoppingCartAdapter(requireContext(),items) { itemId ->
             val cartId = viewModel.readCartId()
             Log.i(TAG, "setupRecyclerView: $cartId")
             removeItemFromCart(cartId, itemId)
