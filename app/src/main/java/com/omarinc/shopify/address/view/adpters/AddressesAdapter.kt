@@ -1,5 +1,6 @@
 package com.omarinc.shopify.address.view.adpters
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +9,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.omarinc.shopify.R
 import com.omarinc.shopify.models.CustomerAddress
+import com.omarinc.shopify.utilities.Helper
 
 class AddressesAdapter(
+    private val context: Context,
     private val addresses: List<CustomerAddress?>,
     private val onRemoveItem: (String) -> Unit
 
@@ -30,7 +33,18 @@ class AddressesAdapter(
         holder.customerName.text = "${item?.firstName} ${item?.lastName}"
         holder.customerAddress.text = item?.address1
         holder.deleteIcon.setOnClickListener {
-            onRemoveItem(item?.id.toString())
+            Helper.showAlertDialog(
+                context = context,
+                title = context.getString(R.string.delete_address_item),
+                message = context.getString(R.string.are_you_sure_to_address_this_item),
+                positiveButtonText = context.getString(R.string.yes),
+                positiveButtonAction = {
+                    onRemoveItem(item?.id.toString())
+                },
+                negativeButtonText = context.getString(R.string.no)
+            )
+
+
         }
     }
 
