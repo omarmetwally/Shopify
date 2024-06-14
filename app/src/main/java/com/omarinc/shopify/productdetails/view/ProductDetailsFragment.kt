@@ -23,6 +23,8 @@ import com.omarinc.shopify.favorites.model.FavoriteItem
 import com.omarinc.shopify.favorites.model.FirebaseRepository
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModel
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModelFactory
+import com.omarinc.shopify.home.view.HomeFragment
+import com.omarinc.shopify.home.view.HomeFragment.Companion
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
@@ -36,6 +38,7 @@ import com.omarinc.shopify.utilities.Constants.CART_ID
 import com.omarinc.shopify.utilities.Helper
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -90,7 +93,6 @@ class ProductDetailsFragment : Fragment() {
 
 
 
-        getCurrentCurrency()
 
         clickFavorite(userToken, productId)
 
@@ -190,7 +192,10 @@ class ProductDetailsFragment : Fragment() {
 
                         binding.tvProductName.text = productDetails.title
                         binding.tvProductVendor.text = productDetails.vendor
-                        binding.tvProductPrice.text = "${productDetails.price} USD"
+
+                        val price = productDetails.price.toString()
+                        getCurrentCurrency(price.toDouble())
+
                         binding.tvProductStock.text = "In Stock: ${productDetails.totalInventory}"
                         binding.tvProductDescription.text = productDetails.description
 
@@ -258,7 +263,7 @@ class ProductDetailsFragment : Fragment() {
 
                                 val cartId = createNewCart(userEmail)
                                 sharedPreferences.writeStringToSharedPreferences(CART_ID, cartId)
-                               // viewModel.writeCartId(cartId)
+                                // viewModel.writeCartId(cartId)
                                 // val variantId = getFirstVariantId(productId)
 
                                 Log.i(TAG, "variantId 11: $variantId")
@@ -288,7 +293,7 @@ class ProductDetailsFragment : Fragment() {
 
                                             Log.i(TAG, "CartId : ${result.response} ")
                                             val cartId = result.response
-                                           // viewModel.writeCartId(cartId!!)
+                                            // viewModel.writeCartId(cartId!!)
                                             sharedPreferences.writeStringToSharedPreferences(
                                                 CART_ID,
                                                 cartId!!
@@ -410,23 +415,40 @@ class ProductDetailsFragment : Fragment() {
         }
     }
 
-
-    private fun getCurrentCurrency() {
-
+    private fun getCurrentCurrency(price: Double) {
+        viewModel.getCurrencyUnit()
         viewModel.getRequiredCurrency()
+
         lifecycleScope.launch {
-            viewModel.requiredCurrency.collect { result ->
-
-                when (result) {
-                    is ApiState.Failure -> Log.i(TAG, "getCurrentCurrency: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
-                    is ApiState.Success -> Log.i(
+            combine(
+                viewModel.currencyUnit,
+                viewModel.requiredCurrency
+            ) { currencyUnit, requiredCurrency ->
+                Pair(currencyUnit, requiredCurrency)
+            }.collect { (currencyUnit, requiredCurrency) ->
+                Log.i(TAG, "getCurrentCurrency 000: $currencyUnit")
+                when (requiredCurrency) {
+                    is ApiState.Failure -> Log.i(
                         TAG,
-                        "getCurrentCurrency: ${result.response.data.values}"
+                        "getCurrentCurrency: ${requiredCurrency.msg}"
                     )
-                }
 
+                    ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
+                    is ApiState.Success -> {
+                        Log.i(
+                            TAG,
+                            "getCurrentCurrency: ${requiredCurrency.response.data[currencyUnit]?.code}"
+                        )
+                        requiredCurrency.response.data[currencyUnit]?.let { currency ->
+                            Log.i(TAG, "getCurrentCurrency: ${currency.value}")
+                            binding.tvProductPrice.text =
+                                "${price * currency.value} ${currency.code}"
+                        }
+                    }
+                }
             }
         }
     }
+
+
 }

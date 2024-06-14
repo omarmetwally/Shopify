@@ -422,7 +422,6 @@ class HomeFragment : Fragment() {
         viewModel.getRequiredCurrency()
 
         lifecycleScope.launch {
-            // Combine currencyUnit and requiredCurrency flows
             combine(
                 viewModel.currencyUnit,
                 viewModel.requiredCurrency
@@ -438,7 +437,6 @@ class HomeFragment : Fragment() {
                             TAG,
                             "getCurrentCurrency: ${requiredCurrency.response.data[currencyUnit]?.code}"
                         )
-                        // Call your method to set up products adapter or any other necessary logic
                         requiredCurrency.response.data[currencyUnit]?.let { currency ->
                             Log.i(TAG, "getCurrentCurrency: ${currency.value}")
                             productsAdapter.updateCurrentCurrency(currency.value, currency.code)
