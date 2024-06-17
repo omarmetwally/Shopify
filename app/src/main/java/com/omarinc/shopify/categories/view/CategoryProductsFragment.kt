@@ -12,12 +12,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentCategoryProductsBinding
 import com.omarinc.shopify.categories.viewmodel.CategoriesViewModel
+import com.omarinc.shopify.home.view.CategoriesFragmentDirections
 import com.omarinc.shopify.home.view.HomeFragment
+import com.omarinc.shopify.home.view.HomeFragmentDirections
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
@@ -80,6 +83,7 @@ class CategoryProductsFragment : Fragment() {
         collectProductsByHandle()
 
 
+       // binding.productsCategoryShimmer.startShimmer()
         binding.fab1.setOnClickListener {
             viewModel.getProductsByType("SHOES")
             toggleFab()
@@ -108,10 +112,12 @@ class CategoryProductsFragment : Fragment() {
                 viewModel.apiState.collect { result ->
                     when (result) {
                         is ApiState.Loading -> {
-
+                            binding.productsCategoryShimmer.startShimmer()
                         }
 
                         is ApiState.Success -> {
+                            binding.productsCategoryShimmer.stopShimmer()
+                            binding.productsCategoryShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response)
                             Log.i(TAG, "collectProductsBySubCategories: ")
                             getCurrentCurrency()
@@ -132,10 +138,12 @@ class CategoryProductsFragment : Fragment() {
                 viewModel.collectionApiState.collect { result ->
                     when (result) {
                         is ApiState.Loading -> {
-
+                            binding.productsCategoryShimmer.startShimmer()
                         }
 
                         is ApiState.Success -> {
+                            binding.productsCategoryShimmer.stopShimmer()
+                            binding.productsCategoryShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response.products)
                             getCurrentCurrency()
                         }
@@ -160,7 +168,11 @@ class CategoryProductsFragment : Fragment() {
     private fun setUpProductsAdapter() {
         productsAdapter = CategoryProductsAdapter(
             requireContext(),
-        )
+        ){ productId ->
+            val action =
+                CategoriesFragmentDirections.actionCategoriesFragmentToProductDetailsFragment(productId)
+            findNavController().navigate(action)
+        }
 
         productsManager = GridLayoutManager(requireContext(), 2)
         productsManager.orientation = LinearLayoutManager.VERTICAL
