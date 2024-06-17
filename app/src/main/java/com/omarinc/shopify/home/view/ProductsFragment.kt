@@ -64,6 +64,7 @@ class ProductsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+        binding.productsShimmer.startShimmer()
         binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -72,6 +73,31 @@ class ProductsFragment : Fragment() {
         setupSuggestionsAdapter()
         setupSearchView()
         collectSearchQuery()
+        collectProducts()
+    }
+
+    private fun collectProducts() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.productsApiState.collect { result ->
+                    when (result) {
+                        is ApiState.Loading -> {
+
+                        }
+
+                        is ApiState.Success -> {
+                            binding.productsShimmer.stopShimmer()
+                            binding.productsShimmer.visibility = View.GONE
+                            productsAdapter.submitList(result.response)
+                        }
+
+                        is ApiState.Failure -> {
+
+                        }
+                    }
+                }
+            }
+        }
     }
 
 
@@ -86,25 +112,7 @@ class ProductsFragment : Fragment() {
         binding.productsRV.layoutManager = productsManager
         binding.productsRV.adapter = productsAdapter
 
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.productsApiState.collect { result ->
-                    when (result) {
-                        is ApiState.Loading -> {
 
-                        }
-
-                        is ApiState.Success -> {
-                            productsAdapter.submitList(result.response)
-                        }
-
-                        is ApiState.Failure -> {
-
-                        }
-                    }
-                }
-            }
-        }
     }
     private fun setupSearchView() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {

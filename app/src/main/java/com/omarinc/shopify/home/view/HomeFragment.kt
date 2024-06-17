@@ -78,6 +78,8 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+        binding.homeScrollView.visibility = View.GONE
+        binding.homeShimmer.startShimmer()
         binding.searchView.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
 
@@ -258,6 +260,9 @@ class HomeFragment : Fragment() {
                         }
 
                         is ApiState.Success -> {
+                            binding.homeScrollView.visibility = View.VISIBLE
+                            binding.homeShimmer.stopShimmer()
+                            binding.homeShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response)
                             getCurrentCurrency()
                         }

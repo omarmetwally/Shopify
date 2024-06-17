@@ -57,6 +57,7 @@ class OrdersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+
         collectOrders()
 
         setUpOrdersAdapter()
@@ -86,10 +87,12 @@ class OrdersFragment : Fragment() {
                 viewModel.apiState.collect { result ->
                     when (result) {
                         is ApiState.Loading -> {
-
+                            binding.ordersShimmer.startShimmer()
                         }
 
                         is ApiState.Success -> {
+                            binding.ordersShimmer.stopShimmer()
+                            binding.ordersShimmer.visibility = View.GONE
                             ordersAdapter.submitList(result.response)
                             getCurrentCurrency()
                         }

@@ -14,6 +14,7 @@ import com.omarinc.shopify.models.Product
 
 class CategoryProductsAdapter(
     val context: Context,
+    val listener:(productsId:String)-> Unit
 ) : ListAdapter<Product, CategoryProductsViewHolder>(
     CategoryProductsDiffUtil()
 ) {
@@ -31,6 +32,10 @@ class CategoryProductsAdapter(
 
     override fun onBindViewHolder(holder: CategoryProductsViewHolder, position: Int) {
         val current = getItem(position)
+        binding.CategoryProductsConstrainLayout.setOnClickListener {
+            listener.invoke(current.id)
+        }
+
         val convertedPrice = convertedPrices[current.id] ?: current.price.toDouble()
 
         holder.bind(current, convertedPrice, currencyUnit)
