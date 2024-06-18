@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_favoritesFragment2"
+            app:destination="@id/favoritesFragment" />
     </fragment>
 
     <fragment
