@@ -321,7 +321,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
     }
 
 
-    override fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>> = flow {
+    override fun getCustomerOrders(token: String): Flow<ApiState<List<Order>>> = flow {
         val query = CustomerOrdersQuery(token)
         Log.i("TAG", "getORders: ")
         try {

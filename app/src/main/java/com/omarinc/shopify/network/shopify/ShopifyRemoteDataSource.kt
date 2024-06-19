@@ -30,7 +30,7 @@ interface ShopifyRemoteDataSource {
     fun getProductById(productId: String): Flow<ApiState<ProductDetails>>
     suspend fun searchProducts(query: String): List<Products>
 
-    fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>>
+    fun getCustomerOrders(token: String): Flow<ApiState<List<Order>>>
 
     fun getProductByType(type: String): Flow<ApiState<List<Product>>>
 
