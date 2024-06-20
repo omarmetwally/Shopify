@@ -29,20 +29,25 @@ class SearchProductsAdapter(
     private var currencyUnit: String = "USD"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val binding = ItemFavoriteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            ItemFavoriteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ProductViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ProductViewHolder, @SuppressLint("RecyclerView") position: Int) {
+    override fun onBindViewHolder(
+        holder: ProductViewHolder,
+        @SuppressLint("RecyclerView") position: Int
+    ) {
         val current = getItem(position)
         val convertedPrice = convertedPrices[current.id] ?: current.price
 
-        holder.bind(current, convertedPrice, context, currencyUnit)
+        holder.bind(current, convertedPrice.toString().toDouble(), context, currencyUnit)
 
         if (position > lastPosition) {
             holder.itemView.visibility = View.INVISIBLE
             handler.postDelayed({
-                val animation = AnimationUtils.loadAnimation(holder.itemView.context, R.anim.scale_in_animation)
+                val animation =
+                    AnimationUtils.loadAnimation(holder.itemView.context, R.anim.scale_in_animation)
                 holder.itemView.startAnimation(animation)
                 holder.itemView.visibility = View.VISIBLE
             }, (position * 170).toLong())
@@ -57,18 +62,27 @@ class SearchProductsAdapter(
     fun updateCurrentCurrency(rate: Double, unit: String) {
         currencyUnit = unit
         currentList.forEach { product ->
-            convertedPrices[product.id] = product.price * rate
+            convertedPrices[product.id] = product.price.toString().toDouble() * rate
         }
         notifyDataSetChanged()
     }
 
-    class ProductViewHolder(private val binding: ItemFavoriteBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ProductViewHolder(private val binding: ItemFavoriteBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(product: Products, convertedPrice: Double, context: Context, currencyUnit: String) {
+        fun bind(
+            product: Products,
+            convertedPrice: Double,
+            context: Context,
+            currencyUnit: String
+        ) {
             binding.tvProductName.text = product.title
             binding.tvProductPrice.text = String.format("%.2f %s", convertedPrice, currencyUnit)
             Glide.with(context).load(product.imageUrl)
-                .apply(RequestOptions().placeholder(R.drawable.ic_launcher_foreground).error(R.drawable.ic_launcher_background))
+                .apply(
+                    RequestOptions().placeholder(R.drawable.ic_launcher_foreground)
+                        .error(R.drawable.ic_launcher_background)
+                )
                 .into(binding.ivProductImage)
         }
     }
