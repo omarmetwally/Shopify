@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.omarinc.shopify.databinding.FragmentShoppingCartBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CartProduct
+import com.omarinc.shopify.models.Line
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
@@ -26,6 +27,8 @@ class ShoppingCartFragment : Fragment() {
 
     private lateinit var binding: FragmentShoppingCartBinding
     private lateinit var viewModel: ShoppingCartViewModel
+    private lateinit var productsLine: List<Line>
+
 
     companion object {
         const val TAG = "ShoppingCartFragment"
@@ -49,6 +52,10 @@ class ShoppingCartFragment : Fragment() {
     }
 
     private fun setListeners() {
+
+        binding.checkoutButton.setOnClickListener {
+         //   viewModel.createCheckout()
+        }
 
     }
 
@@ -74,6 +81,11 @@ class ShoppingCartFragment : Fragment() {
                     is ApiState.Success -> {
                         Log.i(TAG, "onViewCreated: ${result.response.size}")
                         setupRecyclerView(result.response)
+                        result.response.forEach { item ->
+
+                            productsLine = productsLine.plus(Line(item.variantId, item.quantity))
+                        }
+
                     }
                 }
             }
@@ -82,7 +94,7 @@ class ShoppingCartFragment : Fragment() {
 
     private fun setupRecyclerView(items: List<CartProduct>) {
 
-        val adapter = ShoppingCartAdapter(requireContext(),items) { itemId ->
+        val adapter = ShoppingCartAdapter(requireContext(), items) { itemId ->
             val cartId = viewModel.readCartId()
             Log.i(TAG, "setupRecyclerView: $cartId")
             removeItemFromCart(cartId, itemId)
@@ -115,6 +127,10 @@ class ShoppingCartFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun createCheckout() {
+
     }
 
 }

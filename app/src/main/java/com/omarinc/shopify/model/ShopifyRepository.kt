@@ -3,9 +3,9 @@ package com.omarinc.shopify.model
 import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
+import com.omarinc.shopify.models.CheckoutResponse
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Product
-import com.omarinc.shopify.models.Currencies
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.DiscountCodesResponse
@@ -16,7 +16,7 @@ import com.omarinc.shopify.models.PriceRulesResponse
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
-import com.omarinc.shopify.utilities.Constants
+import com.omarinc.shopify.type.CheckoutLineItemInput
 import kotlinx.coroutines.flow.Flow
 
 interface ShopifyRepository {
@@ -49,7 +49,7 @@ interface ShopifyRepository {
     suspend fun getProductById(productId: String): Flow<ApiState<ProductDetails>>
     suspend fun searchProducts(query: String): List<Products>
 
-    fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>>
+    fun getCustomerOrders(token: String): Flow<ApiState<List<Order>>>
 
     fun getProductByType(type: String): Flow<ApiState<List<Product>>>
 
@@ -64,6 +64,7 @@ interface ShopifyRepository {
         quantity: Int,
         variantID: String
     ): Flow<ApiState<String?>>
+
     suspend fun removeProductFromCart(cartId: String, lineId: String): Flow<ApiState<String?>>
 
     suspend fun getCartProducts(cartId: String): Flow<ApiState<List<CartProduct>>>
@@ -78,24 +79,27 @@ interface ShopifyRepository {
 
     suspend fun getCoupons(): Flow<ApiState<PriceRulesResponse>>
 
-    suspend fun getCouponDetails(couponId:String): Flow<ApiState<DiscountCodesResponse>>
+    suspend fun getCouponDetails(couponId: String): Flow<ApiState<DiscountCodesResponse>>
 
     suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>>
 
     suspend fun deleteCustomerAddress(addressId: String, token: String): Flow<ApiState<String?>>
 
     suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>>
-    
+
     suspend fun completeDraftOrder(orderId: Long): Flow<ApiState<DraftOrderResponse>>
-    
+
     suspend fun sendInvoice(orderId: Long): Flow<ApiState<DraftOrderResponse>>
 
     suspend fun writeIsFirstTimeUser(key: String, value: Boolean)
 
     suspend fun readIsFirstTimeUser(key: String): Boolean
-    
+
     suspend fun clearAllData()
-    
+
     fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>>
 
+    suspend fun createCheckout(
+        lineItems: List<CheckoutLineItemInput>, email: String?
+    ): Flow<ApiState<CheckoutResponse?>>
 }

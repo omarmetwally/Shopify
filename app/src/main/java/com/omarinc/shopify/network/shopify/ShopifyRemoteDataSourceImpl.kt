@@ -10,6 +10,7 @@ import com.apollographql.apollo3.exception.ApolloException
 import com.omarinc.shopify.AddProductToCartMutation
 import com.omarinc.shopify.CreateAddressMutation
 import com.omarinc.shopify.CreateCartMutation
+import com.omarinc.shopify.CreateCheckoutMutation
 import com.omarinc.shopify.CreateCustomerAccessTokenMutation
 import com.omarinc.shopify.CreateCustomerMutation
 import com.omarinc.shopify.CustomerAddressesQuery
@@ -32,10 +33,15 @@ import com.omarinc.shopify.SearchProductsQuery
 import com.omarinc.shopify.models.AddToCartResponse
 import com.omarinc.shopify.models.Cart
 import com.omarinc.shopify.models.CartProduct
+import com.omarinc.shopify.models.Checkout
+import com.omarinc.shopify.models.CheckoutResponse
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.CustomerAddress
+import com.omarinc.shopify.models.LineItem
+import com.omarinc.shopify.models.LineItemCheckout
 import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.models.UserError
+import com.omarinc.shopify.models.Variant
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.Price
 import com.omarinc.shopify.productdetails.model.ProductDetails
@@ -43,6 +49,8 @@ import com.omarinc.shopify.productdetails.model.ProductImage
 import com.omarinc.shopify.productdetails.model.ProductVariant
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.productdetails.model.SelectedOption
+import com.omarinc.shopify.type.CheckoutLineItemInput
+import com.omarinc.shopify.type.CurrencyCode
 import com.omarinc.shopify.type.CustomerCreateInput
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
@@ -321,7 +329,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
     }
 
 
-    override fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>> = flow {
+    override fun getCustomerOrders(token: String): Flow<ApiState<List<Order>>> = flow {
         val query = CustomerOrdersQuery(token)
         Log.i("TAG", "getORders: ")
         try {
@@ -609,6 +617,54 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         }
     }
 
+    override suspend fun createCheckout(
+        lineItems: List<CheckoutLineItemInput>, email: String?
+    ): Flow<ApiState<CheckoutResponse?>> = flow {
+
+        emit(ApiState.Loading)
+
+        val mutation = CreateCheckoutMutation( lineItems = lineItems, email = Optional.Present(email))
+        try {
+            val response = apolloClient.mutation(mutation).execute()
+
+            if (response.hasErrors()) {
+                val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
+                emit(ApiState.Failure(Throwable(errorMessages)))
+            } else {
+                val data = response.data
+                if (data != null) {
+                    val checkoutCreate = response.data?.checkoutCreate
+                    val checkout = checkoutCreate?.checkout?.let{
+                        Checkout(id = it.id,
+                            webUrl = it.webUrl.toString(),
+                            lineItems = it.lineItems.edges.map { edge ->
+                                LineItemCheckout(
+                                    title = edge.node.title,
+                                    quantity = edge.node.quantity,
+                                    variant = Variant(
+                                        id = edge.node.variant!!.id,
+                                        title = edge.node.variant.title,
+                                        price = CustomerOrdersQuery.PriceV2(
+                                            amount = edge.node.variant.price.amount.toString(),
+                                            currencyCode = CurrencyCode.CAD
+                                        )
+                                    ),
+                                    45
+                                )
+                            })
+                    }
+                } else {
+                    emit(ApiState.Failure(Throwable("Response data is null")))
+                }
+
+
+            }
+        } catch (e: ApolloException) {
+
+            emit(ApiState.Failure(e))
+        }
+    }
+
     override suspend fun createAddress(
         customerAddress: CustomerAddress,
         token: String
@@ -713,28 +769,32 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
     }
 
 
-    override fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>> = flow {
-        val query = CustomerDetailsQuery(token)
-        try {
-            emit(ApiState.Loading)
-            val response = apolloClient.query(query).execute()
+    override fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>> =
+        flow {
+            val query = CustomerDetailsQuery(token)
+            try {
+                emit(ApiState.Loading)
+                val response = apolloClient.query(query).execute()
 
-            if (response.hasErrors()) {
-                val errorMessages = response.errors?.joinToString { it.message } ?: "Unknown error"
-                emit(ApiState.Failure(Throwable(errorMessages)))
-            } else {
-                val customer = response.data?.customer
-                if (customer != null) {
-                    emit(ApiState.Success(customer))
+                if (response.hasErrors()) {
+                    val errorMessages =
+                        response.errors?.joinToString { it.message } ?: "Unknown error"
+                    emit(ApiState.Failure(Throwable(errorMessages)))
                 } else {
-                    emit(ApiState.Failure(Throwable("Customer data is null")))
+                    val customer = response.data?.customer
+                    if (customer != null) {
+                        emit(ApiState.Success(customer))
+                    } else {
+                        emit(ApiState.Failure(Throwable("Customer data is null")))
+                    }
                 }
+            } catch (e: ApolloException) {
+                emit(ApiState.Failure(e))
             }
-        } catch (e: ApolloException) {
-            emit(ApiState.Failure(e))
         }
-    }
 
 
 
 }
+
+
