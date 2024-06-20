@@ -27,15 +27,19 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.productdetails.view.ProductDetailsFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 
 class ProductsFragment : Fragment() {
+
+    companion object{
+        private const val TAG = "ProductsFragment"
+    }
 
     private lateinit var binding: FragmentProductsBinding
     private lateinit var productsManager: GridLayoutManager
@@ -96,6 +100,8 @@ class ProductsFragment : Fragment() {
 
                         is ApiState.Success -> {
                             productsAdapter.submitList(result.response)
+                            getCurrentCurrency()
+
                         }
 
                         is ApiState.Failure -> {
@@ -204,30 +210,35 @@ class ProductsFragment : Fragment() {
         viewModel.getProductsByBrandId(id ?: "gid://shopify/Collection/308804419763")
     }
 
+
     private fun getCurrentCurrency() {
-
+        viewModel.getCurrencyUnit()
         viewModel.getRequiredCurrency()
+
         lifecycleScope.launch {
-            viewModel.requiredCurrency.collect { result ->
-
-                when (result) {
-                    is ApiState.Failure -> Log.i(
-                        ProductDetailsFragment.TAG,
-                        "getCurrentCurrency: ${result.msg}"
-                    )
-
-                    ApiState.Loading -> Log.i(
-                        ProductDetailsFragment.TAG,
-                        "getCurrentCurrency: Loading"
-                    )
-
-                    is ApiState.Success -> Log.i(
-                        ProductDetailsFragment.TAG,
-                        "getCurrentCurrency: ${result.response.data.values}"
-                    )
+            combine(
+                viewModel.currencyUnit,
+                viewModel.requiredCurrency
+            ) { currencyUnit, requiredCurrency ->
+                Pair(currencyUnit, requiredCurrency)
+            }.collect { (currencyUnit, requiredCurrency) ->
+                Log.i(TAG, "getCurrentCurrency 000: $currencyUnit")
+                when (requiredCurrency) {
+                    is ApiState.Failure -> Log.i(TAG, "getCurrentCurrency: ${requiredCurrency.msg}")
+                    ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
+                    is ApiState.Success -> {
+                        Log.i(
+                            TAG,
+                            "getCurrentCurrency: ${requiredCurrency.response.data[currencyUnit]?.code}"
+                        )
+                        requiredCurrency.response.data[currencyUnit]?.let { currency ->
+                            Log.i(TAG, "getCurrentCurrency: ${currency.value}")
+                            productsAdapter.updateCurrentCurrency(currency.value, currency.code)
+                        }
+                    }
                 }
-
             }
         }
     }
+
 }
