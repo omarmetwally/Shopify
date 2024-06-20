@@ -39,7 +39,7 @@ class FavoriteViewModelTest {
     @Test
     fun addToFavorites_WithValidItem_ShouldAddFavoriteSuccessfully() = runTest {
         val userToken = "fake_token"
-        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url")
+        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url","")
 
         viewModel.addToFavorites(userToken, favoriteItem)
 
@@ -50,7 +50,7 @@ class FavoriteViewModelTest {
     @Test
     fun removeFromFavorites_WithValidItem_ShouldRemoveFavoriteSuccessfully() = runTest {
         val userToken = "fake_token"
-        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url")
+        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url","")
 
         viewModel.addToFavorites(userToken, favoriteItem)
         viewModel.removeFromFavorites(userToken, favoriteItem.productId)
@@ -62,7 +62,7 @@ class FavoriteViewModelTest {
     @Test
     fun checkIfFavorite_WithValidFavorite_ShouldReturnTrue() = runTest {
         val userToken = "fake_token"
-        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url")
+        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url","")
 
         viewModel.addToFavorites(userToken, favoriteItem)
         viewModel.checkIfFavorite(userToken, favoriteItem.productId)
@@ -85,7 +85,7 @@ class FavoriteViewModelTest {
     @Test
     fun getFavorites_WithValidUserToken_ShouldReturnFavoritesList() = runTest {
         val userToken = "fake_token"
-        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url")
+        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url","")
 
         viewModel.addToFavorites(userToken, favoriteItem)
         viewModel.getFavorites(userToken)
