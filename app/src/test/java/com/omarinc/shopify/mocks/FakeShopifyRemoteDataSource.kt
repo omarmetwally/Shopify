@@ -81,7 +81,7 @@ class FakeShopifyRemoteDataSource : ShopifyRemoteDataSource {
         }
     }
 
-    override fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>> = flow {
+    override fun getCustomerOrders(token: String): Flow<ApiState<List<Order>>> = flow {
         if (shouldReturnError) {
             emit(ApiState.Failure(Throwable("Fake error")))
         } else {
