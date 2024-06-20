@@ -6,6 +6,7 @@
     <color name="secondary_color">#B4A5B8</color>
     <color name="gray_color">#FAFAFA</color>
     <color name="gray_text">#929EAE</color>
+    <color name="shimmer_bg_color">#DDDDDD</color>
 
     <!--colors for light mode-->
 

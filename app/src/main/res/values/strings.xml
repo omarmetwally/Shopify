@@ -96,6 +96,10 @@
     <string name="phone_number">Phone Number</string>
     <string name="street_name">Street</string>
     <string name="submit_address">Submit Address</string>
+    <string name="delete_cart_item">Deleting Cart item</string>
+    <string name="are_you_sure_to_delete_this_item">Are you sure you want to delete this item ?</string>
+    <string name="delete_address_item">Deleting Address item</string>
+    <string name="are_you_sure_to_address_this_item">Are you sure you want to delete this item ?</string>
 
 
 </resources>

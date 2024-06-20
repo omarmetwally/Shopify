@@ -25,7 +25,8 @@ object Constants {
     val fragmentsWithHiddenBottomNav = setOf(
         R.id.homeFragment,
         R.id.profileFragment,
-        R.id.categoriesFragment
+        R.id.categoriesFragment,
+        R.id.shoppingCartFragment
     )
 
 }

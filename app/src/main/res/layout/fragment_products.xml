@@ -103,6 +103,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/priceSeekBar" />
 
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/productsShimmer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarValueText">
+
+        <include layout="@layout/fragment_products_shimmer" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/productsRV"
         android:layout_width="0dp"

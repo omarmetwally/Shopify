@@ -56,10 +56,7 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun setUpListeners() {
-        binding.addressTextView.setOnClickListener {
-            val action = SettingsFragmentDirections.actionSettingsFragmentToAddressesFragment()
-            findNavController().navigate(action)
-        }
+
     }
 
     private fun setUpViewModel() {

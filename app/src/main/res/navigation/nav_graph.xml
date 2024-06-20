@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_favoritesFragment2"
+            app:destination="@id/favoritesFragment" />
     </fragment>
 
     <fragment
@@ -48,17 +51,16 @@
         <action
             android:id="@+id/action_profileFragment_to_ordersFragment"
             app:destination="@id/ordersFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_addressesFragment"
+            app:destination="@id/addressesFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.omarinc.shopify.settings.view.SettingsFragment"
         android:label="SettingsFragment"
-        tools:layout="fragment_settings">
-        <action
-            android:id="@+id/action_settingsFragment_to_addressesFragment"
-            app:destination="@id/addressesFragment" />
-    </fragment>
+        tools:layout="fragment_settings"/>
 
 
     <fragment
@@ -88,6 +90,9 @@
         <action
             android:id="@+id/action_categoriesFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_categoriesFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/productDetailsFragment"
