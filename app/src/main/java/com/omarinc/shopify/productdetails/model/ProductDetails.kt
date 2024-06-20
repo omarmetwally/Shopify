@@ -37,5 +37,5 @@ data class Products(
     val title: String,
     val description: String,
     val imageUrl: String,
-    val price: Any
+    val price: Double
 )

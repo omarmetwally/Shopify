@@ -25,6 +25,9 @@ class SearchProductsAdapter(
     private var lastPosition = -1
     private val handler = Handler(Looper.getMainLooper())
 
+    private var convertedPrices: MutableMap<String, Double> = mutableMapOf()
+    private var currencyUnit: String = "USD"
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val binding = ItemFavoriteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ProductViewHolder(binding)
@@ -32,7 +35,9 @@ class SearchProductsAdapter(
 
     override fun onBindViewHolder(holder: ProductViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val current = getItem(position)
-        holder.bind(current, context)
+        val convertedPrice = convertedPrices[current.id] ?: current.price
+
+        holder.bind(current, convertedPrice, context, currencyUnit)
 
         if (position > lastPosition) {
             holder.itemView.visibility = View.INVISIBLE
@@ -49,11 +54,19 @@ class SearchProductsAdapter(
         }
     }
 
+    fun updateCurrentCurrency(rate: Double, unit: String) {
+        currencyUnit = unit
+        currentList.forEach { product ->
+            convertedPrices[product.id] = product.price * rate
+        }
+        notifyDataSetChanged()
+    }
+
     class ProductViewHolder(private val binding: ItemFavoriteBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(product: Products, context: Context) {
+        fun bind(product: Products, convertedPrice: Double, context: Context, currencyUnit: String) {
             binding.tvProductName.text = product.title
-            binding.tvProductPrice.text = "${product.price} USD"
+            binding.tvProductPrice.text = String.format("%.2f %s", convertedPrice, currencyUnit)
             Glide.with(context).load(product.imageUrl)
                 .apply(RequestOptions().placeholder(R.drawable.ic_launcher_foreground).error(R.drawable.ic_launcher_background))
                 .into(binding.ivProductImage)
