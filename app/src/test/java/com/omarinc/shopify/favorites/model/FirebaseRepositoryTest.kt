@@ -62,10 +62,24 @@ class FirebaseRepositoryTest {
     @Test
     fun addCustomerCart_WithValidData_ShouldAddCartSuccessfully() = runBlocking {
 
+        val email = "fake_email"
+        val cartId = "fake_cart_id"
+
+        fakeFirebaseRepository.addCustomerCart(email, cartId)
+
+        val hasCart = fakeFirebaseRepository.isCustomerHasCart(email)
+        assertTrue(hasCart)
     }
 
     @Test
     fun getCartByCustomer_WithValidData_ShouldReturnCorrectCartId() = runBlocking {
 
+        val email = "fake_email"
+        val cartId = "fake_cart_id"
+
+        fakeFirebaseRepository.addCustomerCart(email, cartId)
+
+        val retrievedCartId = fakeFirebaseRepository.getCartByCustomer(email)
+        assertEquals(cartId, retrievedCartId)
     }
 }

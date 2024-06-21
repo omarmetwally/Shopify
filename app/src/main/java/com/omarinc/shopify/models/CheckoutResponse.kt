@@ -23,6 +23,6 @@ data class LineItemCheckout(
     val title: String,
     val quantity: Int,
     val variant: Variant,
-    val price: Int
+    val price: Double
 )
 

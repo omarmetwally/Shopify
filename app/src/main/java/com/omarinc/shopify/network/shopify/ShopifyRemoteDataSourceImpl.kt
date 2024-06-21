@@ -649,7 +649,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                                             currencyCode = CurrencyCode.CAD
                                         )
                                     ),
-                                    45
+                                    45.0
                                 )
                             })
                     }
