@@ -30,7 +30,7 @@ class OrdersViewModel (private val repository: ShopifyRepository) : ViewModel() 
 
     fun getCustomerOrders(token:String){
         viewModelScope.launch {
-            repository.getCutomerOrders(token).collect{
+            repository.getCustomerOrders(token).collect{
                 _apiState.value = it
             }
         }

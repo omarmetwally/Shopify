@@ -5,6 +5,7 @@ import android.util.Log
 import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
+import com.omarinc.shopify.models.CheckoutResponse
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.models.CurrencyResponse
@@ -21,6 +22,7 @@ import com.omarinc.shopify.network.currency.CurrencyRemoteDataSource
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
+import com.omarinc.shopify.type.CheckoutLineItemInput
 import com.omarinc.shopify.utilities.Constants
 import com.omarinc.shopify.utilities.Constants.CART_ID
 import kotlinx.coroutines.flow.Flow
@@ -60,7 +62,7 @@ class ShopifyRepositoryImpl(
         fullName: String,
         phoneNumber: String
     ): Flow<ApiState<RegisterUserResponse>> {
-        return shopifyRemoteDataSource.registerUser(email, password, fullName,phoneNumber)
+        return shopifyRemoteDataSource.registerUser(email, password, fullName, phoneNumber)
     }
 
     override fun getBrands(): Flow<ApiState<List<Brands>>> {
@@ -128,6 +130,7 @@ class ShopifyRepositoryImpl(
     override suspend fun searchProducts(query: String): List<Products> {
         return shopifyRemoteDataSource.searchProducts(query)
     }
+
 
     override fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>> {
         return shopifyRemoteDataSource.getCustomerOrders(token)
@@ -219,7 +222,7 @@ class ShopifyRepositoryImpl(
     }
 
     override suspend fun writeIsFirstTimeUser(key: String, value: Boolean) {
-        sharedPreferences.writeBooleanToSharedPreferences(key,value)
+        sharedPreferences.writeBooleanToSharedPreferences(key, value)
     }
 
     override suspend fun readIsFirstTimeUser(key: String): Boolean {
@@ -230,8 +233,15 @@ class ShopifyRepositoryImpl(
     override suspend fun clearAllData() {
         sharedPreferences.clearAllData()
     }
+
     override fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>> {
         return shopifyRemoteDataSource.getCustomerDetails(token)
+    }
+
+    override suspend fun createCheckout(
+        lineItems: List<CheckoutLineItemInput>, email: String?
+    ): Flow<ApiState<CheckoutResponse?>> {
+        return shopifyRemoteDataSource.createCheckout(lineItems, email)
     }
 
 

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.omarinc.shopify.databinding.FragmentShoppingCartBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CartProduct
+import com.omarinc.shopify.models.Line
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
@@ -20,12 +21,15 @@ import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModel
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModelFactory
+import com.omarinc.shopify.type.CheckoutLineItemInput
 import kotlinx.coroutines.launch
 
 class ShoppingCartFragment : Fragment() {
 
     private lateinit var binding: FragmentShoppingCartBinding
     private lateinit var viewModel: ShoppingCartViewModel
+    private lateinit var productsLine: List<CheckoutLineItemInput>
+
 
     companion object {
         const val TAG = "ShoppingCartFragment"
@@ -49,6 +53,24 @@ class ShoppingCartFragment : Fragment() {
     }
 
     private fun setListeners() {
+
+        binding.checkoutButton.setOnClickListener {
+            viewModel.createCheckout(productsLine)
+            lifecycleScope.launch {
+                viewModel.checkoutResponse.collect{result->
+
+                    when(result){
+                        is ApiState.Failure -> Log.i(TAG, "checkoutResponse: Failure ${result.msg}")
+                        ApiState.Loading -> Log.i(TAG, "checkoutResponse: loading: ")
+                        is ApiState.Success -> {
+
+                            Log.i(TAG, "checkoutResponse: Success ${result.response}")
+                        }
+                    }
+
+                }
+            }
+        }
 
     }
 
@@ -74,6 +96,21 @@ class ShoppingCartFragment : Fragment() {
                     is ApiState.Success -> {
                         Log.i(TAG, "onViewCreated: ${result.response.size}")
                         setupRecyclerView(result.response)
+
+                   Log.i(TAG, "getShoppingCartItems: ${result.response[0].variantId ?: "0"}")
+
+                        productsLine = emptyList()
+                        result.response.forEach { item ->
+
+                            
+                            productsLine = productsLine.plus(
+                                CheckoutLineItemInput(
+                                    quantity = item.quantity,
+                                    variantId = item.variantId
+                                )
+                            )
+                        }
+
                     }
                 }
             }
@@ -82,7 +119,7 @@ class ShoppingCartFragment : Fragment() {
 
     private fun setupRecyclerView(items: List<CartProduct>) {
 
-        val adapter = ShoppingCartAdapter(requireContext(),items) { itemId ->
+        val adapter = ShoppingCartAdapter(requireContext(), items) { itemId ->
             val cartId = viewModel.readCartId()
             Log.i(TAG, "setupRecyclerView: $cartId")
             removeItemFromCart(cartId, itemId)
@@ -116,5 +153,7 @@ class ShoppingCartFragment : Fragment() {
             }
         }
     }
+
+
 
 }
