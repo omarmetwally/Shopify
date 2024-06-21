@@ -124,6 +124,13 @@ class FakeShopifyRemoteDataSource : ShopifyRemoteDataSource {
         }
     }
 
+    override suspend fun removeProductFromCart(
+        cartId: String,
+        lineId: String
+    ): Flow<ApiState<String?>> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getProductsCart(cartId: String): Flow<ApiState<List<CartProduct>>> = flow {
         if (shouldReturnError) {
             emit(ApiState.Failure(Throwable("Fake error")))
@@ -139,6 +146,17 @@ class FakeShopifyRemoteDataSource : ShopifyRemoteDataSource {
         } else {
             emit(ApiState.Success("fake_address_id"))
         }
+    }
+
+    override suspend fun getCustomerAddresses(token: String): Flow<ApiState<List<CustomerAddress>>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteCustomerAddress(
+        addressId: String,
+        token: String
+    ): Flow<ApiState<String?>> {
+        TODO("Not yet implemented")
     }
 
     override fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>> = flow {

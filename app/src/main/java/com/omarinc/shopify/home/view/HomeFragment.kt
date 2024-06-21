@@ -6,19 +6,30 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
+import androidx.navigation.ui.onNavDestinationSelected
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.navigation.NavigationView
 import com.omarinc.shopify.home.view.adapters.ProductsAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
@@ -57,6 +68,10 @@ class HomeFragment : Fragment() {
     private lateinit var productsManager: GridLayoutManager
     private lateinit var productsAdapter: ProductsAdapter
     private lateinit var adsAdapter: AdsAdapter
+    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navController: NavController
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,6 +92,11 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.favourites.setOnClickListener {
+            val action =
+                HomeFragmentDirections.actionHomeFragmentToFavoritesFragment()
+            findNavController().navigate(action)
+        }
 
         binding.searchView.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
@@ -92,16 +112,29 @@ class HomeFragment : Fragment() {
         }
 
 
-
-
-
+        setupDrawer(view)
         checkIfIsFirstUserTime(view)
-
         setUpBrandsAdapter()
         setUpProductsAdapter()
         getCoupons()
         collectProducts()
 
+    }
+
+    private fun setupDrawer(view:View) {
+        val navView: NavigationView = view.findViewById(R.id.navigation_view)
+
+        navController = findNavController()
+        navView.setupWithNavController(navController)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.drawer_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
     }
 
     private fun checkIfIsFirstUserTime(view: View) {
@@ -112,23 +145,24 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             if (!isFirstTimeUser.await()) {
                 setupTabTargetPrompt(view)
+                saveToSharedPref()
             }
         }
     }
 
+    val viewsToDisable = listOf(
+        R.id.favourites,
+        R.id.homeFragment, R.id.categoriesFragment, R.id.shoppingCartFragment,
+        R.id.search_view
+    )
+
     private fun setupTabTargetPrompt(view: View) {
-        val viewsToDisable = listOf(
-            R.id.filter_view,
-            R.id.homeFragment, R.id.categoriesFragment, R.id.shoppingCartFragment,
-            R.id.search_view
-        )
 
         view.post {
-            saveToSharedPref()
             setViewsEnabled(viewsToDisable, false)
 
             showPrompt(
-                targetId = R.id.filter_view,
+                targetId = R.id.favourites,
                 primaryText = "This is Fab",
                 secondaryText = "Changing Prompt Style",
                 backgroundColor = R.color.primary_color,
@@ -226,11 +260,16 @@ class HomeFragment : Fragment() {
                 background?.let { setPromptBackground(it) }
             }
             .setPromptStateChangeListener { prompt, state ->
-                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
-                    onFocalPressed()
+                when (state) {
+                    MaterialTapTargetPrompt.STATE_FOCAL_PRESSED -> onFocalPressed()
+                    MaterialTapTargetPrompt.STATE_DISMISSED -> onPromptDismissed()
                 }
             }
             .show()
+    }
+
+    private fun onPromptDismissed() {
+        setViewsEnabled(viewsToDisable, true)
     }
 
 
@@ -254,10 +293,14 @@ class HomeFragment : Fragment() {
                 viewModel.productsApiState.collect { result ->
                     when (result) {
                         is ApiState.Loading -> {
-
+                            binding.homeScrollView.visibility = View.GONE
+                            binding.homeShimmer.startShimmer()
                         }
 
                         is ApiState.Success -> {
+                            binding.homeScrollView.visibility = View.VISIBLE
+                            binding.homeShimmer.stopShimmer()
+                            binding.homeShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response)
                             getCurrentCurrency()
                         }

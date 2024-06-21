@@ -3,6 +3,7 @@ package com.omarinc.shopify.search.view
 import android.database.MatrixCursor
 import android.os.Bundle
 import android.provider.BaseColumns
+import android.util.Log
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.omarinc.shopify.databinding.FragmentSearchBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
@@ -27,11 +29,16 @@ import com.omarinc.shopify.search.viewmodel.SearchViewModel
 import com.omarinc.shopify.search.viewmodel.SearchViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 class SearchFragment : Fragment() {
+
+    companion object {
+        private const val TAG = "SearchFragment"
+    }
 
     private lateinit var viewModel: SearchViewModel
     private lateinit var binding: FragmentSearchBinding
@@ -73,7 +80,8 @@ class SearchFragment : Fragment() {
 
     private fun setupRecyclerView() {
         productsAdapter = SearchProductsAdapter(requireContext()) { productId ->
-            val action = SearchFragmentDirections.actionSearchFragmentToProductDetailsFragment(productId)
+            val action =
+                SearchFragmentDirections.actionSearchFragmentToProductDetailsFragment(productId)
             findNavController().navigate(action)
         }
         binding.productsRV.layoutManager = GridLayoutManager(requireContext(), 2)
@@ -134,10 +142,12 @@ class SearchFragment : Fragment() {
 
     private fun filterAndDisplayProducts(products: List<Products>) {
         val filteredResults = products.filter {
-            val price = it.price as? Double ?: (it.price as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
+            val price =
+                it.price as? Double ?: (it.price as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
             price <= maxPrice.value
         }
         productsAdapter.submitList(filteredResults)
+        getCurrentCurrency()
         updateSuggestions(filteredResults.map { it.title })
     }
 
@@ -197,4 +207,35 @@ class SearchFragment : Fragment() {
                 .map { it.title }
         }
     }
+
+    private fun getCurrentCurrency() {
+        viewModel.getCurrencyUnit()
+        viewModel.getRequiredCurrency()
+
+        lifecycleScope.launch {
+            combine(
+                viewModel.currencyUnit,
+                viewModel.requiredCurrency
+            ) { currencyUnit, requiredCurrency ->
+                Pair(currencyUnit, requiredCurrency)
+            }.collect { (currencyUnit, requiredCurrency) ->
+                Log.i(TAG, "getCurrentCurrency 000: $currencyUnit")
+                when (requiredCurrency) {
+                    is ApiState.Failure -> Log.i(TAG, "getCurrentCurrency: ${requiredCurrency.msg}")
+                    ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
+                    is ApiState.Success -> {
+                        Log.i(
+                            TAG,
+                            "getCurrentCurrency: ${requiredCurrency.response.data[currencyUnit]?.code}"
+                        )
+                        requiredCurrency.response.data[currencyUnit]?.let { currency ->
+                            Log.i(TAG, "getCurrentCurrency: ${currency.value}")
+                            productsAdapter.updateCurrentCurrency(currency.value, currency.code)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

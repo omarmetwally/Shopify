@@ -2,6 +2,7 @@ package com.omarinc.shopify.productdetails.view
 
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.opengl.Visibility
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -138,11 +139,13 @@ class ProductDetailsFragment : Fragment() {
                 } else {
                     val favoriteItem = FavoriteItem(productId = productId,
                         productName = binding.tvProductName.text.toString(),
-                        productPrice = binding.tvProductPrice.text.toString().removeSuffix(" USD")
+                        productPrice = binding.tvProductPrice.text.toString().removeSuffix(sharedPreferences.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT))
                             .toDouble(),
                         productImage = viewModel.apiState.value.let {
                             if (it is ApiState.Success) it.response.images[0].src else ""
-                        })
+                        },
+                        productCurrency = sharedPreferences.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT)
+                    )
                     favoriteViewModel.addToFavorites(userToken, favoriteItem)
                 }
             }
@@ -232,10 +235,7 @@ class ProductDetailsFragment : Fragment() {
     private fun stopAnimations() {
         binding.imagesShimmer.hideShimmer()
         binding.imagesShimmer.stopShimmer()
-        binding.deatilsShimmer.hideShimmer()
-        binding.deatilsShimmer.stopShimmer()
-        binding.reviewsShimmer.hideShimmer()
-        binding.reviewsShimmer.stopShimmer()
+        binding.imagesShimmer.visibility = View.GONE
     }
 
     private fun setListeners() {
@@ -442,7 +442,8 @@ class ProductDetailsFragment : Fragment() {
                         requiredCurrency.response.data[currencyUnit]?.let { currency ->
                             Log.i(TAG, "getCurrentCurrency: ${currency.value}")
                             binding.tvProductPrice.text =
-                                "${price * currency.value} ${currency.code}"
+                                String.format("%.2f %s", price * currency.value, currency.code)
+
                         }
                     }
                 }
