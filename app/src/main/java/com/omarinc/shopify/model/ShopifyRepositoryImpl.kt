@@ -132,7 +132,7 @@ class ShopifyRepositoryImpl(
     }
 
 
-    override fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>> {
+    override fun getCustomerOrders(token: String): Flow<ApiState<List<Order>>> {
         return shopifyRemoteDataSource.getCustomerOrders(token)
     }
 
