@@ -4,7 +4,7 @@ import com.omarinc.shopify.CustomerOrdersQuery
 
 data class CheckoutResponse(
     val checkout: Checkout?,
-    val userErrors: List<UserError>
+
 )
 
 data class Checkout(

@@ -19,8 +19,9 @@ class ShoppingCartViewModel(private val repository: ShopifyRepository) : ViewMod
     private val _cartItemRemove = MutableStateFlow<ApiState<String?>>(ApiState.Loading)
     val cartItemRemove: MutableStateFlow<ApiState<String?>> = _cartItemRemove
 
-    private val _paymentUrl = MutableStateFlow<ApiState<CheckoutResponse?>>(ApiState.Loading)
-    val paymentUrl: MutableStateFlow<ApiState<CheckoutResponse?>> = _paymentUrl
+    private val _checkoutResponse = MutableStateFlow<ApiState<CheckoutResponse?>>(ApiState.Loading)
+    val checkoutResponse: MutableStateFlow<ApiState<CheckoutResponse?>> = _checkoutResponse
+
     fun getShoppingCartItems(cartId: String) {
 
         viewModelScope.launch {
@@ -52,7 +53,7 @@ class ShoppingCartViewModel(private val repository: ShopifyRepository) : ViewMod
                 repository.readEmailFromSharedPreferences(USER_EMAIL)
             )
                 .collect {
-                    _paymentUrl.value = it
+                    _checkoutResponse.value = it
                 }
 
         }

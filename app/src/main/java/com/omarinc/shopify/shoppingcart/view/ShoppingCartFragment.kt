@@ -21,13 +21,14 @@ import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModel
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModelFactory
+import com.omarinc.shopify.type.CheckoutLineItemInput
 import kotlinx.coroutines.launch
 
 class ShoppingCartFragment : Fragment() {
 
     private lateinit var binding: FragmentShoppingCartBinding
     private lateinit var viewModel: ShoppingCartViewModel
-    private lateinit var productsLine: List<Line>
+    private lateinit var productsLine: List<CheckoutLineItemInput>
 
 
     companion object {
@@ -54,7 +55,21 @@ class ShoppingCartFragment : Fragment() {
     private fun setListeners() {
 
         binding.checkoutButton.setOnClickListener {
-         //   viewModel.createCheckout()
+            viewModel.createCheckout(productsLine)
+            lifecycleScope.launch {
+                viewModel.checkoutResponse.collect{result->
+
+                    when(result){
+                        is ApiState.Failure -> Log.i(TAG, "checkoutResponse: Failure ${result.msg}")
+                        ApiState.Loading -> Log.i(TAG, "checkoutResponse: loading: ")
+                        is ApiState.Success -> {
+
+                            Log.i(TAG, "checkoutResponse: Success ${result.response}")
+                        }
+                    }
+
+                }
+            }
         }
 
     }
@@ -81,9 +96,19 @@ class ShoppingCartFragment : Fragment() {
                     is ApiState.Success -> {
                         Log.i(TAG, "onViewCreated: ${result.response.size}")
                         setupRecyclerView(result.response)
+
+                   Log.i(TAG, "getShoppingCartItems: ${result.response[0].variantId ?: "0"}")
+
+                        productsLine = emptyList()
                         result.response.forEach { item ->
 
-                            productsLine = productsLine.plus(Line(item.variantId, item.quantity))
+                            
+                            productsLine = productsLine.plus(
+                                CheckoutLineItemInput(
+                                    quantity = item.quantity,
+                                    variantId = item.variantId
+                                )
+                            )
                         }
 
                     }
@@ -129,8 +154,6 @@ class ShoppingCartFragment : Fragment() {
         }
     }
 
-    private fun createCheckout() {
 
-    }
 
 }

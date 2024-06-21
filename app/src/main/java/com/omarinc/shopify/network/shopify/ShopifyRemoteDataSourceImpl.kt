@@ -609,7 +609,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                 }
             }
 
-            emit(ApiState.Success(cartProducts)) // Emit success state with the list of cart products
+            emit(ApiState.Success(cartProducts))
         } catch (e: ApolloException) {
             emit(ApiState.Failure(Throwable("Error fetching products in cart: ${e.message}"))) // Emit failure state with error message
         } catch (e: Exception) {
@@ -653,6 +653,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                                 )
                             })
                     }
+                    emit(ApiState.Success(CheckoutResponse(checkout)))
                 } else {
                     emit(ApiState.Failure(Throwable("Response data is null")))
                 }
