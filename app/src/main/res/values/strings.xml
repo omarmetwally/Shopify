@@ -18,7 +18,7 @@
 
     <string name="checkout_button">Checkout</string>
     <string name="address">Adress</string>
-    <string name="payment_text_view">Payment</string>
+    <string name="payment_text_view">Payment Method</string>
     <string name="shipping_to_text_view">Shipping to</string>
     <string name="add_address_text_view">Add Address</string>
     <string name="hello">Hello, </string>
@@ -116,5 +116,14 @@
     <string name="profile_primary_text">Manage Profile</string>
     <string name="profile_secondary_text">Tap here to view your orders<br/>wishlist, settings, and more.</string>
 
+    <string name="checkout_web_view_title">Buy Now!</string>
+    <string name="cash_on_delivery_button">Cash on Delivery</string>
+    <string name="pay_with_card_button">Pay with Card</string>
+    <string name="guest_mode">Guest mode</string>
+    <string name="guest_mode_message">You are currently using guest mode. Please log in to access this feature.</string>
+    <string name="no_internet">You have lost connection to the internet.\nThis app is offline.</string>
+    <string name="TURN_ON_WIFI">TURN ON WIFI</string>
+    <string name="dismiss">DISMISS</string>
+    <string name="no_network_data">No Internet\nPlease check your network connection</string>
 
 </resources>

@@ -12,7 +12,7 @@
         android:id="@+id/ivIcon"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/profile"
+        android:src="@drawable/edit_profile"
         app:tint="@color/dark_grey" />
 
     <TextView

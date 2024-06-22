@@ -8,31 +8,37 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.omarinc.shopify.databinding.FragmentShoppingCartBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CartProduct
-import com.omarinc.shopify.models.Line
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.payment.PaymentFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModel
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModelFactory
 import com.omarinc.shopify.type.CheckoutLineItemInput
+import com.shopify.checkoutsheetkit.CheckoutException
+import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor
+import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent
 import kotlinx.coroutines.launch
 
 class ShoppingCartFragment : Fragment() {
 
     private lateinit var binding: FragmentShoppingCartBinding
     private lateinit var viewModel: ShoppingCartViewModel
-    private lateinit var productsLine: List<CheckoutLineItemInput>
+    private var productsLine = listOf<CheckoutLineItemInput>()
+
 
 
     companion object {
-        const val TAG = "ShoppingCartFragment"
+        private const val TAG = "ShoppingCartFragment"
     }
 
     override fun onCreateView(
@@ -55,24 +61,36 @@ class ShoppingCartFragment : Fragment() {
     private fun setListeners() {
 
         binding.checkoutButton.setOnClickListener {
+
+
+            Log.i(TAG, "setListeners: ${productsLine}")
+
             viewModel.createCheckout(productsLine)
+
             lifecycleScope.launch {
-                viewModel.checkoutResponse.collect{result->
-
-                    when(result){
-                        is ApiState.Failure -> Log.i(TAG, "checkoutResponse: Failure ${result.msg}")
-                        ApiState.Loading -> Log.i(TAG, "checkoutResponse: loading: ")
+                viewModel.checkoutResponse.collect { result ->
+                    when (result) {
+                        is ApiState.Failure -> Log.e(TAG, "Checkout Failed: ${result.msg}")
+                        ApiState.Loading -> Log.i(TAG, "Checkout Loading")
                         is ApiState.Success -> {
+                            Log.i(TAG, "Checkout Success url: ${result.response?.checkout?.webUrl}")
 
-                            Log.i(TAG, "checkoutResponse: Success ${result.response}")
+                            navigateToPaymentFragment(result.response?.checkout?.webUrl ?: "")
+                            /*presentCheckout(
+                                convertShopifyCheckoutUrl(
+                                    result.response?.checkout?.webUrl
+                                        ?: ""
+                                )
+                            )*/
                         }
                     }
-
                 }
             }
         }
 
+
     }
+
 
     private fun setupViewModel() {
         val repository = ShopifyRepositoryImpl.getInstance(
@@ -87,30 +105,16 @@ class ShoppingCartFragment : Fragment() {
 
     private fun getShoppingCartItems() {
         viewModel.getShoppingCartItems(viewModel.readCartId())
-        Log.i(TAG, "getShoppingCartItems: ${viewModel.readCartId()}")
+        Log.i(TAG, "Fetching ShoppingCartItems for CartId: ${viewModel.readCartId()}")
         lifecycleScope.launch {
             viewModel.cartItems.collect { result ->
                 when (result) {
-                    is ApiState.Failure -> Log.i(TAG, "onViewCreated: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "onViewCreated: Loading")
+                    is ApiState.Failure -> Log.e(TAG, "Failed to get items: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "Loading ShoppingCart Items")
                     is ApiState.Success -> {
-                        Log.i(TAG, "onViewCreated: ${result.response.size}")
+                        Log.i(TAG, "Successfully fetched items: ${result.response.size}")
                         setupRecyclerView(result.response)
-
-                   Log.i(TAG, "getShoppingCartItems: ${result.response[0].variantId ?: "0"}")
-
-                        productsLine = emptyList()
-                        result.response.forEach { item ->
-
-                            
-                            productsLine = productsLine.plus(
-                                CheckoutLineItemInput(
-                                    quantity = item.quantity,
-                                    variantId = item.variantId
-                                )
-                            )
-                        }
-
+                        updateProductsLine(result.response)
                     }
                 }
             }
@@ -118,10 +122,9 @@ class ShoppingCartFragment : Fragment() {
     }
 
     private fun setupRecyclerView(items: List<CartProduct>) {
-
         val adapter = ShoppingCartAdapter(requireContext(), items) { itemId ->
             val cartId = viewModel.readCartId()
-            Log.i(TAG, "setupRecyclerView: $cartId")
+            Log.i(TAG, "Removing item $itemId from cart $cartId")
             removeItemFromCart(cartId, itemId)
         }
 
@@ -132,28 +135,34 @@ class ShoppingCartFragment : Fragment() {
             this.adapter = adapter
         }
         adapter.notifyDataSetChanged()
-
     }
 
     private fun removeItemFromCart(cartId: String, lineId: String) {
-
         viewModel.removeProductFromCart(cartId, lineId)
-
         lifecycleScope.launch {
             viewModel.cartItemRemove.collect { result ->
-
                 when (result) {
-                    is ApiState.Failure -> Log.i(TAG, "removeItemFromCart: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "removeItemFromCart: Loading")
-                    is ApiState.Success -> {
-                        getShoppingCartItems()
-
-                    }
+                    is ApiState.Failure -> Log.e(TAG, "Failed to remove item: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "Removing item from cart...")
+                    is ApiState.Success -> getShoppingCartItems()
                 }
             }
         }
     }
 
+    private fun updateProductsLine(items: List<CartProduct>) {
+        productsLine = items.map {
+            CheckoutLineItemInput(quantity = it.quantity, variantId = it.variantId)
+        }
+    }
+
+
+    private fun navigateToPaymentFragment(webUrl: String) {
+
+        val action = ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl)
+        findNavController().navigate(action)
+
+    }
 
 
 }

@@ -23,6 +23,8 @@
             android:layout_marginTop="16dp"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:background="@color/shimmer_bg_color"
+            android:textColor="@color/shimmer_bg_color"
             app:layout_constraintStart_toStartOf="@+id/address_text_view"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="customer_name" />
@@ -37,8 +39,8 @@
             android:layout_marginBottom="16dp"
             android:lineSpacingExtra="4sp"
             android:textAlignment="textStart"
-            android:textColor="@color/gray_text"
-            android:textSize="13sp"
+            android:background="@color/shimmer_bg_color"
+            android:textColor="@color/shimmer_bg_color"            android:textSize="13sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView8"
@@ -51,7 +53,7 @@
             android:layout_height="24dp"
             android:layout_margin="8dp"
             android:layout_marginEnd="32dp"
-            android:src="@drawable/ic_delete"
+            android:src="@drawable/shimmer_background"
             app:layout_constraintBottom_toBottomOf="@+id/customer_name_text_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/customer_name_text_view" />

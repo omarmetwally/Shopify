@@ -52,6 +52,9 @@ class AddressesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
         setUpViewModel()
         getAddresses()
         setupListeners()
@@ -80,8 +83,13 @@ class AddressesFragment : Fragment() {
 
                 when (result) {
                     is ApiState.Failure -> Log.i(TAG, "getAddresses: Failure ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "getAddresses: Loading")
+                    ApiState.Loading -> {
+                        binding.addressesShimmer.startShimmer()
+                    }
                     is ApiState.Success -> {
+                        binding.addressesShimmer.stopShimmer()
+                        binding.addressesShimmer.visibility = View.GONE
+
                         setupRecyclerView(result.response ?: emptyList())
                     }
                 }

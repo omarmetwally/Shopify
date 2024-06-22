@@ -182,4 +182,8 @@ dependencies {
     //OkHttp
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
+    //Shopify Checkout Sheet Kit
+    implementation ("com.shopify:checkout-sheet-kit:3.0.1")
+
+
 }
