@@ -5,6 +5,7 @@ import com.omarinc.shopify.model.RegisterUserResponse
 import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CartProduct
+import com.omarinc.shopify.models.CheckoutResponse
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.CurrencyResponse
 import com.omarinc.shopify.models.CustomerAddress
@@ -17,6 +18,7 @@ import com.omarinc.shopify.models.Product
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
+import com.omarinc.shopify.type.CheckoutLineItemInput
 import kotlinx.coroutines.flow.Flow
 
 class FakeShopifyRepository : ShopifyRepository {
@@ -86,18 +88,15 @@ class FakeShopifyRepository : ShopifyRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getCutomerOrders(token: String): Flow<ApiState<List<Order>>> {
+    override fun getCustomerOrders(token: String): Flow<ApiState<List<Order>>> {
         return shopifyRemoteDataSource.getCustomerOrders(token)
     }
-
     override fun getProductByType(type: String): Flow<ApiState<List<Product>>> {
         return shopifyRemoteDataSource.getProductByType(type)
     }
-
     override fun getCollectionByHandle(handle: String): Flow<ApiState<Collection>> {
         return shopifyRemoteDataSource.getCollectionByHandle(handle)
     }
-
     override suspend fun createCart(token: String): Flow<ApiState<String?>> {
         TODO("Not yet implemented")
     }
@@ -184,6 +183,13 @@ class FakeShopifyRepository : ShopifyRepository {
     }
 
     override fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun createCheckout(
+        lineItems: List<CheckoutLineItemInput>,
+        email: String?
+    ): Flow<ApiState<CheckoutResponse?>> {
         TODO("Not yet implemented")
     }
 }
