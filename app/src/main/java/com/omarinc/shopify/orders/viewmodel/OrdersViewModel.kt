@@ -36,9 +36,6 @@ class OrdersViewModel (private val repository: ShopifyRepository) : ViewModel() 
         }
     }
 
-
-
-
     fun getCurrencyUnit() {
 
         viewModelScope.launch(Dispatchers.IO) {

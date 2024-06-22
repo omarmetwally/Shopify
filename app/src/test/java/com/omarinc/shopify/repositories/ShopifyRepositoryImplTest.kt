@@ -25,7 +25,7 @@ class ShopifyRepositoryImplTest {
         fakeShopifyRemoteDataSource = FakeShopifyRemoteDataSource()
         repository = ShopifyRepositoryImpl
             .getInstance(
-                fakeShopifyRemoteDataSource,
+                FakeShopifyRemoteDataSource(),
                 FakeSharedPreferences(),
                 FakeCurrencyRemoteDataSource(),
                 FakeAdminRemoteDataSource()

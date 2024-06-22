@@ -48,7 +48,6 @@ class CategoriesViewModel(private val repository: ShopifyRepository) : ViewModel
         }
         _apiState.value = ApiState.Success(filteredResults)
     }
-
     fun getProductsByType(type: String) {
         viewModelScope.launch {
             _collectionApiState.collect { result ->
@@ -71,7 +70,6 @@ class CategoriesViewModel(private val repository: ShopifyRepository) : ViewModel
             }
         }
     }
-
     fun getCollectionByHandle(handle: String) {
         Log.i("TAG", "getProductsByType: Viewmodel")
         viewModelScope.launch {
