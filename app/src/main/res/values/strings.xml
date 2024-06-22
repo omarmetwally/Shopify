@@ -105,5 +105,9 @@
     <string name="pay_with_card_button">Pay with Card</string>
     <string name="guest_mode">Guest mode</string>
     <string name="guest_mode_message">You are currently using guest mode. Please log in to access this feature.</string>
+    <string name="no_internet">You have lost connection to the internet.\nThis app is offline.</string>
+    <string name="TURN_ON_WIFI">TURN ON WIFI</string>
+    <string name="dismiss">DISMISS</string>
+    <string name="no_network_data">No Internet\nPlease check your network connection</string>
 
 </resources>

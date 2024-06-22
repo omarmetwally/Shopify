@@ -35,5 +35,12 @@
         app:itemRippleColor="@color/primary_color"
         app:itemTextColor="@drawable/icon_tint_selector"
         app:menu="@menu/menu"/>
+    <include
+        android:id="@+id/no_internet_banner"
+        layout="@layout/no_internet_banner"/>
+    <include
+        android:id="@+id/no_internet_data"
+        android:visibility="gone"
+        layout="@layout/no_data_network"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

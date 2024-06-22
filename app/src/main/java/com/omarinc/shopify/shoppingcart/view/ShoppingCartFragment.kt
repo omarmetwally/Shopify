@@ -32,7 +32,6 @@ class ShoppingCartFragment : Fragment() {
     private var productsLine = listOf<CheckoutLineItemInput>()
     private lateinit var  shoppingCartAdapter: ShoppingCartAdapter
 
-
     companion object {
         private const val TAG = "ShoppingCartFragment"
     }
@@ -151,7 +150,8 @@ class ShoppingCartFragment : Fragment() {
 
     private fun navigateToPaymentFragment(webUrl: String) {
 
-        val action = ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl)
+        val action =
+            ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl)
         findNavController().navigate(action)
 
     }
