@@ -137,7 +137,11 @@
         android:id="@+id/shoppingCartFragment"
         android:name="com.omarinc.shopify.shoppingcart.view.ShoppingCartFragment"
         android:label="fragment_shopping_cart"
-        tools:layout="@layout/fragment_shopping_cart" />
+        tools:layout="@layout/fragment_shopping_cart" >
+        <action
+            android:id="@+id/action_shoppingCartFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+    </fragment>
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.omarinc.shopify.address.view.MapFragment"
@@ -173,4 +177,13 @@
             android:id="@+id/action_addressesFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/paymentFragment"
+        android:name="com.omarinc.shopify.payment.PaymentFragment"
+        android:label="fragment_payment"
+        tools:layout="@layout/fragment_payment" >
+        <argument
+            android:name="webURL"
+            app:argType="string" />
+    </dialog>
 </navigation>

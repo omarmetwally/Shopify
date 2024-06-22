@@ -1,6 +1,5 @@
 package com.omarinc.shopify.shoppingcart.view
 
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.omarinc.shopify.databinding.FragmentShoppingCartBinding
@@ -18,6 +18,7 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.payment.PaymentFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModel
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModelFactory
@@ -35,25 +36,9 @@ class ShoppingCartFragment : Fragment() {
     private var productsLine = listOf<CheckoutLineItemInput>()
 
 
-    private val checkoutEventProcessor by lazy {
-        object : DefaultCheckoutEventProcessor(requireContext()) {
-            override fun onCheckoutCompleted(checkoutCompletedEvent: CheckoutCompletedEvent) {
-                Log.i(TAG, "Checkout completed successfully.")
-            }
-
-            override fun onCheckoutCanceled() {
-                Log.i(TAG, "Checkout canceled by user.")
-            }
-
-            override fun onCheckoutFailed(error: CheckoutException) {
-                Log.e(TAG, "Checkout failed with error: ${error.message}")
-            }
-
-        }
-    }
 
     companion object {
-        const val TAG = "ShoppingCartFragment"
+        private const val TAG = "ShoppingCartFragment"
     }
 
     override fun onCreateView(
@@ -90,12 +75,13 @@ class ShoppingCartFragment : Fragment() {
                         is ApiState.Success -> {
                             Log.i(TAG, "Checkout Success url: ${result.response?.checkout?.webUrl}")
 
-                            presentCheckout(
+                            navigateToPaymentFragment(result.response?.checkout?.webUrl ?: "")
+                            /*presentCheckout(
                                 convertShopifyCheckoutUrl(
                                     result.response?.checkout?.webUrl
                                         ?: ""
                                 )
-                            )
+                            )*/
                         }
                     }
                 }
@@ -170,14 +156,13 @@ class ShoppingCartFragment : Fragment() {
         }
     }
 
-    private fun presentCheckout(checkoutUrl: String) {
-        Log.i(TAG, "presentCheckout: ${checkoutUrl}")
-        ShopifyCheckoutSheetKit.present(checkoutUrl, requireActivity(), checkoutEventProcessor)
+
+    private fun navigateToPaymentFragment(webUrl: String) {
+
+        val action = ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl)
+        findNavController().navigate(action)
+
     }
 
-    private fun convertShopifyCheckoutUrl(originalUrl: String): String {
-        val regex = Regex("""\d+/checkouts/""")
-        val convertedUrl = originalUrl.replace(regex, "checkouts/co/")
-        return convertedUrl
-    }
+
 }
