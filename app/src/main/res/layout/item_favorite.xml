@@ -27,14 +27,17 @@
             android:layout_marginTop="8dp"
             android:text="Product Name"
             android:maxLines="2"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+            android:textSize="14sp"
+            android:textStyle="normal"
+            />
 
         <TextView
             android:id="@+id/tvProductPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="999 AED"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="14sp"
+            android:textStyle="normal"
             android:textColor="@color/primary_color" />
 
     </LinearLayout>

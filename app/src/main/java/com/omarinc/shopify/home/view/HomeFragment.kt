@@ -3,6 +3,7 @@ package com.omarinc.shopify.home.view
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,7 +13,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -23,13 +23,12 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
 import androidx.navigation.ui.onNavDestinationSelected
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.navigation.NavigationView
+import com.omarinc.shopify.AuthenticationMainActivity
 import com.omarinc.shopify.home.view.adapters.ProductsAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
@@ -43,7 +42,10 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Constants
+import com.omarinc.shopify.utilities.Helper
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.combine
@@ -70,13 +72,12 @@ class HomeFragment : Fragment() {
     private lateinit var adsAdapter: AdsAdapter
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
-
-
+    private lateinit var sharedPreferences: ISharedPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
         setViewModel()
 
     }
@@ -93,9 +94,15 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.favourites.setOnClickListener {
-            val action =
-                HomeFragmentDirections.actionHomeFragmentToFavoritesFragment()
-            findNavController().navigate(action)
+            if (checkUserTokenExist() == "null") {
+
+                showGuestModeAlertDialog()
+            } else {
+                val action =
+                    HomeFragmentDirections.actionHomeFragmentToFavoritesFragment()
+                findNavController().navigate(action)
+            }
+
         }
 
         binding.searchView.setOnClickListener {
@@ -103,16 +110,8 @@ class HomeFragment : Fragment() {
 
         }
 
-        binding.menu.setOnClickListener {
-            if (binding.root.isDrawerOpen(GravityCompat.START)) {
-                binding.root.closeDrawer(GravityCompat.START)
-            } else {
-                binding.root.openDrawer(GravityCompat.START)
-            }
-        }
 
 
-        setupDrawer(view)
         checkIfIsFirstUserTime(view)
         setUpBrandsAdapter()
         setUpProductsAdapter()
@@ -121,12 +120,6 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun setupDrawer(view:View) {
-        val navView: NavigationView = view.findViewById(R.id.navigation_view)
-
-        navController = findNavController()
-        navView.setupWithNavController(navController)
-    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -290,7 +283,7 @@ class HomeFragment : Fragment() {
     private fun collectProducts() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.productsApiState.collect { result ->
+                viewModel.productsState.collect { result ->
                     when (result) {
                         is ApiState.Loading -> {
                             binding.homeScrollView.visibility = View.GONE
@@ -334,7 +327,7 @@ class HomeFragment : Fragment() {
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.apiState.collect { result ->
+                viewModel.brandsState.collect { result ->
                     when (result) {
                         is ApiState.Loading -> {
 
@@ -490,6 +483,37 @@ class HomeFragment : Fragment() {
         }
     }
 
+
+    private fun checkUserTokenExist(): String {
+        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
+
+        return sharedPreferences.readStringFromSharedPreferences(Constants.USER_TOKEN)
+    }
+
+    private fun showGuestModeAlertDialog() {
+        Helper.showAlertDialog(
+            context = requireContext(),
+            title = getString(R.string.guest_mode),
+            message = getString(R.string.guest_mode_message),
+            positiveButtonText = getString(R.string.login),
+            positiveButtonAction = {
+                invertSkippedFlag()
+                navigateToLogin()
+            },
+            negativeButtonText = getString(R.string.no)
+        )
+    }
+
+    private fun invertSkippedFlag() {
+        sharedPreferences.writeBooleanToSharedPreferences(Constants.USER_SKIPPED, false)
+    }
+
+    private fun navigateToLogin() {
+
+        startActivity(Intent(requireContext(), AuthenticationMainActivity::class.java))
+        requireActivity().finish()
+
+    }
 }
 
 

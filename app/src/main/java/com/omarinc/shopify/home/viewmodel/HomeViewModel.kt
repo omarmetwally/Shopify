@@ -1,11 +1,9 @@
 package com.omarinc.shopify.home.viewmodel
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.omarinc.shopify.login.viewmodel.LoginViewModel
 import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.CurrencyResponse
@@ -29,11 +27,11 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
         const val TAG = "HomeViewModel"
     }
 
-    private val _apiState = MutableStateFlow<ApiState<List<Brands>>>(ApiState.Loading)
-    val apiState: StateFlow<ApiState<List<Brands>>> = _apiState
+    private val _brandsState = MutableStateFlow<ApiState<List<Brands>>>(ApiState.Loading)
+    val brandsState: StateFlow<ApiState<List<Brands>>> = _brandsState
 
-    private val _productsApiState = MutableStateFlow<ApiState<List<Product>>>(ApiState.Loading)
-    val productsApiState: StateFlow<ApiState<List<Product>>> = _productsApiState
+    private val _productsState = MutableStateFlow<ApiState<List<Product>>>(ApiState.Loading)
+    val productsState: StateFlow<ApiState<List<Product>>> = _productsState
 
 
     private var _requiredCurrency = MutableStateFlow<ApiState<CurrencyResponse>>(ApiState.Loading)
@@ -53,7 +51,7 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
         Log.i("TAG", "getBrands: Viewmodel")
         viewModelScope.launch {
             repository.getBrands().collect {
-                _apiState.value = it
+                _brandsState.value = it
             }
         }
     }
@@ -74,7 +72,7 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
         Log.i("TAG", "getBrands: Viewmodel")
         viewModelScope.launch {
             repository.getProductsByBrandId(id).collect {
-                _productsApiState.value = it
+                _productsState.value = it
             }
         }
     }
@@ -86,8 +84,6 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
             _currencyUnit.value = repository.readCurrencyUnit(Constants.CURRENCY_UNIT)
         }
     }
-
-
     fun getRequiredCurrency() {
         Log.i(TAG, "getRequiredCurrency: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -102,8 +98,6 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
                 }
         }
     }
-
-
     fun getCoupons() {
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -113,7 +107,6 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
             }
         }
     }
-
     fun writeIsFirstTimeUser(key: String, value: Boolean) {
         viewModelScope.launch {
             repository.writeIsFirstTimeUser(key, value)

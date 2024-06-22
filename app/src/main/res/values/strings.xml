@@ -103,5 +103,7 @@
     <string name="checkout_web_view_title">Buy Now!</string>
     <string name="cash_on_delivery_button">Cash on Delivery</string>
     <string name="pay_with_card_button">Pay with Card</string>
+    <string name="guest_mode">Guest mode</string>
+    <string name="guest_mode_message">You are currently using guest mode. Please log in to access this feature.</string>
 
 </resources>

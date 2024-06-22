@@ -83,7 +83,7 @@ class ProductsFragment : Fragment() {
     private fun collectProducts() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.productsApiState.collect { result ->
+                viewModel.productsState.collect { result ->
                     when (result) {
                         is ApiState.Loading -> {
 
@@ -160,7 +160,7 @@ class ProductsFragment : Fragment() {
     }
 
     private fun filterProducts(query: String) {
-        viewModel.productsApiState.value.let { state ->
+        viewModel.productsState.value.let { state ->
             if (state is ApiState.Success) {
                 val filteredList = state.response.filter { product ->
                     product.title.contains(query, ignoreCase = true)
@@ -193,7 +193,7 @@ class ProductsFragment : Fragment() {
     }
 
     private fun getSuggestions(query: String): List<String> {
-        viewModel.productsApiState.value.let { state ->
+        viewModel.productsState.value.let { state ->
             if (state is ApiState.Success) {
                 return state.response.map { it.title }
                     .filter { it.contains(query, ignoreCase = true) }

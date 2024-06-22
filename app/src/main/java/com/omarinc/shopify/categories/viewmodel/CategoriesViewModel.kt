@@ -48,7 +48,6 @@ class CategoriesViewModel(private val repository: ShopifyRepository) : ViewModel
         }
         _apiState.value = ApiState.Success(filteredResults)
     }
-
     fun getProductsByType(type: String) {
         viewModelScope.launch {
             _collectionApiState.collect { result ->
@@ -71,7 +70,6 @@ class CategoriesViewModel(private val repository: ShopifyRepository) : ViewModel
             }
         }
     }
-
     fun getCollectionByHandle(handle: String) {
         Log.i("TAG", "getProductsByType: Viewmodel")
         viewModelScope.launch {
@@ -87,8 +85,6 @@ class CategoriesViewModel(private val repository: ShopifyRepository) : ViewModel
             _currencyUnit.value = repository.readCurrencyUnit(Constants.CURRENCY_UNIT)
         }
     }
-
-
     fun getRequiredCurrency() {
         Log.i(HomeViewModel.TAG, "getRequiredCurrency: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -103,8 +99,6 @@ class CategoriesViewModel(private val repository: ShopifyRepository) : ViewModel
                 }
         }
     }
-
-
     class CategoriesViewModelFactory(
         private val repository: ShopifyRepository,
     ) : ViewModelProvider.Factory {
