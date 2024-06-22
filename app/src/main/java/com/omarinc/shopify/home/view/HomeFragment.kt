@@ -103,16 +103,8 @@ class HomeFragment : Fragment() {
 
         }
 
-        binding.menu.setOnClickListener {
-            if (binding.root.isDrawerOpen(GravityCompat.START)) {
-                binding.root.closeDrawer(GravityCompat.START)
-            } else {
-                binding.root.openDrawer(GravityCompat.START)
-            }
-        }
 
 
-        setupDrawer(view)
         checkIfIsFirstUserTime(view)
         setUpBrandsAdapter()
         setUpProductsAdapter()
@@ -121,12 +113,7 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun setupDrawer(view:View) {
-        val navView: NavigationView = view.findViewById(R.id.navigation_view)
 
-        navController = findNavController()
-        navView.setupWithNavController(navController)
-    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
