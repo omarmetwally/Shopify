@@ -21,7 +21,7 @@ class ProductsAdapter(
 
     private lateinit var binding: ProductLayoutBinding
     private var convertedPrices: MutableMap<String, Double> = mutableMapOf()
-    private var currencyUnit: String = "USD"
+    private var currencyUnit: String = "EGP"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductsViewHolder {
         binding = ProductLayoutBinding.inflate(

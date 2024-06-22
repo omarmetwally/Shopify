@@ -43,7 +43,7 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
     private var _couponDetails = MutableStateFlow<ApiState<DiscountCodesResponse>>(ApiState.Loading)
     val couponDetails = _couponDetails.asStateFlow()
 
-    private val _currencyUnit = MutableStateFlow<String>("USD")
+    private val _currencyUnit = MutableStateFlow<String>("EGP")
     val currencyUnit = _currencyUnit.asStateFlow()
 
     val maxPrice = MutableStateFlow<Int>(10000)
