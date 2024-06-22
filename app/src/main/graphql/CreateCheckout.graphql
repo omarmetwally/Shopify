@@ -1,8 +1,12 @@
-mutation CreateCheckout($lineItems: [CheckoutLineItemInput!]!) {
-    checkoutCreate(input: { lineItems: $lineItems}) {
+mutation CreateCheckout($lineItems: [CheckoutLineItemInput!]!, $email:String!) {
+    checkoutCreate(input: {
+        email:$email
+        lineItems: $lineItems
+    }) {
         checkout {
             id
             webUrl
+
             lineItems(first: 10) {
                 edges {
                     node {
