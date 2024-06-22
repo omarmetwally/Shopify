@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -15,9 +16,12 @@ import com.omarinc.shopify.utilities.Helper
 
 class ShoppingCartAdapter(
     private val context: Context,
-    private val items: List<CartProduct>,
+    private var items: List<CartProduct>,
     private val onRemoveItem: (String) -> Unit
 ) : RecyclerView.Adapter<ShoppingCartAdapter.ViewHolder>() {
+
+    private var convertedPrices: MutableMap<String, Double> = mutableMapOf()
+    private var currencyUnit: String = "EGP"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -31,8 +35,10 @@ class ShoppingCartAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
+        val convertedPrice = convertedPrices[item.id] ?: item.variantPrice.toDouble()
+
         holder.productName.text = item.productTitle
-        holder.productPrice.text = item.variantPrice
+        holder.productPrice.text = String.format("%.2f %s", convertedPrice, currencyUnit)
         Glide.with(context).load(item.productImageUrl)
             .apply(
                 RequestOptions().override(200, 200)
@@ -55,12 +61,45 @@ class ShoppingCartAdapter(
         }
     }
 
+    fun updateItems(newItems: List<CartProduct>) {
+        val diffCallback = CartProductDiffCallback(this.items, newItems)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        this.items = newItems
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun updateCurrentCurrency(rate: Double, unit: String) {
+        currencyUnit = unit
+        val newPrices = items.map { product ->
+            product.id to product.variantPrice.toDouble() * rate
+        }.toMap()
+        convertedPrices.putAll(newPrices)
+        notifyDataSetChanged()
+    }
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val productName: TextView = itemView.findViewById(R.id.shopping_cart_product_name_text_view)
-        val productPrice: TextView =
-            itemView.findViewById(R.id.shopping_cart_product_price_text_view)
+        val productPrice: TextView = itemView.findViewById(R.id.shopping_cart_product_price_text_view)
         val removeImageView: ImageView = itemView.findViewById(R.id.shopping_cart_delete_icon)
-        val productImage: ImageView =
-            itemView.findViewById(R.id.shopping_cart_product_image_view)
+        val productImage: ImageView = itemView.findViewById(R.id.shopping_cart_product_image_view)
+    }
+
+}
+
+class CartProductDiffCallback(
+    private val oldList: List<CartProduct>,
+    private val newList: List<CartProduct>
+) : DiffUtil.Callback() {
+
+    override fun getOldListSize(): Int = oldList.size
+
+    override fun getNewListSize(): Int = newList.size
+
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition].id == newList[newItemPosition].id
+    }
+
+    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+        return oldList[oldItemPosition] == newList[newItemPosition]
     }
 }

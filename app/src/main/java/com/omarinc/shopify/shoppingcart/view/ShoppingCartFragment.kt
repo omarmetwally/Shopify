@@ -18,15 +18,11 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.payment.PaymentFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModel
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModelFactory
 import com.omarinc.shopify.type.CheckoutLineItemInput
-import com.shopify.checkoutsheetkit.CheckoutException
-import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor
-import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit
-import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class ShoppingCartFragment : Fragment() {
@@ -34,8 +30,7 @@ class ShoppingCartFragment : Fragment() {
     private lateinit var binding: FragmentShoppingCartBinding
     private lateinit var viewModel: ShoppingCartViewModel
     private var productsLine = listOf<CheckoutLineItemInput>()
-
-
+    private lateinit var  shoppingCartAdapter: ShoppingCartAdapter
 
     companion object {
         private const val TAG = "ShoppingCartFragment"
@@ -76,12 +71,7 @@ class ShoppingCartFragment : Fragment() {
                             Log.i(TAG, "Checkout Success url: ${result.response?.checkout?.webUrl}")
 
                             navigateToPaymentFragment(result.response?.checkout?.webUrl ?: "")
-                            /*presentCheckout(
-                                convertShopifyCheckoutUrl(
-                                    result.response?.checkout?.webUrl
-                                        ?: ""
-                                )
-                            )*/
+
                         }
                     }
                 }
@@ -115,6 +105,7 @@ class ShoppingCartFragment : Fragment() {
                         Log.i(TAG, "Successfully fetched items: ${result.response.size}")
                         setupRecyclerView(result.response)
                         updateProductsLine(result.response)
+                        getCurrentCurrency()
                     }
                 }
             }
@@ -122,7 +113,7 @@ class ShoppingCartFragment : Fragment() {
     }
 
     private fun setupRecyclerView(items: List<CartProduct>) {
-        val adapter = ShoppingCartAdapter(requireContext(), items) { itemId ->
+        shoppingCartAdapter = ShoppingCartAdapter(requireContext(), items.toMutableList()) { itemId ->
             val cartId = viewModel.readCartId()
             Log.i(TAG, "Removing item $itemId from cart $cartId")
             removeItemFromCart(cartId, itemId)
@@ -132,9 +123,9 @@ class ShoppingCartFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireActivity()).apply {
                 orientation = RecyclerView.VERTICAL
             }
-            this.adapter = adapter
+            this.adapter = shoppingCartAdapter
         }
-        adapter.notifyDataSetChanged()
+        shoppingCartAdapter.notifyDataSetChanged()
     }
 
     private fun removeItemFromCart(cartId: String, lineId: String) {
@@ -159,10 +150,40 @@ class ShoppingCartFragment : Fragment() {
 
     private fun navigateToPaymentFragment(webUrl: String) {
 
-        val action = ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl)
+        val action =
+            ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl)
         findNavController().navigate(action)
 
     }
 
+    private fun getCurrentCurrency() {
+        viewModel.getCurrencyUnit()
+        viewModel.getRequiredCurrency()
+
+        lifecycleScope.launch {
+            combine(
+                viewModel.currencyUnit,
+                viewModel.requiredCurrency
+            ) { currencyUnit, requiredCurrency ->
+                Pair(currencyUnit, requiredCurrency)
+            }.collect { (currencyUnit, requiredCurrency) ->
+                Log.i(TAG, "getCurrentCurrency 000: $currencyUnit")
+                when (requiredCurrency) {
+                    is ApiState.Failure -> Log.i(TAG, "getCurrentCurrency: ${requiredCurrency.msg}")
+                    ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
+                    is ApiState.Success -> {
+                        Log.i(
+                            TAG,
+                            "getCurrentCurrency: ${requiredCurrency.response.data[currencyUnit]?.code}"
+                        )
+                        requiredCurrency.response.data[currencyUnit]?.let { currency ->
+                            Log.i(TAG, "getCurrentCurrency: ${currency.value}")
+                            shoppingCartAdapter.updateCurrentCurrency(currency.value, currency.code)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 }
