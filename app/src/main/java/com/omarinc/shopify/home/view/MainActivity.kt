@@ -1,16 +1,23 @@
 package com.omarinc.shopify.home.view
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.omarinc.shopify.AuthenticationMainActivity
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.ActivityMainBinding
+import com.omarinc.shopify.databinding.NoInternetBannerBinding
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
@@ -21,6 +28,24 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var binding: ActivityMainBinding
     private lateinit var sharedPreferences: ISharedPreferences
+
+
+
+    private var wasNetworkDisconnected = false
+    private val networkChangeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (ConnectivityManager.CONNECTIVITY_ACTION == intent.action) {
+                val noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false)
+                showNetworkBanner(noConnectivity)
+                if (wasNetworkDisconnected && !noConnectivity) {
+                    refreshCurrentFragment()
+                    wasNetworkDisconnected = false
+                } else {
+                    wasNetworkDisconnected = noConnectivity
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,10 +70,48 @@ class MainActivity : AppCompatActivity() {
 //                binding.bottomNav.visibility = View.GONE
 //            }
 //        }
+
+        setupNetworkBanner()
         navigationItemSelectedListener()
 
     }
 
+    override fun onStart() {
+        super.onStart()
+        registerReceiver(networkChangeReceiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(networkChangeReceiver)
+
+    }
+    private fun setupNetworkBanner() {
+
+        binding.noInternetBanner.buttonTurnOnWifi.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+        }
+
+        binding.noInternetBanner.btnDismiss.setOnClickListener {
+            binding.noInternetBanner.networkBanner.visibility = View.GONE
+        }
+    }
+
+    private fun showNetworkBanner(noConnectivity: Boolean) {
+        runOnUiThread {
+            binding.noInternetBanner.networkBanner.visibility = if (noConnectivity) View.VISIBLE else View.GONE
+            binding.noInternetData.noDataNetworkLayout.visibility = if (noConnectivity) View.VISIBLE else View.GONE
+
+        }
+    }
+
+    private fun refreshCurrentFragment() {
+        navController.currentDestination?.let { destination ->
+            navController.popBackStack(destination.id, true)
+            navController.navigate(destination.id)
+        }
+    }
     private fun navigationItemSelectedListener() {
         binding.bottomNav.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
