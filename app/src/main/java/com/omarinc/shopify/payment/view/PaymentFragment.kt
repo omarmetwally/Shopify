@@ -126,20 +126,29 @@ class PaymentFragment : BottomSheetDialogFragment() {
                     is ApiState.Success -> {
                         val items = result.response
                         for (item in items) {
-                            viewModel.removeProductFromCart(viewModel.readCartId(), item.id)
-                            viewModel.cartItemRemove.collect { removeResult ->
-                                when (removeResult) {
-                                    is ApiState.Failure -> Log.e(TAG, "Failed to remove item: ${removeResult.msg}")
-                                    ApiState.Loading -> Log.i(TAG, "Removing item from cart...")
-                                    is ApiState.Success -> Log.i(TAG, "Successfully removed item: ${item.id}")
-                                }
-                            }
+                            removeItemCompletely(item.id, item.quantity)
                         }
                     }
                 }
             }
         }
     }
+
+    private fun removeItemCompletely(itemId: String, quantity: Int) {
+        lifecycleScope.launch {
+            repeat(quantity) {
+                viewModel.removeProductFromCart(viewModel.readCartId(), itemId)
+                viewModel.cartItemRemove.collect { removeResult ->
+                    when (removeResult) {
+                        is ApiState.Failure -> Log.e(TAG, "Failed to remove item: ${removeResult.msg}")
+                        ApiState.Loading -> Log.i(TAG, "Removing item from cart...")
+                        is ApiState.Success -> Log.i(TAG, "Successfully removed item: $itemId")
+                    }
+                }
+            }
+        }
+    }
+
 
 
 }
