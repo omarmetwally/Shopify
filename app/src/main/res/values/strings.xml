@@ -101,5 +101,20 @@
     <string name="delete_address_item">Deleting Address item</string>
     <string name="are_you_sure_to_address_this_item">Are you sure you want to delete this item ?</string>
 
+    <!--strings for tap target prompt-->
+
+    <string name="favourites_primary_text">View Favorites</string>
+    <string name="favourites_secondary_text">Tap here to see all the<br/>items you have marked<br/>as favorites.</string>
+    <string name="search_primary_text">Find Items</string>
+    <string name="search_secondary_text">Tap here to find what<br/>you are looking for quickly.</string>
+    <string name="discount_primary_text">Get a Discount</string>
+    <string name="discount_secondary_text">Long press this ad<br/>to receive a special discount.</string>
+    <string name="categories_primary_text">Explore Categories</string>
+    <string name="categories_secondary_text">Tap here to explore<br/>different categories of items.</string>
+    <string name="cart_primary_text">Your Cart</string>
+    <string name="cart_secondary_text">Tap here to review the items<br/>you are ready to purchase.</string>
+    <string name="profile_primary_text">Manage Profile</string>
+    <string name="profile_secondary_text">Tap here to view your orders<br/>wishlist, settings, and more.</string>
+
 
 </resources>
