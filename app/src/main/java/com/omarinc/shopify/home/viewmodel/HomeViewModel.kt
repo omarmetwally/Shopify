@@ -46,6 +46,19 @@ class HomeViewModel(private val repository: ShopifyRepository) : ViewModel() {
     private val _currencyUnit = MutableStateFlow<String>("USD")
     val currencyUnit = _currencyUnit.asStateFlow()
 
+    val maxPrice = MutableStateFlow<Int>(10000)
+
+    fun filterProducts(products: List<Product>) {
+        Log.i(TAG, "filterProducts: ")
+        val filteredResults = products.filter {
+            Log.i(TAG, "filterProducts: "+it)
+            val price =
+                (it.price as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
+            price <= maxPrice.value
+        }
+        _productsState.value = ApiState.Success(filteredResults)
+    }
+
 
     fun getBrands() {
         Log.i("TAG", "getBrands: Viewmodel")
