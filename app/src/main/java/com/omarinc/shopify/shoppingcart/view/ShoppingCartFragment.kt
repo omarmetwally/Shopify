@@ -31,7 +31,6 @@ class ShoppingCartFragment : Fragment() {
     private var productsLine = listOf<CheckoutLineItemInput>()
 
 
-
     companion object {
         private const val TAG = "ShoppingCartFragment"
     }
@@ -71,12 +70,7 @@ class ShoppingCartFragment : Fragment() {
                             Log.i(TAG, "Checkout Success url: ${result.response?.checkout?.webUrl}")
 
                             navigateToPaymentFragment(result.response?.checkout?.webUrl ?: "")
-                            /*presentCheckout(
-                                convertShopifyCheckoutUrl(
-                                    result.response?.checkout?.webUrl
-                                        ?: ""
-                                )
-                            )*/
+
                         }
                     }
                 }
@@ -154,7 +148,8 @@ class ShoppingCartFragment : Fragment() {
 
     private fun navigateToPaymentFragment(webUrl: String) {
 
-        val action = ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl)
+        val action =
+            ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl)
         findNavController().navigate(action)
 
     }

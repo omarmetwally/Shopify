@@ -1,12 +1,20 @@
-package com.omarinc.shopify.payment
+package com.omarinc.shopify.payment.view
 
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.omarinc.shopify.databinding.FragmentPaymentBinding
+import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
+import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.payment.viewModel.PaymentViewModel
+import com.omarinc.shopify.payment.viewModel.PaymentViewModelFactory
+import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.shopify.checkoutsheetkit.CheckoutException
 import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit
@@ -17,7 +25,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
 
     private lateinit var binding: FragmentPaymentBinding
-
+    private lateinit var viewModel: PaymentViewModel
     private lateinit var webUrl: String
 
     companion object {
@@ -54,6 +62,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupViewModel()
 
         webUrl = arguments?.getString("webURL") ?: ""
         setListeners()
@@ -88,5 +97,17 @@ class PaymentFragment : BottomSheetDialogFragment() {
         return convertedUrl
     }
 
+
+    private fun setupViewModel(){
+
+        val repository = ShopifyRepositoryImpl.getInstance(
+            ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
+            SharedPreferencesImpl.getInstance(requireContext()),
+            CurrencyRemoteDataSourceImpl.getInstance(),
+            AdminRemoteDataSourceImpl.getInstance()
+        )
+        val viewModelFactory = PaymentViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(PaymentViewModel::class.java)
+    }
 
 }
