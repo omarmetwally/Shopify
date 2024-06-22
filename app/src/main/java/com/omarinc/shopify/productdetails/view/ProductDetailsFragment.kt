@@ -436,10 +436,15 @@ class ProductDetailsFragment : Fragment() {
             }.collect { (currencyUnit, requiredCurrency) ->
                 Log.i(TAG, "getCurrentCurrency 000: $currencyUnit")
                 when (requiredCurrency) {
-                    is ApiState.Failure -> Log.i(
-                        TAG,
-                        "getCurrentCurrency: ${requiredCurrency.msg}"
-                    )
+                    is ApiState.Failure ->{
+                        Log.i(
+                            TAG,
+                            "getCurrentCurrency: ${requiredCurrency.msg}"
+
+                        )
+                        binding.tvProductPrice.text = "$price"
+
+                    }
 
                     ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
                     is ApiState.Success -> {

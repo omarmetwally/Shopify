@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Customer Name"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     <TextView
         android:id="@+id/tvComment"
@@ -19,7 +19,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:text="Customer Comment"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
     <RatingBar
         android:id="@+id/ratingBar"
