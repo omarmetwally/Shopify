@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Shopify</string>
+    <string name="app_name">EZstore</string>
     <string name="home">Home</string>
     <string name="categories">Categories</string>
     <string name="cart">Cart</string>
@@ -109,5 +109,6 @@
     <string name="TURN_ON_WIFI">TURN ON WIFI</string>
     <string name="dismiss">DISMISS</string>
     <string name="no_network_data">No Internet\nPlease check your network connection</string>
+    <string name="app_slogon">Find it Fast, Buy it Easy!</string>
 
 </resources>
