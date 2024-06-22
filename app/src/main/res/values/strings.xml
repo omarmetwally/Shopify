@@ -18,7 +18,7 @@
 
     <string name="checkout_button">Checkout</string>
     <string name="address">Adress</string>
-    <string name="payment_text_view">Payment</string>
+    <string name="payment_text_view">Payment Method</string>
     <string name="shipping_to_text_view">Shipping to</string>
     <string name="add_address_text_view">Add Address</string>
     <string name="hello">Hello, </string>
@@ -100,6 +100,9 @@
     <string name="are_you_sure_to_delete_this_item">Are you sure you want to delete this item ?</string>
     <string name="delete_address_item">Deleting Address item</string>
     <string name="are_you_sure_to_address_this_item">Are you sure you want to delete this item ?</string>
+    <string name="checkout_web_view_title">Buy Now!</string>
+    <string name="cash_on_delivery_button">Cash on Delivery</string>
+    <string name="pay_with_card_button">Pay with Card</string>
     <string name="guest_mode">Guest mode</string>
     <string name="guest_mode_message">You are currently using guest mode. Please log in to access this feature.</string>
 
