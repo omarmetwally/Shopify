@@ -3,6 +3,7 @@ package com.omarinc.shopify.home.view
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -30,6 +31,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.navigation.NavigationView
+import com.omarinc.shopify.AuthenticationMainActivity
 import com.omarinc.shopify.home.view.adapters.ProductsAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
@@ -43,7 +45,10 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Constants
+import com.omarinc.shopify.utilities.Helper
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.combine
@@ -70,13 +75,12 @@ class HomeFragment : Fragment() {
     private lateinit var adsAdapter: AdsAdapter
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
-
-
+    private lateinit var sharedPreferences: ISharedPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
         setViewModel()
 
     }
@@ -93,9 +97,15 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.favourites.setOnClickListener {
-            val action =
-                HomeFragmentDirections.actionHomeFragmentToFavoritesFragment()
-            findNavController().navigate(action)
+            if (checkUserTokenExist() == "null") {
+
+                showGuestModeAlertDialog()
+            } else {
+                val action =
+                    HomeFragmentDirections.actionHomeFragmentToFavoritesFragment()
+                findNavController().navigate(action)
+            }
+
         }
 
         binding.searchView.setOnClickListener {
@@ -112,7 +122,6 @@ class HomeFragment : Fragment() {
         collectProducts()
 
     }
-
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -477,6 +486,37 @@ class HomeFragment : Fragment() {
         }
     }
 
+
+    private fun checkUserTokenExist(): String {
+        val sharedPreferences = SharedPreferencesImpl.getInstance(requireContext())
+
+        return sharedPreferences.readStringFromSharedPreferences(Constants.USER_TOKEN)
+    }
+
+    private fun showGuestModeAlertDialog() {
+        Helper.showAlertDialog(
+            context = requireContext(),
+            title = getString(R.string.guest_mode),
+            message = getString(R.string.guest_mode_message),
+            positiveButtonText = getString(R.string.login),
+            positiveButtonAction = {
+                invertSkippedFlag()
+                navigateToLogin()
+            },
+            negativeButtonText = getString(R.string.no)
+        )
+    }
+
+    private fun invertSkippedFlag() {
+        sharedPreferences.writeBooleanToSharedPreferences(Constants.USER_SKIPPED, false)
+    }
+
+    private fun navigateToLogin() {
+
+        startActivity(Intent(requireContext(), AuthenticationMainActivity::class.java))
+        requireActivity().finish()
+
+    }
 }
 
 

@@ -76,6 +76,7 @@ class ProductDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setUpViewModel()
+        checkGuestMode()
 
         productId = arguments?.getString("productId") ?: ""
 
@@ -102,6 +103,8 @@ class ProductDetailsFragment : Fragment() {
         }
 
     }
+
+
 
 
     private fun setUpViewModel() {
@@ -137,14 +140,19 @@ class ProductDetailsFragment : Fragment() {
                 if (isFavorite) {
                     showUnfavoriteDialog(userToken, productId)
                 } else {
-                    val favoriteItem = FavoriteItem(productId = productId,
+                    val favoriteItem = FavoriteItem(
+                        productId = productId,
                         productName = binding.tvProductName.text.toString(),
-                        productPrice = binding.tvProductPrice.text.toString().removeSuffix(sharedPreferences.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT))
+                        productPrice = binding.tvProductPrice.text.toString().removeSuffix(
+                            sharedPreferences.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT)
+                        )
                             .toDouble(),
                         productImage = viewModel.apiState.value.let {
                             if (it is ApiState.Success) it.response.images[0].src else ""
                         },
-                        productCurrency = sharedPreferences.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT)
+                        productCurrency = sharedPreferences.readCurrencyUnitFromSharedPreferences(
+                            Constants.CURRENCY_UNIT
+                        )
                     )
                     favoriteViewModel.addToFavorites(userToken, favoriteItem)
                 }
@@ -449,6 +457,18 @@ class ProductDetailsFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun checkGuestMode() {
+        if (checkUserTokenExist() == "null")
+        {
+            binding.btnAddToCart.visibility= View.GONE
+            binding.btnFavorite.visibility= View.GONE
+
+        }
+    }
+    private fun checkUserTokenExist(): String {
+        return sharedPreferences.readStringFromSharedPreferences(Constants.USER_TOKEN)
     }
 
 
