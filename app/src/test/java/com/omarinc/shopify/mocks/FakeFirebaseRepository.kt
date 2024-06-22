@@ -32,15 +32,15 @@ class FakeFirebaseRepository : IFirebaseRepository {
     }
 
     override suspend fun addCustomerCart(email: String, cartId: String) {
-        TODO("Not yet implemented")
+        fakeDatabase.addCustomerCart(email, cartId)
     }
 
     override suspend fun isCustomerHasCart(email: String): Boolean {
-        TODO("Not yet implemented")
+        return fakeDatabase.isCustomerHasCart(email)
     }
 
     override suspend fun getCartByCustomer(email: String): String {
-        TODO("Not yet implemented")
+        return fakeDatabase.getCartByCustomer(email)
     }
 
 

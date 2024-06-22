@@ -18,7 +18,7 @@ class FirebaseRepositoryTest {
     @Test
     fun addFavorite_WithValidData_ShouldAddFavoriteSuccessfully() = runBlocking {
         val userToken = "fake_token"
-        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url")
+        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url","")
 
         fakeFirebaseRepository.addFavorite(userToken, favoriteItem)
         val favorites = fakeFirebaseRepository.getFavorites(userToken)
@@ -29,7 +29,7 @@ class FirebaseRepositoryTest {
     @Test
     fun removeFavorite_WithValidData_ShouldRemoveFavoriteSuccessfully() = runBlocking {
         val userToken = "fake_token"
-        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url")
+        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url","")
 
         fakeFirebaseRepository.addFavorite(userToken, favoriteItem)
         fakeFirebaseRepository.removeFavorite(userToken, favoriteItem.productId)
@@ -41,7 +41,7 @@ class FirebaseRepositoryTest {
     @Test
     fun isFavorite_WithAddedFavorite_ShouldReturnTrue() = runBlocking {
         val userToken = "fake_token"
-        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url")
+        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url","")
 
         fakeFirebaseRepository.addFavorite(userToken, favoriteItem)
         val isFavorite = fakeFirebaseRepository.isFavorite(userToken, favoriteItem.productId)
@@ -62,10 +62,24 @@ class FirebaseRepositoryTest {
     @Test
     fun addCustomerCart_WithValidData_ShouldAddCartSuccessfully() = runBlocking {
 
+        val email = "fake_email"
+        val cartId = "fake_cart_id"
+
+        fakeFirebaseRepository.addCustomerCart(email, cartId)
+
+        val hasCart = fakeFirebaseRepository.isCustomerHasCart(email)
+        assertTrue(hasCart)
     }
 
     @Test
     fun getCartByCustomer_WithValidData_ShouldReturnCorrectCartId() = runBlocking {
 
+        val email = "fake_email"
+        val cartId = "fake_cart_id"
+
+        fakeFirebaseRepository.addCustomerCart(email, cartId)
+
+        val retrievedCartId = fakeFirebaseRepository.getCartByCustomer(email)
+        assertEquals(cartId, retrievedCartId)
     }
 }

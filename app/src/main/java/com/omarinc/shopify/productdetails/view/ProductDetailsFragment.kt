@@ -139,11 +139,13 @@ class ProductDetailsFragment : Fragment() {
                 } else {
                     val favoriteItem = FavoriteItem(productId = productId,
                         productName = binding.tvProductName.text.toString(),
-                        productPrice = binding.tvProductPrice.text.toString().removeSuffix(" USD")
+                        productPrice = binding.tvProductPrice.text.toString().removeSuffix(sharedPreferences.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT))
                             .toDouble(),
                         productImage = viewModel.apiState.value.let {
                             if (it is ApiState.Success) it.response.images[0].src else ""
-                        })
+                        },
+                        productCurrency = sharedPreferences.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT)
+                    )
                     favoriteViewModel.addToFavorites(userToken, favoriteItem)
                 }
             }

@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Shopify" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.Shopify" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:colorPrimary">@color/primary_color</item>
 
         <item name="statusBarBackground">@color/white</item>
@@ -15,7 +15,4 @@
     </style>
 
     <style name="Theme.Shopify" parent="Base.Theme.Shopify" />
-
-
-
 </resources>

@@ -16,6 +16,8 @@ import com.bumptech.glide.request.RequestOptions
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.ItemFavoriteBinding
 import com.omarinc.shopify.favorites.model.FavoriteItemFirebase
+import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Constants
 
 class FavoritesAdapter(
     private val context: Context,
@@ -53,12 +55,14 @@ class FavoritesAdapter(
 
         fun bind(favoriteItem: FavoriteItemFirebase, context: Context) {
             binding.tvProductName.text = favoriteItem.productName
-            binding.tvProductPrice.text = "${favoriteItem.productPrice} USD"
+            binding.tvProductPrice.text = "${favoriteItem.productPrice} ${favoriteItem.productCurrency}"
             Glide.with(context).load(favoriteItem.productImage)
                 .apply(RequestOptions().placeholder(R.drawable.ic_launcher_foreground).error(R.drawable.ic_launcher_background))
                 .into(binding.ivProductImage)
         }
     }
+
+
 
     class FavoritesDiffUtil : DiffUtil.ItemCallback<FavoriteItemFirebase>() {
         override fun areItemsTheSame(oldItem: FavoriteItemFirebase, newItem: FavoriteItemFirebase): Boolean {
