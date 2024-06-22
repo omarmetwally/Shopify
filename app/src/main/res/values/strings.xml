@@ -101,7 +101,6 @@
     <string name="delete_address_item">Deleting Address item</string>
     <string name="are_you_sure_to_address_this_item">Are you sure you want to delete this item ?</string>
     <string name="guest_mode">Guest mode</string>
-    <string name="guest_mode_message">You have to login first to activate this feature</string>
-
+    <string name="guest_mode_message">You are currently using guest mode. Please log in to access this feature.</string>
 
 </resources>

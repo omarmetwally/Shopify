@@ -43,8 +43,8 @@
             android:layout_margin="16dp"
             android:gravity="center"
             android:text="Alert"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="18sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
