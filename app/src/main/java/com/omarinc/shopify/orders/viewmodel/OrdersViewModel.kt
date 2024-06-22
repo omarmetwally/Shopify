@@ -25,7 +25,7 @@ class OrdersViewModel (private val repository: ShopifyRepository) : ViewModel() 
     private var _requiredCurrency = MutableStateFlow<ApiState<CurrencyResponse>>(ApiState.Loading)
     val requiredCurrency = _requiredCurrency.asStateFlow()
 
-    private val _currencyUnit = MutableStateFlow<String>("USD")
+    private val _currencyUnit = MutableStateFlow<String>("EGP")
     val currencyUnit = _currencyUnit.asStateFlow()
 
     fun getCustomerOrders(token:String){
