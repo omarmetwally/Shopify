@@ -1,5 +1,6 @@
 package com.omarinc.shopify.shoppingcart.view
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,7 +22,10 @@ import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModel
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModelFactory
 import com.omarinc.shopify.type.CheckoutLineItemInput
+import com.shopify.checkoutsheetkit.CheckoutException
+import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit
+import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent
 import kotlinx.coroutines.launch
 
 class ShoppingCartFragment : Fragment() {
@@ -29,6 +33,24 @@ class ShoppingCartFragment : Fragment() {
     private lateinit var binding: FragmentShoppingCartBinding
     private lateinit var viewModel: ShoppingCartViewModel
     private var productsLine = listOf<CheckoutLineItemInput>()
+
+
+    private val checkoutEventProcessor by lazy {
+        object : DefaultCheckoutEventProcessor(requireContext()) {
+            override fun onCheckoutCompleted(checkoutCompletedEvent: CheckoutCompletedEvent) {
+                Log.i(TAG, "Checkout completed successfully.")
+            }
+
+            override fun onCheckoutCanceled() {
+                Log.i(TAG, "Checkout canceled by user.")
+            }
+
+            override fun onCheckoutFailed(error: CheckoutException) {
+                Log.e(TAG, "Checkout failed with error: ${error.message}")
+            }
+
+        }
+    }
 
     companion object {
         const val TAG = "ShoppingCartFragment"
@@ -38,6 +60,7 @@ class ShoppingCartFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // Inflate the layout for this fragment
         binding = FragmentShoppingCartBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -51,23 +74,37 @@ class ShoppingCartFragment : Fragment() {
     }
 
     private fun setListeners() {
+
         binding.checkoutButton.setOnClickListener {
+
+
+            Log.i(TAG, "setListeners: ${productsLine}")
+
             viewModel.createCheckout(productsLine)
+
             lifecycleScope.launch {
                 viewModel.checkoutResponse.collect { result ->
                     when (result) {
                         is ApiState.Failure -> Log.e(TAG, "Checkout Failed: ${result.msg}")
                         ApiState.Loading -> Log.i(TAG, "Checkout Loading")
                         is ApiState.Success -> {
-                            Log.i(TAG, "Checkout Success: ${result.response}")
-                            presentCheckout(viewModel.readCartId())
+                            Log.i(TAG, "Checkout Success url: ${result.response?.checkout?.webUrl}")
 
+                            presentCheckout(
+                                convertShopifyCheckoutUrl(
+                                    result.response?.checkout?.webUrl
+                                        ?: ""
+                                )
+                            )
                         }
                     }
                 }
             }
         }
+
+
     }
+
 
     private fun setupViewModel() {
         val repository = ShopifyRepositoryImpl.getInstance(
@@ -134,8 +171,13 @@ class ShoppingCartFragment : Fragment() {
     }
 
     private fun presentCheckout(checkoutUrl: String) {
-        val checkoutEventProcessor = CheckoutEventProcessor(requireContext())
+        Log.i(TAG, "presentCheckout: ${checkoutUrl}")
         ShopifyCheckoutSheetKit.present(checkoutUrl, requireActivity(), checkoutEventProcessor)
     }
 
+    private fun convertShopifyCheckoutUrl(originalUrl: String): String {
+        val regex = Regex("""\d+/checkouts/""")
+        val convertedUrl = originalUrl.replace(regex, "checkouts/co/")
+        return convertedUrl
+    }
 }

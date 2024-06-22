@@ -30,14 +30,14 @@ class CheckoutEventProcessor(private val context: Context) : DefaultCheckoutEven
 
     override fun onCheckoutLinkClicked(uri: Uri) {
         Log.i(TAG, "Checkout link clicked: $uri")
-        handleUri(uri)
+     //   handleUri(uri)
     }
 
     override fun onWebPixelEvent(event: PixelEvent) {
         Log.i(TAG, "Web pixel event: $event")
     }
 
-    private fun handleUri(uri: Uri) {
+  /*  private fun handleUri(uri: Uri) {
         val intent = when (uri.scheme) {
             "mailto" -> Intent(Intent.ACTION_SENDTO, uri)
             "tel" -> Intent(Intent.ACTION_DIAL, uri)
@@ -75,5 +75,5 @@ class CheckoutEventProcessor(private val context: Context) : DefaultCheckoutEven
                 Toast.makeText(context, "Unsupported link type: ${uri.scheme}", Toast.LENGTH_SHORT).show()
             }
         }
-    }
+    }*/
 }

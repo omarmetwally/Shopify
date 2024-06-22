@@ -1,5 +1,5 @@
-mutation CreateCheckout($lineItems: [CheckoutLineItemInput!]!, $email: String) {
-    checkoutCreate(input: { lineItems: $lineItems, email: $email }) {
+mutation CreateCheckout($lineItems: [CheckoutLineItemInput!]!) {
+    checkoutCreate(input: { lineItems: $lineItems}) {
         checkout {
             id
             webUrl
@@ -19,9 +19,6 @@ mutation CreateCheckout($lineItems: [CheckoutLineItemInput!]!, $email: String) {
                 }
             }
         }
-        userErrors {
-            field
-            message
-        }
+
     }
 }

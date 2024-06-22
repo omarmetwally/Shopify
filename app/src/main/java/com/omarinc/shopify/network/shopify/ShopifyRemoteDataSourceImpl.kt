@@ -623,7 +623,7 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
 
         emit(ApiState.Loading)
 
-        val mutation = CreateCheckoutMutation( lineItems = lineItems, email = Optional.Present(email))
+        val mutation = CreateCheckoutMutation( lineItems = lineItems)
         try {
             val response = apolloClient.mutation(mutation).execute()
 
@@ -632,8 +632,11 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                 emit(ApiState.Failure(Throwable(errorMessages)))
             } else {
                 val data = response.data
+                Log.i(TAG, "createCheckout: $data")
                 if (data != null) {
                     val checkoutCreate = response.data?.checkoutCreate
+                    val webURL= data.checkoutCreate?.checkout?.webUrl
+                    Log.i(TAG, "createCheckout: ${webURL}")
                     val checkout = checkoutCreate?.checkout?.let{
                         Checkout(id = it.id,
                             webUrl = it.webUrl.toString(),
