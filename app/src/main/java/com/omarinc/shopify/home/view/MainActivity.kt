@@ -38,13 +38,13 @@ class MainActivity : AppCompatActivity() {
 
         NavigationUI.setupWithNavController(binding.bottomNav, navController)
         // 3lshan el bottomNavigation y5tafe
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            if (destination.id in Constants.fragmentsWithHiddenBottomNav) {
-                binding.bottomNav.visibility = View.VISIBLE
-            } else {
-                binding.bottomNav.visibility = View.GONE
-            }
-        }
+//        navController.addOnDestinationChangedListener { _, destination, _ ->
+//            if (destination.id in Constants.fragmentsWithHiddenBottomNav) {
+//                binding.bottomNav.visibility = View.VISIBLE
+//            } else {
+//                binding.bottomNav.visibility = View.GONE
+//            }
+//        }
         navigationItemSelectedListener()
 
     }
