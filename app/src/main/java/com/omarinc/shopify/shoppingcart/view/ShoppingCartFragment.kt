@@ -18,15 +18,10 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
-import com.omarinc.shopify.payment.PaymentFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModel
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModelFactory
 import com.omarinc.shopify.type.CheckoutLineItemInput
-import com.shopify.checkoutsheetkit.CheckoutException
-import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor
-import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit
-import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent
 import kotlinx.coroutines.launch
 
 class ShoppingCartFragment : Fragment() {
@@ -34,7 +29,6 @@ class ShoppingCartFragment : Fragment() {
     private lateinit var binding: FragmentShoppingCartBinding
     private lateinit var viewModel: ShoppingCartViewModel
     private var productsLine = listOf<CheckoutLineItemInput>()
-
 
 
     companion object {
@@ -76,12 +70,7 @@ class ShoppingCartFragment : Fragment() {
                             Log.i(TAG, "Checkout Success url: ${result.response?.checkout?.webUrl}")
 
                             navigateToPaymentFragment(result.response?.checkout?.webUrl ?: "")
-                            /*presentCheckout(
-                                convertShopifyCheckoutUrl(
-                                    result.response?.checkout?.webUrl
-                                        ?: ""
-                                )
-                            )*/
+
                         }
                     }
                 }
@@ -159,7 +148,8 @@ class ShoppingCartFragment : Fragment() {
 
     private fun navigateToPaymentFragment(webUrl: String) {
 
-        val action = ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl)
+        val action =
+            ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl)
         findNavController().navigate(action)
 
     }
