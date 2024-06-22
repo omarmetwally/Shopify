@@ -87,8 +87,6 @@ class CategoriesViewModel(private val repository: ShopifyRepository) : ViewModel
             _currencyUnit.value = repository.readCurrencyUnit(Constants.CURRENCY_UNIT)
         }
     }
-
-
     fun getRequiredCurrency() {
         Log.i(HomeViewModel.TAG, "getRequiredCurrency: ")
         viewModelScope.launch(Dispatchers.IO) {
@@ -103,8 +101,6 @@ class CategoriesViewModel(private val repository: ShopifyRepository) : ViewModel
                 }
         }
     }
-
-
     class CategoriesViewModelFactory(
         private val repository: ShopifyRepository,
     ) : ViewModelProvider.Factory {
