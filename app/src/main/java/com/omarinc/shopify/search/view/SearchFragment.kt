@@ -142,13 +142,17 @@ class SearchFragment : Fragment() {
     }
 
     private fun filterAndDisplayProducts(products: List<Products>) {
+        val currencyUnit = SharedPreferencesImpl.getInstance(requireContext())
         val filteredResults = products.filter {
             val price =
                 it.convertedPrice as? Double ?: (it.convertedPrice as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
             price <= maxPrice.value
         }
         productsAdapter.submitList(filteredResults)
-        getCurrentCurrency()
+        if (!currencyUnit.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT).equals("EGP")){
+            getCurrentCurrency()
+        }
+
         updateSuggestions(filteredResults.map { it.title })
     }
 

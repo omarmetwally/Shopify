@@ -205,7 +205,14 @@ class ProductDetailsFragment : Fragment() {
                         binding.tvProductVendor.text = productDetails.vendor
 
                         val price = productDetails.price.toString()
-                        getCurrentCurrency(price.toDouble())
+
+
+                        if (!sharedPreferences.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT).equals("EGP")){
+                            getCurrentCurrency(price.toDouble())
+                        }
+                        else{
+                            binding.tvProductPrice.text = "$price EGP"
+                        }
 
                         binding.tvProductStock.text = "In Stock: ${productDetails.totalInventory}"
                         binding.tvProductDescription.text = productDetails.description
