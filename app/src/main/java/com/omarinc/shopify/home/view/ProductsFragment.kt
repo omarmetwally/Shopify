@@ -138,7 +138,7 @@ class ProductsFragment : Fragment() {
         }
     }
     private fun setupSeekBar() {
-        binding.priceSeekBar.max = 1000
+        binding.priceSeekBar.max = 10000
         binding.priceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 viewModel.maxPrice.value = progress

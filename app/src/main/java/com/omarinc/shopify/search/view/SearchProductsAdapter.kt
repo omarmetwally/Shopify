@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +27,7 @@ class SearchProductsAdapter(
     private val handler = Handler(Looper.getMainLooper())
 
     private var convertedPrices: MutableMap<String, Double> = mutableMapOf()
-    private var currencyUnit: String = "USD"
+    private var currencyUnit: String = "EGP"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val binding =
@@ -63,8 +64,15 @@ class SearchProductsAdapter(
         currencyUnit = unit
         currentList.forEach { product ->
             convertedPrices[product.id] = product.price.toString().toDouble() * rate
+            Log.e("price", "convertedPrices: ${convertedPrices[product.id]} ", )
+            product.convertedPrice=convertedPrices[product.id]
+            Log.e("price", "price: ${product.convertedPrice} ", )
+
         }
         notifyDataSetChanged()
+    }
+    fun getConvertedPrice(productId: String): Double {
+        return convertedPrices[productId] ?: Double.MAX_VALUE
     }
 
     class ProductViewHolder(private val binding: ItemFavoriteBinding) :

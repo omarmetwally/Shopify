@@ -143,7 +143,7 @@ class SearchFragment : Fragment() {
     private fun filterAndDisplayProducts(products: List<Products>) {
         val filteredResults = products.filter {
             val price =
-                it.price as? Double ?: (it.price as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
+                it.convertedPrice as? Double ?: (it.convertedPrice as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
             price <= maxPrice.value
         }
         productsAdapter.submitList(filteredResults)
@@ -152,7 +152,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun setupSeekBar() {
-        binding.priceSeekBar.max = 1000
+        binding.priceSeekBar.max = 10000
         binding.priceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 maxPrice.value = progress
@@ -239,3 +239,4 @@ class SearchFragment : Fragment() {
     }
 
 }
+
