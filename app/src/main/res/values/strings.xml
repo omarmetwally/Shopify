@@ -125,6 +125,9 @@
     <string name="TURN_ON_WIFI">TURN ON WIFI</string>
     <string name="dismiss">DISMISS</string>
     <string name="no_network_data">No Internet\nPlease check your network connection</string>
+    <string name="empty_cart">It looks like you have not added anything to your cart yet ! start shopping and add products .</string>
+    <string name="no_favorites">It looks like you have not added anything to your favorites yet ! start exploring and add products .</string>
+    <string name="no_orders">It looks like you have not made any orders yet ! start shopping and make orders.</string>
     <string name="app_slogon">Find it Fast, Buy it Easy!</string>
 
 </resources>

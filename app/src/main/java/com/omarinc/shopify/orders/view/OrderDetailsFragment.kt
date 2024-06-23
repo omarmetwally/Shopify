@@ -77,9 +77,7 @@ class OrderDetailsFragment : Fragment() {
 
     private fun setUpProductsAdapter() {
         productsAdapter = ProductsAdapter(requireContext()) { productId ->
-            val action =
-                HomeFragmentDirections.actionHomeFragmentToProductDetailsFragment(productId)
-            findNavController().navigate(action)
+
         }
         productsManager = GridLayoutManager(requireContext(), 2)
         productsManager.orientation = GridLayoutManager.VERTICAL

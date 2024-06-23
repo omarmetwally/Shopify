@@ -6,11 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".orders.view.OrderDetailsFragment">
 
-     <TextView
+    <TextView
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="@string/order_items"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -50,6 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="-24dp"
         android:text="@string/order_id"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -97,7 +98,6 @@
         android:id="@+id/divider"
         android:layout_width="327dp"
         android:layout_height="1dp"
-        android:layout_marginTop="16dp"
         android:background="?android:attr/listDivider"
         android:backgroundTint="@color/dark_grey"
         app:layout_constraintEnd_toEndOf="parent"
@@ -239,7 +239,7 @@
         android:id="@+id/textView15"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:text="@string/total_cost"
         android:textSize="16sp"
         android:textStyle="bold"
