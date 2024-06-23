@@ -71,7 +71,7 @@ class ShoppingCartFragment : Fragment() {
                         is ApiState.Success -> {
                             Log.i(TAG, "Checkout Success url: ${result.response?.checkout?.webUrl}")
 
-                            navigateToPaymentFragment(result.response?.checkout?.webUrl ?: "")
+                            navigateToPaymentFragment(result.response?.checkout?.id ?: "")
 
                         }
                     }

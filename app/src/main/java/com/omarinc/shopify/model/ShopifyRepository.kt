@@ -17,6 +17,7 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.type.CheckoutLineItemInput
+import com.omarinc.shopify.type.MailingAddressInput
 import kotlinx.coroutines.flow.Flow
 
 interface ShopifyRepository {
@@ -102,4 +103,7 @@ interface ShopifyRepository {
     suspend fun createCheckout(
         lineItems: List<CheckoutLineItemInput>, email: String?
     ): Flow<ApiState<CheckoutResponse?>>
+
+    fun applyShippingAddress(checkoutId: String, shippingAddress: MailingAddressInput):Flow<ApiState<String?>>
+
 }
