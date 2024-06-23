@@ -91,7 +91,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
         binding.cashOnDeliveryButton.setOnClickListener {
 
-            testDraftOrder()
+            createCashOnDeliveryOrder()
 
         }
 
@@ -171,67 +171,71 @@ class PaymentFragment : BottomSheetDialogFragment() {
     }
 
 
-    fun testDraftOrder() {
-
-        val billingAddress = Address(
-            address1 = "123 Main St",
-            city = "Anytown",
-            province = "Anystate",
-            zip = "12345",
-            country = "USA"
-        )
-
-        val shippingAddress = Address(
-            address1 = "123 Main St",
-            city = "Anytown",
-            province = "Anystate",
-            zip = "12345",
-            country = "USA"
-        )
-
-        val customer = Customer(
-            email = "customer@example.com"
-        )
-
-        val lineItem = LineItem(
-            title = "Sample Product",
-            variantId = 43633467621555L,
-            quantity = 1,
-            price = "19.99"
-        )
-
-        val lineItems = listOf(lineItem)
-
-        val draftOrder = DraftOrder(
-            lineItems = lineItems,
-            customer = customer,
-            billingAddress = billingAddress,
-            shippingAddress = shippingAddress
-        )
-
-        val draftOrderRequest = DraftOrderRequest(
-            draftOrder = draftOrder
-        )
-
-        viewModel.createCashOnDeliveryOrder(draftOrderRequest)
-
+    private fun createCashOnDeliveryOrder() {
+        // Fetch cart items and create the order when fetched successfully
         lifecycleScope.launch {
+            viewModel.getShoppingCartItems(viewModel.readCartId())
 
-            viewModel.draftOrder.collect { result ->
-
-                when(result){
-                    is ApiState.Failure -> Log.i(TAG, "testDraftOrder: Failure ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "testDraftOrder: Loading")
+            viewModel.cartItems.collect { result ->
+                when (result) {
+                    is ApiState.Failure -> Log.e(TAG, "Failed to get items: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "Loading ShoppingCart Items")
                     is ApiState.Success -> {
+                        val cartProducts = result.response
 
-                        Log.i(TAG, "testDraftOrder: Success")
+                        // Map CartProduct to LineItem
+                        val lineItems = cartProducts.map { cartProduct ->
+                            val variantIdLong = extractProductVariantId(cartProduct.variantId) ?: 0L
+                            LineItem(
+                                title = cartProduct.productTitle,
+                                variantId = variantIdLong,
+                                quantity = cartProduct.quantity,
+                                price = cartProduct.variantPrice
+                            )
+                        }
+
+                        // Create DraftOrder
+                        val draftOrder = DraftOrder(
+                            lineItems = lineItems,
+                            customer = Customer(email = viewModel.readCustomerEmail()),
+                            billingAddress = Address(
+                                address1 = "123 Billing St",
+                                city = "Billing City",
+                                province = "Billing Province",
+                                zip = "12345",
+                                country = "Billing Country"
+                            ),
+                            shippingAddress = Address(
+                                address1 = "456 Shipping Ave",
+                                city = "Shipping City",
+                                province = "Shipping Province",
+                                zip = "67890",
+                                country = "Shipping Country"
+                            )
+                        )
+
+                        val draftOrderRequest = DraftOrderRequest(draftOrder = draftOrder)
+
+                        viewModel.createCashOnDeliveryOrder(draftOrderRequest)
+
+                        // Collect the response of createCashOnDeliveryOrder
+                        viewModel.draftOrder.collect { draftOrderResult ->
+                            when (draftOrderResult) {
+                                is ApiState.Failure -> Log.e(TAG, "createCashOnDeliveryOrder: ${draftOrderResult.msg}")
+                                ApiState.Loading -> Log.i(TAG, "createCashOnDeliveryOrder: Loading")
+                                is ApiState.Success -> {
+                                    Log.i(TAG, "createCashOnDeliveryOrder: Success")
+                                    clearShoppingCartItems()
+                                }
+                            }
+                        }
                     }
                 }
-
             }
         }
-
     }
+
+    
 }
 
 

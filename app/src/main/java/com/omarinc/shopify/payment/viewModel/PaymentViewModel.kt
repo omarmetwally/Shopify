@@ -11,6 +11,7 @@ import com.omarinc.shopify.models.DraftOrderResponse
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.utilities.Constants.USER_EMAIL
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PaymentViewModel(private val repository: ShopifyRepository):ViewModel() {
@@ -26,7 +27,7 @@ class PaymentViewModel(private val repository: ShopifyRepository):ViewModel() {
     val cartItemRemove: MutableStateFlow<ApiState<String?>> = _cartItemRemove
 
     private val _draftOrder = MutableStateFlow<ApiState<DraftOrderResponse>>(ApiState.Loading)
-    val draftOrder: MutableStateFlow<ApiState<DraftOrderResponse>> = _draftOrder
+    val draftOrder: StateFlow<ApiState<DraftOrderResponse>> = _draftOrder
 
     fun getShoppingCartItems(cartId: String) {
 
@@ -55,7 +56,9 @@ class PaymentViewModel(private val repository: ShopifyRepository):ViewModel() {
     fun createCashOnDeliveryOrder(draftOrder: DraftOrderRequest){
         viewModelScope.launch {
             Log.i(TAG, "createCashOnDeliveryOrder: ")
-            repository.createDraftOrder(draftOrder)
+            repository.createDraftOrder(draftOrder).collect{
+                _draftOrder.value = it
+            }
         }
     }
 
