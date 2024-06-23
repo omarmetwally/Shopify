@@ -73,8 +73,7 @@ class HomeViewModel(
         Log.i(TAG, "filterProducts: ")
         val filteredResults = products.filter {
             Log.i(TAG, "filterProducts: " + it)
-            val price =
-                (it.price as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
+            val price = it.convertedPrice ?: 0.0
             price <= maxPrice.value
         }
         _filteredProductsState.value = ApiState.Success(filteredResults)
