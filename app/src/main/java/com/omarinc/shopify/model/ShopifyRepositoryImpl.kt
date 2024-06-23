@@ -36,6 +36,8 @@ class ShopifyRepositoryImpl(
 ) : ShopifyRepository {
 
     companion object {
+        private const val TAG = "ShopifyRepositoryImpl"
+
         @Volatile
         private var instance: ShopifyRepositoryImpl? = null
 
@@ -144,8 +146,8 @@ class ShopifyRepositoryImpl(
         return shopifyRemoteDataSource.getCollectionByHandle(handle)
     }
 
-    override suspend fun createCart(token: String): Flow<ApiState<String?>> {
-        return shopifyRemoteDataSource.createCart(token)
+    override suspend fun createCart(email: String, token: String): Flow<ApiState<String?>> {
+        return shopifyRemoteDataSource.createCart(email, token)
     }
 
     override suspend fun readEmailFromSharedPreferences(key: String): String {
@@ -209,7 +211,7 @@ class ShopifyRepositoryImpl(
 
 
     override suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>> {
-        Log.i("TAG", "createDraftOrder: repo")
+        Log.i(TAG, "createDraftOrder: Repo")
         return adminRemoteDataSource.createDraftOrder(draftOrder)
     }
 

@@ -55,7 +55,7 @@ interface ShopifyRepository {
 
     fun getCollectionByHandle(handle: String): Flow<ApiState<Collection>>
 
-    suspend fun createCart(token: String): Flow<ApiState<String?>>
+    suspend fun createCart(email: String, token: String): Flow<ApiState<String?>>
 
     suspend fun readEmailFromSharedPreferences(key: String): String
 

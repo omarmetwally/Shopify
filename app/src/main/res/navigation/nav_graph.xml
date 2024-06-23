@@ -158,6 +158,9 @@
         <argument
             android:name="index"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_orderDetailsFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/addressDetailsFragment"

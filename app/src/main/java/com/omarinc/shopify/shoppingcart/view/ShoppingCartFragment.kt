@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.omarinc.shopify.databinding.FragmentShoppingCartBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CartProduct
+import com.omarinc.shopify.models.Currency
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
@@ -100,15 +101,28 @@ class ShoppingCartFragment : Fragment() {
             viewModel.cartItems.collect { result ->
                 when (result) {
                     is ApiState.Failure -> Log.e(TAG, "Failed to get items: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "Loading ShoppingCart Items")
+                    ApiState.Loading -> {
+                        binding.cartShimmer.startShimmer()
+                    }
                     is ApiState.Success -> {
                         Log.i(TAG, "Successfully fetched items: ${result.response.size}")
+                       setupEmptyCart(result.response)
+                        binding.cartShimmer.stopShimmer()
+                        binding.cartShimmer.visibility = View.GONE
                         setupRecyclerView(result.response)
                         updateProductsLine(result.response)
                         getCurrentCurrency()
+
                     }
                 }
             }
+        }
+    }
+
+    private fun setupEmptyCart(items:List<CartProduct>) {
+        if (items.isEmpty()){
+            binding.emptyCart.visibility = View.VISIBLE
+            binding.checkoutButton.visibility = View.GONE
         }
     }
 
@@ -147,6 +161,8 @@ class ShoppingCartFragment : Fragment() {
             CheckoutLineItemInput(quantity = it.quantity, variantId = it.variantId)
         }
 
+
+
     }
 
 
@@ -181,11 +197,23 @@ class ShoppingCartFragment : Fragment() {
                         requiredCurrency.response.data[currencyUnit]?.let { currency ->
                             Log.i(TAG, "getCurrentCurrency: ${currency.value}")
                             shoppingCartAdapter.updateCurrentCurrency(currency.value, currency.code)
+                            updateTotalPrice(currency)
+
+
                         }
                     }
                 }
             }
         }
+    }
+
+
+    private fun updateTotalPrice(currency: Currency) {
+
+        val totalPrice = productsLine.sumOf {it.quantity * currency.value}
+        binding.totalPriceTextView.text = String.format("Total price : %.2f %s", totalPrice, currency.code)
+
+
     }
 
 }

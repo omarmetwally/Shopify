@@ -69,6 +69,7 @@ class ProductsViewHolder(val binding: ProductLayoutBinding) :
             )
             .into(binding.brandImage)
         binding.brandConstrainLayout.setOnClickListener {
+            Log.i("TAG", "bind: Product Id${product.id}")
             listener.invoke(product.id)
         }
     }

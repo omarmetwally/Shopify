@@ -10,6 +10,11 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.omarinc.shopify.databinding.FragmentPaymentBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.models.Address
+import com.omarinc.shopify.models.Customer
+import com.omarinc.shopify.models.DraftOrder
+import com.omarinc.shopify.models.DraftOrderRequest
+import com.omarinc.shopify.models.LineItem
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
@@ -79,12 +84,14 @@ class PaymentFragment : BottomSheetDialogFragment() {
         binding.payWithCardButton.setOnClickListener {
 
             presentCheckout(convertShopifyCheckoutUrl(webUrl))
+            //"https://mad44-sv-and.myshopify.com/cart/c/Z2NwLWV1cm9wZS13ZXN0MTowMUoxMTJHRDFOUDZHVkVYSkQySjBBU1g4Uw?key=e856db46ee3cc0f93d60436f380f9fd3"
 
 
         }
 
         binding.cashOnDeliveryButton.setOnClickListener {
 
+            testDraftOrder()
 
         }
 
@@ -103,7 +110,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
     }
 
 
-    private fun setupViewModel(){
+    private fun setupViewModel() {
 
         val repository = ShopifyRepositoryImpl.getInstance(
             ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
@@ -126,14 +133,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
                     is ApiState.Success -> {
                         val items = result.response
                         for (item in items) {
-                            viewModel.removeProductFromCart(viewModel.readCartId(), item.id)
-                            viewModel.cartItemRemove.collect { removeResult ->
-                                when (removeResult) {
-                                    is ApiState.Failure -> Log.e(TAG, "Failed to remove item: ${removeResult.msg}")
-                                    ApiState.Loading -> Log.i(TAG, "Removing item from cart...")
-                                    is ApiState.Success -> Log.i(TAG, "Successfully removed item: ${item.id}")
-                                }
-                            }
+                            removeItemCompletely(item.id, item.quantity)
                         }
                     }
                 }
@@ -141,5 +141,97 @@ class PaymentFragment : BottomSheetDialogFragment() {
         }
     }
 
+    private fun removeItemCompletely(itemId: String, quantity: Int) {
+        lifecycleScope.launch {
+            repeat(quantity) {
+                viewModel.removeProductFromCart(viewModel.readCartId(), itemId)
+                viewModel.cartItemRemove.collect { removeResult ->
+                    when (removeResult) {
+                        is ApiState.Failure -> Log.e(
+                            TAG,
+                            "Failed to remove item: ${removeResult.msg}"
+                        )
 
+                        ApiState.Loading -> Log.i(TAG, "Removing item from cart...")
+                        is ApiState.Success -> Log.i(TAG, "Successfully removed item: $itemId")
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+    fun extractProductVariantId(variantId: String): Long? {
+        // Regex pattern to extract the numeric part
+        val regex = Regex("""\d+""")
+        val matchResult = regex.find(variantId)
+        return matchResult?.value?.toLongOrNull()
+    }
+
+
+    fun testDraftOrder() {
+
+        val billingAddress = Address(
+            address1 = "123 Main St",
+            city = "Anytown",
+            province = "Anystate",
+            zip = "12345",
+            country = "USA"
+        )
+
+        val shippingAddress = Address(
+            address1 = "123 Main St",
+            city = "Anytown",
+            province = "Anystate",
+            zip = "12345",
+            country = "USA"
+        )
+
+        val customer = Customer(
+            email = "customer@example.com"
+        )
+
+        val lineItem = LineItem(
+            title = "Sample Product",
+            variantId = 43633467621555L,
+            quantity = 1,
+            price = "19.99"
+        )
+
+        val lineItems = listOf(lineItem)
+
+        val draftOrder = DraftOrder(
+            lineItems = lineItems,
+            customer = customer,
+            billingAddress = billingAddress,
+            shippingAddress = shippingAddress
+        )
+
+        val draftOrderRequest = DraftOrderRequest(
+            draftOrder = draftOrder
+        )
+
+        viewModel.createCashOnDeliveryOrder(draftOrderRequest)
+
+        lifecycleScope.launch {
+
+            viewModel.draftOrder.collect { result ->
+
+                when(result){
+                    is ApiState.Failure -> Log.i(TAG, "testDraftOrder: Failure ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "testDraftOrder: Loading")
+                    is ApiState.Success -> {
+
+                        Log.i(TAG, "testDraftOrder: Success")
+                    }
+                }
+
+            }
+        }
+
+    }
 }
+
+
