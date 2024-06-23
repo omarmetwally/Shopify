@@ -185,5 +185,8 @@ dependencies {
     //Shopify Checkout Sheet Kit
     implementation ("com.shopify:checkout-sheet-kit:3.0.1")
 
+    implementation("androidx.webkit:webkit:1.8.0")
+
+
 
 }

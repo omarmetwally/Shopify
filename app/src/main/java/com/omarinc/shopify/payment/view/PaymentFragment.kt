@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.apollographql.apollo3.api.Optional
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.omarinc.shopify.databinding.FragmentPaymentBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.Address
 import com.omarinc.shopify.models.Customer
+import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.DraftOrder
 import com.omarinc.shopify.models.DraftOrderRequest
 import com.omarinc.shopify.models.LineItem
@@ -37,7 +39,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
     private lateinit var binding: FragmentPaymentBinding
     private lateinit var viewModel: PaymentViewModel
     private lateinit var checkoutId: String
-
+    private lateinit var defaultAddress: CustomerAddress
     companion object {
         private const val TAG = "PaymentFragment"
     }
@@ -75,8 +77,9 @@ class PaymentFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupViewModel()
-
+        getCustomerAddresses()
         checkoutId = arguments?.getString("checkoutId") ?: ""
+        Log.i(TAG, "onViewCreated: ${checkoutId}")
         setListeners()
 
     }
@@ -85,26 +88,30 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
         binding.payWithCardButton.setOnClickListener {
 
-            //presentCheckout(convertShopifyCheckoutUrl(webUrl))
 
             lifecycleScope.launch {
-                viewModel.applyShippingAddress(checkoutId,
-                    MailingAddressInput(Optional.present("address 1"),
-                        city = Optional.present("Cairo"),
+                viewModel.applyShippingAddress(
+                    checkoutId,
+                    MailingAddressInput(
+                        address1 = Optional.present(defaultAddress?.address1),
+                        city = Optional.present(defaultAddress?.city),
                         country = Optional.present("Egypt"),
-                        lastName = Optional.present("last name"),
+                        lastName = Optional.present(defaultAddress?.lastName),
                         phone = Optional.present("01555774530"),
                         province = Optional.present("Cairo"),
                         zip = Optional.present("123")
-                        ))
+                    )
+                )
 
-                viewModel.webUrl.collect{result->
+                viewModel.webUrl.collect { result ->
 
-                    when(result){
+                    when (result) {
                         is ApiState.Failure -> Log.i(TAG, "setListeners: Failure ${result.msg}")
                         ApiState.Loading -> Log.i(TAG, "setListeners: Loading")
                         is ApiState.Success -> {
                             Log.i(TAG, "setListeners: ${result.response}")
+                            val action = PaymentFragmentDirections.actionPaymentFragmentToPaymentWebViewFragment(result.response)
+                            findNavController().navigate(action)
                         }
                     }
 
@@ -184,7 +191,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
     }
 
 
-    fun extractProductVariantId(variantId: String): Long? {
+    private fun extractProductVariantId(variantId: String): Long? {
         // Regex pattern to extract the numeric part
         val regex = Regex("""\d+""")
         val matchResult = regex.find(variantId)
@@ -193,7 +200,6 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
 
     private fun createCashOnDeliveryOrder() {
-        // Fetch cart items and create the order when fetched successfully
         lifecycleScope.launch {
             viewModel.getShoppingCartItems(viewModel.readCartId())
 
@@ -260,6 +266,33 @@ class PaymentFragment : BottomSheetDialogFragment() {
         }
     }
 
+
+    private fun getCustomerAddresses() {
+
+        viewModel.getCustomersAddresses()
+
+        lifecycleScope.launch {
+            viewModel.addressList.collect { result ->
+
+                when(result){
+                    is ApiState.Failure -> Log.i(TAG, "getCustomerAddresses: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "getCustomerAddresses: loading")
+                    is ApiState.Success -> {
+                        defaultAddress= result.response?.get(0)!!
+                        updateDefaultAddressUI()
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    private fun updateDefaultAddressUI(){
+
+        binding.cityAddress.text = defaultAddress?.city
+        binding.detailsAddress.text = defaultAddress?.address1
+    }
 
 }
 
