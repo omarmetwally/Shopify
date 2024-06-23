@@ -153,13 +153,17 @@ class FakeShopifyRemoteDataSource : ShopifyRemoteDataSource {
         }
     }
 
-    override suspend fun createCart(email: String): Flow<ApiState<String?>> = flow {
-        if (shouldReturnError) {
-            emit(ApiState.Failure(Throwable("Fake error")))
-        } else {
-            emit(ApiState.Success("fake_cart_id"))
-        }
+    override suspend fun createCart(email: String, token: String): Flow<ApiState<String?>> {
+        TODO("Not yet implemented")
     }
+
+//    override suspend fun createCart(email: String): Flow<ApiState<String?>> = flow {
+//        if (shouldReturnError) {
+//            emit(ApiState.Failure(Throwable("Fake error")))
+//        } else {
+//            emit(ApiState.Success("fake_cart_id"))
+//        }
+//    }
 
     override suspend fun addToCartById(
         cartId: String,
