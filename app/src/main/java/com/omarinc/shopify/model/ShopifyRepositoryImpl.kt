@@ -86,6 +86,10 @@ class ShopifyRepositoryImpl(
                     Constants.USER_EMAIL,
                     email
                 )
+                sharedPreferences.writeStringToSharedPreferences(
+                    Constants.CURRENCY_UNIT,
+                    "EGP"
+                )
 
             }
             state

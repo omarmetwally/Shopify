@@ -2,6 +2,7 @@ package com.omarinc.shopify.favorites.view
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import com.omarinc.shopify.favorites.model.FirebaseRepository
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModel
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModelFactory
 import com.omarinc.shopify.models.CartProduct
+import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.launch
@@ -38,7 +40,10 @@ class FavoritesFragment : Fragment() {
         viewModel = ViewModelProvider(this, favoriteFactory).get(FavoriteViewModel::class.java)
 
         favoritesAdapter = FavoritesAdapter(requireContext()) { productId ->
-            val action = FavoritesFragmentDirections.actionFavoritesFragmentToProductDetailsFragment(productId)
+            val action =
+                FavoritesFragmentDirections.actionFavoritesFragmentToProductDetailsFragment(
+                    productId
+                )
             findNavController().navigate(action)
         }
         binding.rvFavorites.layoutManager = GridLayoutManager(requireContext(), 3)
@@ -49,22 +54,42 @@ class FavoritesFragment : Fragment() {
 
         viewModel.getFavorites(userToken)
 
-        binding.btnBack.setOnClickListener{
+        binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
-        lifecycleScope.launch {
-            viewModel.favorites.collect { favoriteItems ->
-                setupNoFavourites(favoriteItems)
-                favoritesAdapter.submitList(favoriteItems)
+        lifecycleScope.launchWhenStarted {
+            viewModel.favorites.collect { favoriteState ->
+                when (favoriteState) {
+                    is ApiState.Loading -> {
+                        binding.favoriteShimmer.visibility = View.VISIBLE
+                        binding.noFavorites.visibility = View.GONE
+                        binding.rvFavorites.visibility = View.GONE
+                    }
+
+                    is ApiState.Success -> {
+                        binding.favoriteShimmer.visibility = View.GONE
+                        if (favoriteState.response.isEmpty()) {
+                            binding.noFavorites.visibility = View.VISIBLE
+                            binding.rvFavorites.visibility = View.GONE
+                        } else {
+                            binding.noFavorites.visibility = View.GONE
+                            binding.rvFavorites.visibility = View.VISIBLE
+                            favoritesAdapter.submitList(favoriteState.response)
+                        }
+                    }
+
+                    is ApiState.Failure -> {
+                        binding.favoriteShimmer.visibility = View.GONE
+                        binding.noFavorites.visibility = View.VISIBLE
+                        binding.rvFavorites.visibility = View.GONE
+                        Log.e("fav", "Error: ${favoriteState.msg}")
+                    }
+                }
             }
         }
 
     }
 
-    private fun setupNoFavourites(items:List<FavoriteItemFirebase>) {
-        if (items.isEmpty()){
-            binding.noFavorites .visibility = View.VISIBLE
-        }
-    }
+
 
 }
