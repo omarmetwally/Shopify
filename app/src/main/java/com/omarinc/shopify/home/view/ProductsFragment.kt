@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.omarinc.shopify.home.view.adapters.ProductsAdapter
 import com.omarinc.shopify.databinding.FragmentProductsBinding
+import com.omarinc.shopify.favorites.model.FirebaseRepository
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
@@ -254,7 +255,8 @@ class ProductsFragment : Fragment() {
                 CurrencyRemoteDataSourceImpl.getInstance(),
                 AdminRemoteDataSourceImpl.getInstance()
 
-            )
+            ),
+            FirebaseRepository.getInstance()
         )
 
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
