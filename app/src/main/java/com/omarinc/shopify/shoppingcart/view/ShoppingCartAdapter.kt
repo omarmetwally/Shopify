@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -38,6 +39,7 @@ class ShoppingCartAdapter(
         val convertedPrice = convertedPrices[item.id] ?: item.variantPrice.toDouble()
 
         holder.productName.text = item.productTitle
+        holder.productQuantity.text = item.quantity.toString()
         holder.productPrice.text = String.format("%.2f %s", convertedPrice, currencyUnit)
         Glide.with(context).load(item.productImageUrl)
             .apply(
@@ -59,6 +61,31 @@ class ShoppingCartAdapter(
                 negativeButtonText = context.getString(R.string.no)
             )
         }
+
+        holder.increaseQuantityButton.setOnClickListener {
+            item.quantity += 1
+            holder.productQuantity.text = item.quantity.toString()
+            notifyItemChanged(position)
+        }
+
+        holder.decreaseQuantityButton.setOnClickListener {
+            if (item.quantity > 1) {
+                item.quantity -= 1
+                holder.productQuantity.text = item.quantity.toString()
+                notifyItemChanged(position)
+            } else {
+                Helper.showAlertDialog(
+                    context = context,
+                    title = context.getString(R.string.delete_cart_item),
+                    message = context.getString(R.string.are_you_sure_to_delete_this_item),
+                    positiveButtonText = context.getString(R.string.yes),
+                    positiveButtonAction = {
+                        onRemoveItem(item.id)
+                    },
+                    negativeButtonText = context.getString(R.string.no)
+                )
+            }
+        }
     }
 
     fun updateItems(newItems: List<CartProduct>) {
@@ -79,9 +106,14 @@ class ShoppingCartAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val productName: TextView = itemView.findViewById(R.id.shopping_cart_product_name_text_view)
-        val productPrice: TextView = itemView.findViewById(R.id.shopping_cart_product_price_text_view)
+        val productPrice: TextView =
+            itemView.findViewById(R.id.shopping_cart_product_price_text_view)
         val removeImageView: ImageView = itemView.findViewById(R.id.shopping_cart_delete_icon)
         val productImage: ImageView = itemView.findViewById(R.id.shopping_cart_product_image_view)
+        val productQuantity: TextView =
+            itemView.findViewById(R.id.shopping_cart_product_quantity_text_view)
+        val increaseQuantityButton: Button = itemView.findViewById(R.id.increase_quantity_button)
+        val decreaseQuantityButton: Button = itemView.findViewById(R.id.decrease_quantity_button)
     }
 
 }
