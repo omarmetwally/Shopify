@@ -2,9 +2,18 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
-    id("androidx.navigation.safeargs")
+    id("androidx.navigation.safeargs.kotlin")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("com.apollographql.apollo3").version("3.7.3")
+    id("com.google.gms.google-services")
 }
+
+apollo {
+    service("service") {
+        packageName.set("com.omarinc.shopify")
+    }
+}
+
 
 android {
     namespace = "com.omarinc.shopify"
@@ -44,6 +53,15 @@ android {
 
 dependencies {
 
+    // shimmer
+    implementation ("com.facebook.shimmer:shimmer:0.5.0")
+
+    //Tab target view
+    implementation ("com.google.android.material:material:1.12.0")
+    implementation ("androidx.viewpager2:viewpager2:1.1.0")
+    implementation ("uk.co.samuelwall:material-tap-target-prompt:3.3.2")
+
+
 
     //Room
     implementation ("androidx.room:room-ktx:2.6.1")
@@ -52,6 +70,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.preference:preference:1.2.0")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("com.google.firebase:firebase-database-ktx:21.0.0")
     kapt ("androidx.room:room-compiler:2.6.1")
     //Coroutines Dependencies
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
@@ -62,6 +81,10 @@ dependencies {
 
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.2")
+
+    //Apollo
+    implementation("com.apollographql.apollo3:apollo-runtime:3.7.3")
 
     // Image loading
     implementation ("com.github.bumptech.glide:glide:4.11.0")
@@ -81,12 +104,20 @@ dependencies {
 
     //animation
     implementation ("com.airbnb.android:lottie:6.4.0")
+    //loading animation
+    implementation ("com.github.leandroborgesferreira:loading-button-android:2.3.0")
+    //dots viewPager
+    implementation("com.tbuonomo:dotsindicator:5.0")
 
 
     implementation ("androidx.navigation:navigation-fragment:2.5.3")
     implementation ("androidx.navigation:navigation-ui:2.5.3")
 
 
+    //firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-database")
 
 
     // Dependencies for local unit tests
@@ -140,4 +171,19 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    //ImageViewShape
+    implementation ("com.google.android.material:material:1.6.0")
+
+
+    // circular image
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+
+    //OkHttp
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
+
+    //Shopify Checkout Sheet Kit
+    implementation ("com.shopify:checkout-sheet-kit:3.0.1")
+
+
 }
