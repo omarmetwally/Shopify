@@ -186,7 +186,7 @@
         android:label="fragment_payment"
         tools:layout="@layout/fragment_payment" >
         <argument
-            android:name="webURL"
+            android:name="checkoutId"
             app:argType="string" />
     </dialog>
 </navigation>
