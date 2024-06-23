@@ -23,6 +23,7 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -157,11 +158,14 @@ class CategoriesFragment : Fragment() {
 
 
     private fun setupSeekBar() {
+        val currencyUnit = SharedPreferencesImpl.getInstance(requireContext())
+
         binding.priceSeekBar.max = 10000
         binding.priceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 viewModel.maxPrice.value = progress
-                binding.seekBarValueText.text = "Max Price: $progress"
+                binding.seekBarValueText.text = "Max Price: $progress ${currencyUnit.readCurrencyUnitFromSharedPreferences(
+                    Constants.CURRENCY_UNIT)}"
                 collectFilteredProducts()
             }
 

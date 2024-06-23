@@ -28,6 +28,7 @@ import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.search.viewmodel.SearchViewModel
 import com.omarinc.shopify.search.viewmodel.SearchViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -152,11 +153,12 @@ class SearchFragment : Fragment() {
     }
 
     private fun setupSeekBar() {
+        val currencyUnit = SharedPreferencesImpl.getInstance(requireContext())
         binding.priceSeekBar.max = 10000
         binding.priceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 maxPrice.value = progress
-                binding.seekBarValueText.text = "Max Price: $progress"
+                binding.seekBarValueText.text = "Max Price: $progress ${currencyUnit.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT)}"
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
