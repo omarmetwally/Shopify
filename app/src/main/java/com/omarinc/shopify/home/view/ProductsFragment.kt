@@ -68,7 +68,6 @@ class ProductsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -80,6 +79,7 @@ class ProductsFragment : Fragment() {
         setupSearchView()
         collectSearchQuery()
         collectProducts()
+        collectFilteredProducts()
     }
 
     private fun collectProducts() {
@@ -143,7 +143,17 @@ class ProductsFragment : Fragment() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 viewModel.maxPrice.value = progress
                 binding.seekBarValueText.text = "Max Price: $progress"
-                collectFilteredProducts()
+                lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        launch {
+                            viewModel.productsState.collect { results ->
+                                if (results is ApiState.Success) {
+                                    viewModel.filterProducts(results.response)
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -152,19 +162,32 @@ class ProductsFragment : Fragment() {
     }
 
 
+
     private fun collectFilteredProducts() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    viewModel.productsState.collect { results ->
-                        if (results is ApiState.Success)
-                            viewModel.filterProducts(results.response)
+                viewModel.filteredProductsState.collect { result ->
+                    when (result) {
+                        is ApiState.Loading -> {
+                            binding.productsShimmer.startShimmer()
+                        }
+
+                        is ApiState.Success -> {
+                            Log.i(TAG, "collectProducts: ")
+                            binding.productsShimmer.stopShimmer()
+                            binding.productsShimmer.visibility = View.GONE
+                            productsAdapter.submitList(result.response)
+                            getCurrentCurrency()
+                        }
+
+                        is ApiState.Failure -> {
+
+                        }
                     }
                 }
             }
         }
     }
-
     private fun setupSearchView() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -193,7 +216,6 @@ class ProductsFragment : Fragment() {
             }
         })
     }
-
     private fun collectSearchQuery() {
         lifecycleScope.launch {
             searchQuery.debounce(150)
@@ -203,7 +225,6 @@ class ProductsFragment : Fragment() {
                 }
         }
     }
-
     private fun filterProducts(query: String) {
         viewModel.productsState.value.let { state ->
             if (state is ApiState.Success) {
@@ -214,7 +235,6 @@ class ProductsFragment : Fragment() {
             }
         }
     }
-
     private fun setupSuggestionsAdapter() {
         val from = arrayOf("suggestion")
         val to = intArrayOf(android.R.id.text1)
@@ -227,8 +247,6 @@ class ProductsFragment : Fragment() {
             CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
         )
     }
-
-
     private fun updateSuggestions(suggestions: List<String>) {
         val cursor = MatrixCursor(arrayOf(BaseColumns._ID, "suggestion"))
         suggestions.forEachIndexed { index, suggestion ->
@@ -236,7 +254,6 @@ class ProductsFragment : Fragment() {
         }
         suggestionsAdapter.changeCursor(cursor)
     }
-
     private fun getSuggestions(query: String): List<String> {
         viewModel.productsState.value.let { state ->
             if (state is ApiState.Success) {
@@ -246,7 +263,6 @@ class ProductsFragment : Fragment() {
         }
         return emptyList()
     }
-
     private fun setupViewModel(){
         val factory = HomeViewModel.HomeViewModelFactory(
             ShopifyRepositoryImpl(
@@ -263,8 +279,6 @@ class ProductsFragment : Fragment() {
         val id = arguments?.getString("id")
         viewModel.getProductsByBrandId(id ?: "gid://shopify/Collection/308804419763")
     }
-
-
     private fun getCurrentCurrency() {
         viewModel.getCurrencyUnit()
         viewModel.getRequiredCurrency()

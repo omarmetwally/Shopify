@@ -113,7 +113,6 @@ class HomeFragment : Fragment() {
 
         }
 
-
         checkIfIsFirstUserTime(view)
         setUpBrandsAdapter()
         setUpProductsAdapter()
