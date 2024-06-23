@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SeekBar
 import androidx.appcompat.widget.SearchView
 import androidx.cursoradapter.widget.CursorAdapter
 import androidx.cursoradapter.widget.SimpleCursorAdapter
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.omarinc.shopify.home.view.adapters.ProductsAdapter
 import com.omarinc.shopify.databinding.FragmentProductsBinding
+import com.omarinc.shopify.favorites.model.FirebaseRepository
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
@@ -46,7 +48,6 @@ class ProductsFragment : Fragment() {
     private lateinit var productsAdapter: ProductsAdapter
     private lateinit var viewModel: HomeViewModel
     private lateinit var suggestionsAdapter: CursorAdapter
-    private val maxPrice = MutableStateFlow<Int>(10000)
     private var isFilter = false
 
 
@@ -68,12 +69,13 @@ class ProductsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        binding.productsShimmer.startShimmer()
         binding.btnBack.setOnClickListener {
             findNavController().navigateUp()
         }
 
-       setupProductsAdapter()
+        setupSeekBar()
+        setupFilterView()
+        setupProductsAdapter()
         setupSuggestionsAdapter()
         setupSearchView()
         collectSearchQuery()
@@ -86,10 +88,11 @@ class ProductsFragment : Fragment() {
                 viewModel.productsState.collect { result ->
                     when (result) {
                         is ApiState.Loading -> {
-
+                            binding.productsShimmer.startShimmer()
                         }
 
                         is ApiState.Success -> {
+                            Log.i(TAG, "collectProducts: ")
                             binding.productsShimmer.stopShimmer()
                             binding.productsShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response)
@@ -120,6 +123,48 @@ class ProductsFragment : Fragment() {
 
 
     }
+
+    private fun setupFilterView() {
+        binding.filterView.setOnClickListener {
+            if (isFilter) {
+                binding.priceSeekBar.visibility = View.GONE
+                binding.seekBarValueText.visibility = View.GONE
+                isFilter = !isFilter
+            } else {
+                binding.priceSeekBar.visibility = View.VISIBLE
+                binding.seekBarValueText.visibility = View.VISIBLE
+                isFilter = !isFilter
+            }
+        }
+    }
+    private fun setupSeekBar() {
+        binding.priceSeekBar.max = 1000
+        binding.priceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                viewModel.maxPrice.value = progress
+                binding.seekBarValueText.text = "Max Price: $progress"
+                collectFilteredProducts()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+
+
+    private fun collectFilteredProducts() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.productsState.collect { results ->
+                        if (results is ApiState.Success)
+                            viewModel.filterProducts(results.response)
+                    }
+                }
+            }
+        }
+    }
+
     private fun setupSearchView() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -210,7 +255,8 @@ class ProductsFragment : Fragment() {
                 CurrencyRemoteDataSourceImpl.getInstance(),
                 AdminRemoteDataSourceImpl.getInstance()
 
-            )
+            ),
+            FirebaseRepository.getInstance()
         )
 
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)

@@ -58,6 +58,9 @@ class OrdersFragment : Fragment() {
 
 
 
+        binding.btnBack.setOnClickListener{
+            findNavController().navigateUp()
+        }
         collectOrders()
 
         setUpOrdersAdapter()

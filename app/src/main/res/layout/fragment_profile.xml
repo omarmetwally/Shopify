@@ -55,7 +55,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/profile"
+            android:src="@drawable/orders"
             app:tint="@color/dark_grey" />
 
         <TextView
@@ -84,7 +84,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/profile"
+            android:src="@drawable/favourites"
             app:tint="@color/dark_grey" />
 
         <TextView
@@ -113,7 +113,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/profile"
+            android:src="@drawable/location"
             app:tint="@color/dark_grey" />
 
         <TextView
@@ -141,7 +141,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/profile"
+            android:src="@drawable/setting"
             app:tint="@color/dark_grey" />
 
         <TextView
@@ -168,8 +168,7 @@
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/profile"
-            app:tint="@color/dark_grey" />
+            android:src="@drawable/logout" />
 
         <TextView
             android:layout_width="wrap_content"

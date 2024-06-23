@@ -32,6 +32,7 @@ import com.omarinc.shopify.AuthenticationMainActivity
 import com.omarinc.shopify.home.view.adapters.ProductsAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
+import com.omarinc.shopify.favorites.model.FirebaseRepository
 import com.omarinc.shopify.home.view.adapters.AdsAdapter
 import com.omarinc.shopify.home.view.adapters.BrandsAdapter
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
@@ -42,9 +43,12 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.productdetails.view.ProductDetailsFragment
+import com.omarinc.shopify.productdetails.view.ProductDetailsFragment.Companion
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
+import com.omarinc.shopify.utilities.Constants.CART_ID
 import com.omarinc.shopify.utilities.Helper
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -70,7 +74,6 @@ class HomeFragment : Fragment() {
     private lateinit var productsManager: GridLayoutManager
     private lateinit var productsAdapter: ProductsAdapter
     private lateinit var adsAdapter: AdsAdapter
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
     private lateinit var sharedPreferences: ISharedPreferences
 
@@ -111,12 +114,12 @@ class HomeFragment : Fragment() {
         }
 
 
-
         checkIfIsFirstUserTime(view)
         setUpBrandsAdapter()
         setUpProductsAdapter()
         getCoupons()
         collectProducts()
+        createCustomerCart()
 
     }
 
@@ -143,10 +146,10 @@ class HomeFragment : Fragment() {
         }
     }
 
-    val viewsToDisable = listOf(
+    private val viewsToDisable = listOf(
         R.id.favourites,
         R.id.homeFragment, R.id.categoriesFragment, R.id.shoppingCartFragment,
-        R.id.search_view
+        R.id.search_view, R.id.profileFragment
     )
 
     private fun setupTabTargetPrompt(view: View) {
@@ -156,53 +159,59 @@ class HomeFragment : Fragment() {
 
             showPrompt(
                 targetId = R.id.favourites,
-                primaryText = "This is Fab",
-                secondaryText = "Changing Prompt Style",
+                primaryText = getString(R.string.favourites_primary_text),
+                secondaryText = getString(R.string.favourites_secondary_text),
                 backgroundColor = R.color.primary_color,
                 focal = RectanglePromptFocal(),
                 background = RectanglePromptBackground(),
                 onFocalPressed = {
                     showPrompt(
                         targetId = R.id.search_view,
-                        primaryText = "Button 2",
-                        secondaryText = "Changing Focal Color",
-                        backgroundColor = R.color.dark_grey,
-                        focalColor = R.color.primary_color,
+                        primaryText = getString(R.string.search_primary_text),
+                        secondaryText = getString(R.string.search_secondary_text),
+                        backgroundColor = R.color.primary_color,
+                        focalColor = R.color.white,
                         onFocalPressed = {
                             showPrompt(
-                                targetId = R.id.homeFragment,
-                                primaryText = "Button 1",
-                                secondaryText = "Changing Focal Color",
+                                targetId = R.id.ads_placeholder,
+                                primaryText = getString(R.string.discount_primary_text),
+                                secondaryText = getString(R.string.discount_secondary_text),
                                 backgroundColor = R.color.primary_color,
                                 focalColor = R.color.white,
                                 focalRadius = 150.4f,
                                 onFocalPressed = {
                                     showPrompt(
                                         targetId = R.id.categoriesFragment,
-                                        primaryText = "This is Fab",
-                                        secondaryText = "Changing Prompt Style",
+                                        primaryText = getString(R.string.categories_primary_text),
+                                        secondaryText = getString(R.string.categories_secondary_text),
                                         backgroundColor = R.color.primary_color,
                                         focal = RectanglePromptFocal(),
                                         background = RectanglePromptBackground(),
                                         onFocalPressed = {
-                                            Toast.makeText(
+                                            /*Toast.makeText(
                                                 requireContext(),
                                                 "Hello",
                                                 Toast.LENGTH_LONG
-                                            ).show()
+                                            ).show()*/
                                             showPrompt(
                                                 targetId = R.id.shoppingCartFragment,
-                                                primaryText = "This is Fab",
-                                                secondaryText = "Changing Prompt Style",
+                                                primaryText = getString(R.string.cart_secondary_text),
+                                                secondaryText = getString(R.string.cart_secondary_text),
                                                 backgroundColor = R.color.primary_color,
                                                 focal = RectanglePromptFocal(),
                                                 background = RectanglePromptBackground(),
                                                 onFocalPressed = {
-                                                    Toast.makeText(
-                                                        requireContext(),
-                                                        "Hello",
-                                                        Toast.LENGTH_LONG
-                                                    ).show()
+                                                    showPrompt(
+                                                        targetId = R.id.profileFragment,
+                                                        primaryText = getString(R.string.profile_primary_text),
+                                                        secondaryText = getString(R.string.profile_secondary_text),
+                                                        backgroundColor = R.color.primary_color,
+                                                        focal = RectanglePromptFocal(),
+                                                        background = RectanglePromptBackground(),
+                                                        onFocalPressed = {
+                                                            //setViewsEnabled(viewsToDisable,true)
+                                                        }
+                                                    )
                                                 }
                                             )
                                         }
@@ -349,13 +358,15 @@ class HomeFragment : Fragment() {
 
 
     private fun setViewModel() {
+
         val factory = HomeViewModel.HomeViewModelFactory(
             ShopifyRepositoryImpl(
                 ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
                 SharedPreferencesImpl.getInstance(requireContext()),
                 CurrencyRemoteDataSourceImpl.getInstance(),
                 AdminRemoteDataSourceImpl.getInstance()
-            )
+            ),
+            FirebaseRepository.getInstance()
         )
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
@@ -364,11 +375,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun setUpAdsAdapter() {
-        Log.i(TAG, "setUpAdsAdapter: 1")
+
         adsAdapter = AdsAdapter(requireContext()) { priceRule ->
             onCouponLongClick(priceRule)
         }
         binding.adsVP.adapter = adsAdapter
+
+        val dotsIndicator = binding.dotsIndicator
+        dotsIndicator.attachTo(binding.adsVP)
 
         val images = listOf(
             R.drawable.coupon_1,
@@ -513,6 +527,61 @@ class HomeFragment : Fragment() {
         startActivity(Intent(requireContext(), AuthenticationMainActivity::class.java))
         requireActivity().finish()
 
+    }
+
+    private fun createCustomerCart() {
+
+        val email: Deferred<String> = lifecycleScope.async {
+            viewModel.readCustomerEmail()
+        }
+
+        lifecycleScope.launch {
+
+            val userEmail = email.await()
+            viewModel.isCustomerHasCart(userEmail)
+
+            viewModel.hasCart.collect { result ->
+                when (result) {
+                    is ApiState.Failure -> Log.i(ProductDetailsFragment.TAG, "hasCart Failure: ${result.msg}")
+                    ApiState.Loading -> Log.i(ProductDetailsFragment.TAG, "hasCart Loading: ")
+                    is ApiState.Success -> {
+                        Log.i(ProductDetailsFragment.TAG, "hasCart Success user has cart: ${result.response}")
+                        if (!result.response) {
+
+                            Log.i(ProductDetailsFragment.TAG, "hasCart: ${result.response}")
+
+                                                    } else {
+                            viewModel.getCartByCustomer(userEmail)
+                            viewModel.customerCart.collect { result ->
+                                when (result) {
+                                    is ApiState.Failure -> Log.i(
+                                        ProductDetailsFragment.TAG,
+                                        "customerCart Failure: ${result.msg}"
+                                    )
+
+                                    ApiState.Loading -> Log.i(ProductDetailsFragment.TAG, "Loading")
+                                    is ApiState.Success -> {
+
+                                        Log.i(ProductDetailsFragment.TAG, "CartId : ${result.response} ")
+                                        val cartId = result.response
+                                        // viewModel.writeCartId(cartId!!)
+                                        sharedPreferences.writeStringToSharedPreferences(
+                                            CART_ID,
+                                            cartId!!
+                                        )
+                                        Log.i(ProductDetailsFragment.TAG, "customerCart Success: $cartId")
+
+
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
     }
 }
 
