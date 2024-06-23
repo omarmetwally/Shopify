@@ -1,6 +1,7 @@
 package com.omarinc.shopify.home.view.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -39,10 +40,13 @@ class ProductsAdapter(
 
     fun updateCurrentCurrency(rate: Double, unit: String) {
         currencyUnit = unit
-        val newPrices = currentList.map { product ->
-            product.id to product.price.toDouble() * rate
-        }.toMap()
-        convertedPrices.putAll(newPrices)
+        currentList.forEach { product ->
+            convertedPrices[product.id] = product.price.toDouble() * rate
+            Log.e("price", "convertedPrices: ${convertedPrices[product.id]} ", )
+            product.convertedPrice=convertedPrices[product.id]
+            Log.e("price", "price: ${product.convertedPrice} ", )
+
+        }
         notifyDataSetChanged()
     }
 }

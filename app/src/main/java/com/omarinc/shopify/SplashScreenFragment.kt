@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-private const val SPLASH_DELAY = 3000L
+private const val SPLASH_DELAY = 1800L
 
 class SplashScreenFragment : Fragment() {
     private var param1: String? = null

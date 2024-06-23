@@ -29,7 +29,7 @@ class CurrencyRemoteDataSourceImpl : CurrencyRemoteDataSource {
         return flow {
             emit(ApiState.Loading)
             try {
-                val response = currencyService.getLatestRates(CURRENCY_API_KEY, "USD", requiredCurrency)
+                val response = currencyService.getLatestRates(CURRENCY_API_KEY, "EGP", requiredCurrency)
                 if (response.isSuccessful) {
                     response.body()?.let {
                         emit(ApiState.Success(it))

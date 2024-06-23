@@ -84,13 +84,27 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private fun observeCurrency() {
         lifecycleScope.launch {
             settingsViewModel.currencyResponse.collect { currency ->
-                if (currency.isNotEmpty()) {
-                    val position = Currencies.valueOf(currency).ordinal
+                val currencyEnum = safeValueOf(currency)
+                if (currencyEnum != null) {
+                    val position = currencyEnum.ordinal
                     binding.spinnerCurrencies.setSelection(position)
                 }
             }
         }
     }
+
+    private fun safeValueOf(currency: String?): Currencies? {
+        return try {
+            if (currency != null) {
+                Currencies.valueOf(currency)
+            } else {
+                Currencies.EGP
+            }
+        } catch (e: IllegalArgumentException) {
+            null
+        }
+    }
+
 
     private fun fetchCurrentCurrencyUnit() {
         lifecycleScope.launch {

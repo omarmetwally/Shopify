@@ -439,10 +439,10 @@ class ProductDetailsFragment : Fragment() {
                     is ApiState.Failure ->{
                         Log.i(
                             TAG,
-                            "getCurrentCurrency: ${requiredCurrency.msg}"
+                            "getCurrentCurrency fail: ${requiredCurrency.msg}"
 
                         )
-                        binding.tvProductPrice.text = "$price"
+                        binding.tvProductPrice.text = "$price EGP"
 
                     }
 
@@ -450,7 +450,7 @@ class ProductDetailsFragment : Fragment() {
                     is ApiState.Success -> {
                         Log.i(
                             TAG,
-                            "getCurrentCurrency: ${requiredCurrency.response.data[currencyUnit]?.code}"
+                            "getCurrentCurrency suc: ${requiredCurrency.response.data[currencyUnit]?.code}"
                         )
                         requiredCurrency.response.data[currencyUnit]?.let { currency ->
                             Log.i(TAG, "getCurrentCurrency: ${currency.value}")
