@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.omarinc.shopify.databinding.FragmentShoppingCartBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CartProduct
+import com.omarinc.shopify.models.Currency
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
@@ -111,6 +112,7 @@ class ShoppingCartFragment : Fragment() {
                         setupRecyclerView(result.response)
                         updateProductsLine(result.response)
                         getCurrentCurrency()
+
                     }
                 }
             }
@@ -159,6 +161,8 @@ class ShoppingCartFragment : Fragment() {
             CheckoutLineItemInput(quantity = it.quantity, variantId = it.variantId)
         }
 
+
+
     }
 
 
@@ -193,11 +197,23 @@ class ShoppingCartFragment : Fragment() {
                         requiredCurrency.response.data[currencyUnit]?.let { currency ->
                             Log.i(TAG, "getCurrentCurrency: ${currency.value}")
                             shoppingCartAdapter.updateCurrentCurrency(currency.value, currency.code)
+                            updateTotalPrice(currency)
+
+
                         }
                     }
                 }
             }
         }
+    }
+
+
+    private fun updateTotalPrice(currency: Currency) {
+
+        val totalPrice = productsLine.sumOf {it.quantity * currency.value}
+        binding.totalPriceTextView.text = String.format("Total price : %.2f %s", totalPrice, currency.code)
+
+
     }
 
 }

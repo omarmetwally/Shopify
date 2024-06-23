@@ -1,7 +1,6 @@
 package com.omarinc.shopify.network.shopify
 
 import android.content.Context
-import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.util.Log
 import com.apollographql.apollo3.ApolloClient
 import com.apollographql.apollo3.api.ApolloResponse
@@ -18,6 +17,7 @@ import com.omarinc.shopify.CustomerDetailsQuery
 import com.omarinc.shopify.CustomerOrdersQuery
 import com.omarinc.shopify.DeleteAddressMutation
 import com.omarinc.shopify.GetBrandsQuery
+import com.omarinc.shopify.GetCartDetailsQuery
 import com.omarinc.shopify.GetCollectionByHandleQuery
 import com.omarinc.shopify.GetProductsByBrandIdQuery
 import com.omarinc.shopify.model.CustomerCreateData
@@ -27,20 +27,15 @@ import com.omarinc.shopify.models.Product
 
 import com.omarinc.shopify.GetProductByIdQuery
 import com.omarinc.shopify.GetProductsByTypeQuery
-import com.omarinc.shopify.GetProductsInCartQuery
 import com.omarinc.shopify.RemoveProductFromCartMutation
 import com.omarinc.shopify.SearchProductsQuery
-import com.omarinc.shopify.models.AddToCartResponse
-import com.omarinc.shopify.models.Cart
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Checkout
 import com.omarinc.shopify.models.CheckoutResponse
 import com.omarinc.shopify.models.Collection
 import com.omarinc.shopify.models.CustomerAddress
-import com.omarinc.shopify.models.LineItem
 import com.omarinc.shopify.models.LineItemCheckout
 import com.omarinc.shopify.models.Order
-import com.omarinc.shopify.models.UserError
 import com.omarinc.shopify.models.Variant
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.Price
@@ -49,7 +44,9 @@ import com.omarinc.shopify.productdetails.model.ProductImage
 import com.omarinc.shopify.productdetails.model.ProductVariant
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.productdetails.model.SelectedOption
+import com.omarinc.shopify.type.CheckoutBuyerIdentityInput
 import com.omarinc.shopify.type.CheckoutLineItemInput
+import com.omarinc.shopify.type.CountryCode
 import com.omarinc.shopify.type.CurrencyCode
 import com.omarinc.shopify.type.CustomerCreateInput
 import com.omarinc.shopify.utilities.Constants
@@ -487,8 +484,8 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         }
     }
 
-    override suspend fun createCart(email: String): Flow<ApiState<String?>> = flow {
-        val mutation = CreateCartMutation(email)
+    override suspend fun createCart(email: String, token: String): Flow<ApiState<String?>> = flow {
+        val mutation = CreateCartMutation(email, token)
 
         try {
             emit(ApiState.Loading)
@@ -576,10 +573,10 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
         emit(ApiState.Loading)
 
         val cartProducts = mutableListOf<CartProduct>()
-        val query = GetProductsInCartQuery(cartId)
+        val query = GetCartDetailsQuery(cartId)
 
         try {
-            val response: ApolloResponse<GetProductsInCartQuery.Data> =
+            val response: ApolloResponse<GetCartDetailsQuery.Data> =
                 apolloClient.query(query).execute()
 
             response.data?.cart?.lines?.edges?.forEach { line ->
@@ -623,7 +620,14 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
 
         emit(ApiState.Loading)
 
-        val mutation = CreateCheckoutMutation(lineItems = lineItems, email = email ?:"")
+        val buyerIdentity = CheckoutBuyerIdentityInput(CountryCode.EG)
+
+        val mutation = CreateCheckoutMutation(
+            lineItems = lineItems,
+            email = email ?: "",
+            buyerIdentity = buyerIdentity
+        )
+
         try {
             val response = apolloClient.mutation(mutation).execute()
 

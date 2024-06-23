@@ -12,12 +12,15 @@ import kotlin.math.log
 
 class AdminRemoteDataSourceImpl : AdminRemoteDataSource {
 
+
     private val adminApiService: AdminApiService by lazy {
         AdminRetrofitClient.getInstance().create(AdminApiService::class.java)
     }
 
 
     companion object {
+
+        private const val TAG = "AdminRemoteDataSourceImpl"
         private var instance: AdminRemoteDataSourceImpl? = null
         fun getInstance(): AdminRemoteDataSourceImpl {
             if (instance == null) {
@@ -65,26 +68,26 @@ class AdminRemoteDataSourceImpl : AdminRemoteDataSource {
             }
         }
 
-    override suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>> =
-        flow {
-            Log.i("TAG", "createDraftOrder: remote")
-            emit(ApiState.Loading)
-            try {
-                val response = adminApiService.createDraftOrder(draftOrder)
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        Log.i("TAG", "createDraftOrder: $it")
-                        emit(ApiState.Success(it))
-                    } ?: emit(ApiState.Failure(Throwable("Response is empty")))
-                } else {
-                    Log.i("TAG", "createDraftOrder: ${response.body()}")
-                    emit(ApiState.Failure(Throwable("Response error: ${response.code()} - ${response.message()}")))
-                }
-            } catch (e: Exception) {
-                Log.i("TAG", "createDraftOrder: ${e.message}")
-                emit(ApiState.Failure(Throwable("Network error: ${e.localizedMessage}", e)))
+    override suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>> = flow {
+        Log.i(TAG, "createDraftOrder: remote")
+        emit(ApiState.Loading)
+        try {
+            val response = adminApiService.createDraftOrder(draftOrder)
+
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    Log.i(TAG, "createDraftOrder: $it")
+                    emit(ApiState.Success(it))
+                } ?: emit(ApiState.Failure(Throwable("Response is empty")))
+            } else {
+                Log.i(TAG, "createDraftOrder: ${response.body()}")
+                emit(ApiState.Failure(Throwable("Response error: ${response.code()} - ${response.message()}")))
             }
+        } catch (e: Exception) {
+            Log.i(TAG, "createDraftOrder: ${e.message}")
+            emit(ApiState.Failure(Throwable("Network error: ${e.localizedMessage}", e)))
         }
+    }
 
     override suspend fun completeDraftOrder(orderId: Long): Flow<ApiState<DraftOrderResponse>> =
         flow {

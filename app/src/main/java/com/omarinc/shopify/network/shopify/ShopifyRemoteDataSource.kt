@@ -39,7 +39,7 @@ interface ShopifyRemoteDataSource {
 
     fun getCollectionByHandle(handle: String): Flow<ApiState<Collection>>
 
-    suspend fun createCart(email: String): Flow<ApiState<String?>>
+    suspend fun createCart(email: String, token: String): Flow<ApiState<String?>>
 
     suspend fun addToCartById(
         cartId: String,

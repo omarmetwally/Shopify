@@ -11,7 +11,9 @@
         android:id="@+id/shopping_cart_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
         android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/total_price_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -28,6 +30,16 @@
         <include layout="@layout/fragment_shopping_cart_shimmer" />
     </com.facebook.shimmer.ShimmerFrameLayout>
 
+
+    <TextView
+        android:id="@+id/total_price_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/checkout_button"
+        tools:text="Total price : 2000 EGP" />
 
     <Button
         android:id="@+id/checkout_button"
@@ -73,4 +85,6 @@
             android:textColor="@color/gray_text"
             android:textSize="12sp" />
     </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
