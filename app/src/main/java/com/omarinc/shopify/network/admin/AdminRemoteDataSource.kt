@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface AdminRemoteDataSource {
 
     suspend fun getCoupons(): Flow<ApiState<PriceRulesResponse>>
+
     suspend fun getCouponDetails(couponId:String): Flow<ApiState<DiscountCodesResponse>>
 
     suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>>

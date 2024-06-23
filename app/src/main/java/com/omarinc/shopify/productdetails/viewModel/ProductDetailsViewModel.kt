@@ -83,7 +83,7 @@ class ProductDetailsViewModel(
 
     fun createCart(email: String) {
         viewModelScope.launch {
-            repository.createCart(email).collect { response ->
+            repository.createCart(email,repository.readUserToken()).collect { response ->
                 _cartId.value = response
             }
         }

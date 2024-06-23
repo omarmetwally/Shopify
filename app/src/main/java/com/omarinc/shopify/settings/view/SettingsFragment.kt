@@ -23,9 +23,6 @@ import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
-    companion object {
-        private const val TAG = "SettingsFragment"
-    }
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!

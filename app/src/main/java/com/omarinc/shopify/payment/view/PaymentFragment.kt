@@ -78,7 +78,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
         binding.payWithCardButton.setOnClickListener {
 
-            presentCheckout(convertShopifyCheckoutUrl(webUrl))
+            presentCheckout(convertShopifyCheckoutUrl("https://mad44-sv-and.myshopify.com/cart/c/Z2NwLWV1cm9wZS13ZXN0MTowMUoxMTJHRDFOUDZHVkVYSkQySjBBU1g4Uw?key=e856db46ee3cc0f93d60436f380f9fd3"))
 
 
         }

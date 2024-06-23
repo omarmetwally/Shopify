@@ -41,4 +41,7 @@ class PaymentViewModel(private val repository: ShopifyRepository):ViewModel() {
         return repository.readCartIdFromSharedPreferences()
     }
 
+
+    
+
 }

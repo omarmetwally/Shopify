@@ -11,12 +11,22 @@
         android:id="@+id/shopping_cart_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="2dp"
-        app:layout_constraintBottom_toTopOf="@+id/checkout_button"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/total_price_text_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/shopping_cart_item" />
+
+    <TextView
+        android:id="@+id/total_price_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/checkout_button"
+        tools:text="Total price : 2000 EGP" />
 
     <Button
         android:id="@+id/checkout_button"
@@ -34,4 +44,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/shopping_cart_recycler_view" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -209,7 +209,6 @@ class ShopifyRepositoryImpl(
 
 
     override suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>> {
-        Log.i("TAG", "createDraftOrder: repo")
         return adminRemoteDataSource.createDraftOrder(draftOrder)
     }
 
