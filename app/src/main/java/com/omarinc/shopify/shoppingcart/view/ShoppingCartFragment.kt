@@ -105,6 +105,7 @@ class ShoppingCartFragment : Fragment() {
                     }
                     is ApiState.Success -> {
                         Log.i(TAG, "Successfully fetched items: ${result.response.size}")
+                       setupEmptyCart(result.response)
                         binding.cartShimmer.stopShimmer()
                         binding.cartShimmer.visibility = View.GONE
                         setupRecyclerView(result.response)
@@ -113,6 +114,13 @@ class ShoppingCartFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    private fun setupEmptyCart(items:List<CartProduct>) {
+        if (items.isEmpty()){
+            binding.emptyCart.visibility = View.VISIBLE
+            binding.checkoutButton.visibility = View.GONE
         }
     }
 
