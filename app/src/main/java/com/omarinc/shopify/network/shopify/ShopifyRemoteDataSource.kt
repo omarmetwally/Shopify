@@ -14,6 +14,8 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.type.CheckoutLineItemInput
+import com.omarinc.shopify.type.MailingAddress
+import com.omarinc.shopify.type.MailingAddressInput
 import kotlinx.coroutines.flow.Flow
 
 interface ShopifyRemoteDataSource {
@@ -63,6 +65,8 @@ interface ShopifyRemoteDataSource {
     suspend fun deleteCustomerAddress(addressId: String, token: String): Flow<ApiState<String?>>
 
     fun getCustomerDetails(token: String): Flow<ApiState<CustomerDetailsQuery.Customer>>
+
+    fun applyShippingAddress(checkoutId: String, shippingAddress: MailingAddressInput):Flow<ApiState<String?>>
 
 }
 

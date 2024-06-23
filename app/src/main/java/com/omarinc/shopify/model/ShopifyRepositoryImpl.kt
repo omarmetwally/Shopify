@@ -23,6 +23,7 @@ import com.omarinc.shopify.productdetails.model.ProductDetails
 import com.omarinc.shopify.productdetails.model.Products
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.type.CheckoutLineItemInput
+import com.omarinc.shopify.type.MailingAddressInput
 import com.omarinc.shopify.utilities.Constants
 import com.omarinc.shopify.utilities.Constants.CART_ID
 import kotlinx.coroutines.flow.Flow
@@ -248,6 +249,13 @@ class ShopifyRepositoryImpl(
         lineItems: List<CheckoutLineItemInput>, email: String?
     ): Flow<ApiState<CheckoutResponse?>> {
         return shopifyRemoteDataSource.createCheckout(lineItems, email)
+    }
+
+    override fun applyShippingAddress(
+        checkoutId: String,
+        shippingAddress: MailingAddressInput
+    ): Flow<ApiState<String?>> {
+        return shopifyRemoteDataSource.applyShippingAddress(checkoutId, shippingAddress)
     }
 
 
