@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.omarinc.shopify.favorites.model.FavoriteItem
 import com.omarinc.shopify.favorites.model.FavoriteItemFirebase
 import com.omarinc.shopify.favorites.model.IFirebaseRepository
+import com.omarinc.shopify.network.ApiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,11 +37,13 @@ class FavoriteViewModel(private val repository: IFirebaseRepository) : ViewModel
         }
     }
 
-    private val _favorites = MutableStateFlow<List<FavoriteItemFirebase>>(emptyList())
-    val favorites: StateFlow<List<FavoriteItemFirebase>> get() = _favorites.asStateFlow()
+    private val _favorites = MutableStateFlow<ApiState<List<FavoriteItemFirebase>>>(ApiState.Loading)
+    val favorites: StateFlow<ApiState<List<FavoriteItemFirebase>>> get() = _favorites.asStateFlow()
+
     fun getFavorites(userToken: String) {
         viewModelScope.launch {
-            _favorites.value = repository.getFavorites(userToken)
+             _favorites.value = ApiState.Success(repository.getFavorites(userToken))
+
         }
     }
 }
