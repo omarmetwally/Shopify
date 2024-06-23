@@ -10,9 +10,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.omarinc.shopify.databinding.FragmentFavoritesBinding
+import com.omarinc.shopify.favorites.model.FavoriteItemFirebase
 import com.omarinc.shopify.favorites.model.FirebaseRepository
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModel
 import com.omarinc.shopify.favorites.viewmodel.FavoriteViewModelFactory
+import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.launch
@@ -52,9 +54,17 @@ class FavoritesFragment : Fragment() {
         }
         lifecycleScope.launch {
             viewModel.favorites.collect { favoriteItems ->
+                setupNoFavourites(favoriteItems)
                 favoritesAdapter.submitList(favoriteItems)
             }
         }
 
     }
+
+    private fun setupNoFavourites(items:List<FavoriteItemFirebase>) {
+        if (items.isEmpty()){
+            binding.noFavorites .visibility = View.VISIBLE
+        }
+    }
+
 }

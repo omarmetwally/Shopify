@@ -140,8 +140,8 @@ class HomeFragment : Fragment() {
 
         lifecycleScope.launch {
             if (!isFirstTimeUser.await()) {
-                setupTabTargetPrompt(view)
-                saveToSharedPref()
+                    setupTabTargetPrompt(view)
+                    saveToSharedPref()
             }
         }
     }
@@ -164,6 +164,7 @@ class HomeFragment : Fragment() {
                 backgroundColor = R.color.primary_color,
                 focal = RectanglePromptFocal(),
                 background = RectanglePromptBackground(),
+                onPromptFinished = {},
                 onFocalPressed = {
                     showPrompt(
                         targetId = R.id.search_view,
@@ -171,6 +172,7 @@ class HomeFragment : Fragment() {
                         secondaryText = getString(R.string.search_secondary_text),
                         backgroundColor = R.color.primary_color,
                         focalColor = R.color.white,
+                        onPromptFinished = {},
                         onFocalPressed = {
                             showPrompt(
                                 targetId = R.id.ads_placeholder,
@@ -179,6 +181,7 @@ class HomeFragment : Fragment() {
                                 backgroundColor = R.color.primary_color,
                                 focalColor = R.color.white,
                                 focalRadius = 150.4f,
+                                onPromptFinished = {},
                                 onFocalPressed = {
                                     showPrompt(
                                         targetId = R.id.categoriesFragment,
@@ -187,6 +190,7 @@ class HomeFragment : Fragment() {
                                         backgroundColor = R.color.primary_color,
                                         focal = RectanglePromptFocal(),
                                         background = RectanglePromptBackground(),
+                                        onPromptFinished = {},
                                         onFocalPressed = {
                                             /*Toast.makeText(
                                                 requireContext(),
@@ -200,6 +204,7 @@ class HomeFragment : Fragment() {
                                                 backgroundColor = R.color.primary_color,
                                                 focal = RectanglePromptFocal(),
                                                 background = RectanglePromptBackground(),
+                                                onPromptFinished = {},
                                                 onFocalPressed = {
                                                     showPrompt(
                                                         targetId = R.id.profileFragment,
@@ -208,8 +213,10 @@ class HomeFragment : Fragment() {
                                                         backgroundColor = R.color.primary_color,
                                                         focal = RectanglePromptFocal(),
                                                         background = RectanglePromptBackground(),
+                                                        onPromptFinished = {
+                                                            setViewsEnabled(viewsToDisable,true)
+                                                        },
                                                         onFocalPressed = {
-                                                            //setViewsEnabled(viewsToDisable,true)
                                                         }
                                                     )
                                                 }
@@ -223,7 +230,6 @@ class HomeFragment : Fragment() {
                 }
             )
         }
-        setViewsEnabled(viewsToDisable, true)
 
     }
 
@@ -234,6 +240,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setViewsEnabled(viewIds: List<Int>, enabled: Boolean) {
+        Log.i(TAG, "setViewsEnabled: ")
         viewIds.forEach { id ->
             requireActivity().findViewById<View>(id)?.isEnabled = enabled
         }
@@ -248,7 +255,8 @@ class HomeFragment : Fragment() {
         focalRadius: Float? = null,
         focal: PromptFocal? = null,
         background: PromptBackground? = null,
-        onFocalPressed: () -> Unit
+        onFocalPressed: () -> Unit,
+        onPromptFinished: () -> Unit,
     ) {
         MaterialTapTargetPrompt.Builder(requireActivity())
             .setTarget(targetId)
@@ -265,6 +273,7 @@ class HomeFragment : Fragment() {
                 when (state) {
                     MaterialTapTargetPrompt.STATE_FOCAL_PRESSED -> onFocalPressed()
                     MaterialTapTargetPrompt.STATE_DISMISSED -> onPromptDismissed()
+                    MaterialTapTargetPrompt.STATE_FINISHED ->onPromptFinished()
                 }
             }
             .show()
