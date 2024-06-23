@@ -40,6 +40,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
     private lateinit var viewModel: PaymentViewModel
     private lateinit var checkoutId: String
     private lateinit var defaultAddress: CustomerAddress
+
     companion object {
         private const val TAG = "PaymentFragment"
     }
@@ -110,7 +111,10 @@ class PaymentFragment : BottomSheetDialogFragment() {
                         ApiState.Loading -> Log.i(TAG, "setListeners: Loading")
                         is ApiState.Success -> {
                             Log.i(TAG, "setListeners: ${result.response}")
-                            val action = PaymentFragmentDirections.actionPaymentFragmentToPaymentWebViewFragment(result.response)
+                            val action =
+                                PaymentFragmentDirections.actionPaymentFragmentToPaymentWebViewFragment(
+                                    result.response
+                                )
                             findNavController().navigate(action)
                         }
                     }
@@ -125,18 +129,18 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
         }
 
+        binding.addressCard.setOnClickListener {
+
+            val action = PaymentFragmentDirections.actionPaymentFragmentToDefaultAddressFragment()
+            findNavController().navigate(action)
+        }
+
     }
 
 
     private fun presentCheckout(checkoutUrl: String) {
         Log.i(TAG, "presentCheckout: ${checkoutUrl}")
         ShopifyCheckoutSheetKit.present(checkoutUrl, requireActivity(), checkoutEventProcessor)
-    }
-
-    private fun convertShopifyCheckoutUrl(originalUrl: String): String {
-        val regex = Regex("""\d+/checkouts/""")
-        val convertedUrl = originalUrl.replace(regex, "checkouts/co/")
-        return convertedUrl
     }
 
 
@@ -274,11 +278,11 @@ class PaymentFragment : BottomSheetDialogFragment() {
         lifecycleScope.launch {
             viewModel.addressList.collect { result ->
 
-                when(result){
+                when (result) {
                     is ApiState.Failure -> Log.i(TAG, "getCustomerAddresses: ${result.msg}")
                     ApiState.Loading -> Log.i(TAG, "getCustomerAddresses: loading")
                     is ApiState.Success -> {
-                        defaultAddress= result.response?.get(0)!!
+                        defaultAddress = result.response?.get(0)!!
                         updateDefaultAddressUI()
                     }
                 }
@@ -288,7 +292,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
     }
 
-    private fun updateDefaultAddressUI(){
+    private fun updateDefaultAddressUI() {
 
         binding.cityAddress.text = defaultAddress?.city
         binding.detailsAddress.text = defaultAddress?.address1

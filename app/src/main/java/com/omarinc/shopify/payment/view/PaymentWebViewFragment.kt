@@ -34,8 +34,8 @@ class PaymentWebViewFragment : Fragment() {
 
 
         val paymentUrl = arguments?.getString("webUrl") ?: ""
-        Log.i(TAG, "onViewCreated: ${paymentUrl}")
-        setupWebView(paymentUrl)
+        Log.i(TAG, "onViewCreated: ${convertShopifyCheckoutUrl(paymentUrl)}")
+        setupWebView(convertShopifyCheckoutUrl(paymentUrl))
     }
 
     private fun setupWebView(url: String) {
@@ -51,4 +51,18 @@ class PaymentWebViewFragment : Fragment() {
             }
         }
     }
+
+    private fun convertShopifyCheckoutUrl(originalUrl: String): String {
+        val pattern = Regex("""https://[^/]+/(\d+)/checkouts/([a-f0-9]+)\?key=[a-f0-9]+""")
+        val matchResult = pattern.matchEntire(originalUrl)
+
+        return if (matchResult != null) {
+            val (domain, checkoutId) = matchResult.destructured
+            "https://$domain/checkouts/co/$checkoutId"
+        } else {
+            throw IllegalArgumentException("Invalid Shopify checkout URL format")
+        }
+    }
+
 }
+
