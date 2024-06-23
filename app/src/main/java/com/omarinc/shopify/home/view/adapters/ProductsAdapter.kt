@@ -1,6 +1,7 @@
 package com.omarinc.shopify.home.view.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -65,6 +66,7 @@ class ProductsViewHolder(val binding: ProductLayoutBinding) :
             )
             .into(binding.brandImage)
         binding.brandConstrainLayout.setOnClickListener {
+            Log.i("TAG", "bind: Product Id${product.id}")
             listener.invoke(product.id)
         }
     }

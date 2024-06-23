@@ -101,9 +101,14 @@ class ShoppingCartFragment : Fragment() {
             viewModel.cartItems.collect { result ->
                 when (result) {
                     is ApiState.Failure -> Log.e(TAG, "Failed to get items: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "Loading ShoppingCart Items")
+                    ApiState.Loading -> {
+                        binding.cartShimmer.startShimmer()
+                    }
                     is ApiState.Success -> {
                         Log.i(TAG, "Successfully fetched items: ${result.response.size}")
+                       setupEmptyCart(result.response)
+                        binding.cartShimmer.stopShimmer()
+                        binding.cartShimmer.visibility = View.GONE
                         setupRecyclerView(result.response)
                         updateProductsLine(result.response)
                         getCurrentCurrency()
@@ -111,6 +116,13 @@ class ShoppingCartFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    private fun setupEmptyCart(items:List<CartProduct>) {
+        if (items.isEmpty()){
+            binding.emptyCart.visibility = View.VISIBLE
+            binding.checkoutButton.visibility = View.GONE
         }
     }
 

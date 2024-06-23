@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.omarinc.shopify.databinding.FragmentOrdersBinding
 import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.models.Order
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
@@ -67,6 +68,12 @@ class OrdersFragment : Fragment() {
 
     }
 
+    private fun setupNoOrders(items:List<Order>) {
+        if (items.isEmpty()){
+            binding.noOrders.visibility = View.VISIBLE
+        }
+    }
+
     private fun setUpOrdersAdapter() {
         ordersAdapter = OrdersAdapter(
             requireContext()
@@ -96,6 +103,7 @@ class OrdersFragment : Fragment() {
                         is ApiState.Success -> {
                             binding.ordersShimmer.stopShimmer()
                             binding.ordersShimmer.visibility = View.GONE
+                            setupNoOrders(result.response)
                             ordersAdapter.submitList(result.response)
                             getCurrentCurrency()
                         }

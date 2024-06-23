@@ -21,7 +21,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/ic_launcher_background"
+            android:src="@drawable/shimmer_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -33,7 +33,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:textColor="@color/black"
+            android:textColor="@color/shimmer_bg_color"
+            android:background="@color/shimmer_bg_color"
             android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@+id/shopping_cart_product_image_view"
             app:layout_constraintTop_toTopOf="parent"
@@ -43,7 +44,9 @@
             android:id="@+id/shopping_cart_product_price_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/primary_color"
+            android:layout_marginTop="8dp"
+            android:background="@color/shimmer_bg_color"
+            android:textColor="@color/shimmer_bg_color"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/shopping_cart_product_name_text_view"
             app:layout_constraintTop_toBottomOf="@+id/shopping_cart_product_name_text_view"
@@ -56,7 +59,6 @@
             android:layout_height="24dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
@@ -65,19 +67,18 @@
             app:iconGravity="textStart"
             app:iconPadding="0dp"
             app:iconTint="@color/primary_color"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/shopping_cart_product_quantity_text_view"
             app:layout_constraintTop_toBottomOf="@+id/shopping_cart_product_price_text_view" />
 
 
         <TextView
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="8dp"
             android:id="@+id/shopping_cart_product_quantity_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:textColor="@color/shimmer_bg_color"
+            android:background="@color/shimmer_bg_color"
             app:layout_constraintStart_toEndOf="@+id/increase_quantity_button"
             app:layout_constraintTop_toBottomOf="@+id/shopping_cart_product_price_text_view"
             tools:text="1" />
@@ -88,7 +89,6 @@
             android:layout_height="24dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:backgroundTint="@color/primary_color"
             android:insetLeft="0dp"
             android:insetTop="0dp"
@@ -97,7 +97,6 @@
             app:icon="@drawable/ic_increase"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/shopping_cart_product_image_view"
             app:layout_constraintTop_toBottomOf="@+id/shopping_cart_product_price_text_view" />
 
@@ -106,7 +105,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_margin="8dp"
-            android:src="@drawable/ic_delete"
+            android:src="@drawable/shimmer_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
