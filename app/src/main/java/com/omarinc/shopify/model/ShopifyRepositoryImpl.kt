@@ -36,6 +36,8 @@ class ShopifyRepositoryImpl(
 ) : ShopifyRepository {
 
     companion object {
+        private const val TAG = "ShopifyRepositoryImpl"
+
         @Volatile
         private var instance: ShopifyRepositoryImpl? = null
 
@@ -209,6 +211,7 @@ class ShopifyRepositoryImpl(
 
 
     override suspend fun createDraftOrder(draftOrder: DraftOrderRequest): Flow<ApiState<DraftOrderResponse>> {
+        Log.i(TAG, "createDraftOrder: Repo")
         return adminRemoteDataSource.createDraftOrder(draftOrder)
     }
 
