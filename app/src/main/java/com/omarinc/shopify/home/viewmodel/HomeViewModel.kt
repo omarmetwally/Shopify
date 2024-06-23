@@ -37,6 +37,9 @@ class HomeViewModel(
     private val _brandsState = MutableStateFlow<ApiState<List<Brands>>>(ApiState.Loading)
     val brandsState: StateFlow<ApiState<List<Brands>>> = _brandsState
 
+    private val _filteredProductsState = MutableStateFlow<ApiState<List<Product>>>(ApiState.Loading)
+    val filteredProductsState: StateFlow<ApiState<List<Product>>> = _filteredProductsState
+
     private val _productsState = MutableStateFlow<ApiState<List<Product>>>(ApiState.Loading)
     val productsState: StateFlow<ApiState<List<Product>>> = _productsState
 
@@ -74,7 +77,7 @@ class HomeViewModel(
                 (it.price as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
             price <= maxPrice.value
         }
-        _productsState.value = ApiState.Success(filteredResults)
+        _filteredProductsState.value = ApiState.Success(filteredResults)
     }
 
 
