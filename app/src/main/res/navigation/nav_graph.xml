@@ -200,7 +200,8 @@
         android:name="com.omarinc.shopify.payment.view.PaymentWebViewFragment"
         android:label="fragment_payment_web_view"
         tools:layout="@layout/fragment_payment_web_view" >
-        <argument android:name="webUrl" />
+        <argument android:name="webUrl"
+            app:argType="string" />
     </fragment>
     <dialog
         android:id="@+id/defaultAddressFragment"

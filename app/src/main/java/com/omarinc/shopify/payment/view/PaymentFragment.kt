@@ -31,6 +31,7 @@ import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor
 import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit
 import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent
 import kotlinx.coroutines.launch
+import kotlin.properties.Delegates
 
 
 class PaymentFragment : BottomSheetDialogFragment() {
@@ -40,6 +41,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
     private lateinit var viewModel: PaymentViewModel
     private lateinit var checkoutId: String
     private lateinit var defaultAddress: CustomerAddress
+
 
     companion object {
         private const val TAG = "PaymentFragment"
@@ -76,6 +78,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         setupViewModel()
         getCustomerAddresses()
