@@ -100,9 +100,13 @@ class ShoppingCartFragment : Fragment() {
             viewModel.cartItems.collect { result ->
                 when (result) {
                     is ApiState.Failure -> Log.e(TAG, "Failed to get items: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "Loading ShoppingCart Items")
+                    ApiState.Loading -> {
+                        binding.cartShimmer.startShimmer()
+                    }
                     is ApiState.Success -> {
                         Log.i(TAG, "Successfully fetched items: ${result.response.size}")
+                        binding.cartShimmer.stopShimmer()
+                        binding.cartShimmer.visibility = View.GONE
                         setupRecyclerView(result.response)
                         updateProductsLine(result.response)
                         getCurrentCurrency()
