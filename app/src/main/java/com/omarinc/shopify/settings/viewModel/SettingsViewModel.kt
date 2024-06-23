@@ -1,5 +1,6 @@
 package com.omarinc.shopify.settings.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omarinc.shopify.model.ShopifyRepository
@@ -18,22 +19,21 @@ import kotlinx.coroutines.withContext
 
 class SettingsViewModel(private val repository: ShopifyRepository) : ViewModel() {
 
-    private val _currencyResponse = MutableStateFlow<String>("USD")
+
+    private val _currencyResponse = MutableStateFlow<String>("EGP")
     val currencyResponse = _currencyResponse.asStateFlow()
 
     suspend fun getCurrencyUnit() {
-
         viewModelScope.launch(Dispatchers.IO) {
-            _currencyResponse.value = repository.readCurrencyUnit(CURRENCY_UNIT)
+            val currencyUnit = repository.readCurrencyUnit(CURRENCY_UNIT)
+
+            _currencyResponse.value = currencyUnit
         }
     }
 
     fun setCurrency(unit: String) {
         viewModelScope.launch(Dispatchers.IO) {
-
             repository.writeCurrencyUnit(CURRENCY_UNIT, unit)
         }
     }
-
-
 }
