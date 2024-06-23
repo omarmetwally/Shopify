@@ -1,6 +1,7 @@
 package com.omarinc.shopify.settings.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +21,6 @@ import com.omarinc.shopify.settings.viewModel.SettingsViewModel
 import com.omarinc.shopify.settings.viewModel.SettingsViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import kotlinx.coroutines.launch
-
 class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
@@ -50,6 +50,7 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
         setUpSpinner()
         setUpListeners()
         observeCurrency()
+        fetchCurrentCurrencyUnit()
     }
 
     private fun setUpListeners() {
@@ -88,6 +89,12 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     binding.spinnerCurrencies.setSelection(position)
                 }
             }
+        }
+    }
+
+    private fun fetchCurrentCurrencyUnit() {
+        lifecycleScope.launch {
+            settingsViewModel.getCurrencyUnit()
         }
     }
 

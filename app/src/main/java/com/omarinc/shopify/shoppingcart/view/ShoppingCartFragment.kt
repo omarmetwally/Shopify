@@ -144,6 +144,7 @@ class ShoppingCartFragment : Fragment() {
     }
 
     private fun updateProductsLine(items: List<CartProduct>) {
+
         productsLine = items.map {
             CheckoutLineItemInput(quantity = it.quantity, variantId = it.variantId)
         }
