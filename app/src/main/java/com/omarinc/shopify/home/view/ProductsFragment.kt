@@ -50,7 +50,6 @@ class ProductsFragment : Fragment() {
     private lateinit var suggestionsAdapter: CursorAdapter
     private var isFilter = false
 
-
     private val searchQuery = MutableStateFlow("")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,7 +80,6 @@ class ProductsFragment : Fragment() {
         collectProducts()
         collectFilteredProducts()
     }
-
     private fun collectProducts() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -108,8 +106,6 @@ class ProductsFragment : Fragment() {
             }
         }
     }
-
-
     private fun setupProductsAdapter(){
         productsAdapter = ProductsAdapter(requireContext()) { productId ->
             val action =
@@ -123,7 +119,6 @@ class ProductsFragment : Fragment() {
 
 
     }
-
     private fun setupFilterView() {
         binding.filterView.setOnClickListener {
             if (isFilter) {
@@ -160,9 +155,6 @@ class ProductsFragment : Fragment() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
-
-
-
     private fun collectFilteredProducts() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

@@ -93,7 +93,6 @@ class AddressDetailsFragment : Fragment() {
 
     private fun setAddress(address: CustomerAddress) {
         viewModel.createAddress(address)
-
         Log.i(TAG, "City: ${address.city}")
         lifecycleScope.launch {
             viewModel.address.collect { result ->
@@ -109,17 +108,14 @@ class AddressDetailsFragment : Fragment() {
                             Toast.LENGTH_SHORT
                         ).show()
                         popFragment()
-
                     }
-
                 }
-
             }
-
         }
     }
 
     private fun popFragment() {
+        parentFragmentManager.popBackStack()
         parentFragmentManager.popBackStack()
     }
 }
