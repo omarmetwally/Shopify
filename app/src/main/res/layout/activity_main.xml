@@ -37,6 +37,7 @@
         app:menu="@menu/menu"/>
     <include
         android:id="@+id/no_internet_banner"
+        android:visibility="gone"
         layout="@layout/no_internet_banner"/>
     <include
         android:id="@+id/no_internet_data"
