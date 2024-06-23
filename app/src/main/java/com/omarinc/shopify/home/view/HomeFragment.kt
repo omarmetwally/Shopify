@@ -32,6 +32,7 @@ import com.omarinc.shopify.AuthenticationMainActivity
 import com.omarinc.shopify.home.view.adapters.ProductsAdapter
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentHomeBinding
+import com.omarinc.shopify.favorites.model.FirebaseRepository
 import com.omarinc.shopify.home.view.adapters.AdsAdapter
 import com.omarinc.shopify.home.view.adapters.BrandsAdapter
 import com.omarinc.shopify.home.viewmodel.HomeViewModel
@@ -42,9 +43,12 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.productdetails.view.ProductDetailsFragment
+import com.omarinc.shopify.productdetails.view.ProductDetailsFragment.Companion
 import com.omarinc.shopify.sharedPreferences.ISharedPreferences
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.utilities.Constants
+import com.omarinc.shopify.utilities.Constants.CART_ID
 import com.omarinc.shopify.utilities.Helper
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -115,6 +119,7 @@ class HomeFragment : Fragment() {
         setUpProductsAdapter()
         getCoupons()
         collectProducts()
+        createCustomerCart()
 
     }
 
@@ -282,7 +287,6 @@ class HomeFragment : Fragment() {
         binding.productsRv.adapter = productsAdapter
 
 
-
     }
 
     private fun collectProducts() {
@@ -354,13 +358,15 @@ class HomeFragment : Fragment() {
 
 
     private fun setViewModel() {
+
         val factory = HomeViewModel.HomeViewModelFactory(
             ShopifyRepositoryImpl(
                 ShopifyRemoteDataSourceImpl.getInstance(requireContext()),
                 SharedPreferencesImpl.getInstance(requireContext()),
                 CurrencyRemoteDataSourceImpl.getInstance(),
                 AdminRemoteDataSourceImpl.getInstance()
-            )
+            ),
+            FirebaseRepository.getInstance()
         )
         viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
@@ -369,7 +375,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setUpAdsAdapter() {
-        Log.i(TAG, "setUpAdsAdapter: 1")
+
         adsAdapter = AdsAdapter(requireContext()) { priceRule ->
             onCouponLongClick(priceRule)
         }
@@ -521,6 +527,61 @@ class HomeFragment : Fragment() {
         startActivity(Intent(requireContext(), AuthenticationMainActivity::class.java))
         requireActivity().finish()
 
+    }
+
+    private fun createCustomerCart() {
+
+        val email: Deferred<String> = lifecycleScope.async {
+            viewModel.readCustomerEmail()
+        }
+
+        lifecycleScope.launch {
+
+            val userEmail = email.await()
+            viewModel.isCustomerHasCart(userEmail)
+
+            viewModel.hasCart.collect { result ->
+                when (result) {
+                    is ApiState.Failure -> Log.i(ProductDetailsFragment.TAG, "hasCart Failure: ${result.msg}")
+                    ApiState.Loading -> Log.i(ProductDetailsFragment.TAG, "hasCart Loading: ")
+                    is ApiState.Success -> {
+                        Log.i(ProductDetailsFragment.TAG, "hasCart Success user has cart: ${result.response}")
+                        if (!result.response) {
+
+                            Log.i(ProductDetailsFragment.TAG, "hasCart: ${result.response}")
+
+                                                    } else {
+                            viewModel.getCartByCustomer(userEmail)
+                            viewModel.customerCart.collect { result ->
+                                when (result) {
+                                    is ApiState.Failure -> Log.i(
+                                        ProductDetailsFragment.TAG,
+                                        "customerCart Failure: ${result.msg}"
+                                    )
+
+                                    ApiState.Loading -> Log.i(ProductDetailsFragment.TAG, "Loading")
+                                    is ApiState.Success -> {
+
+                                        Log.i(ProductDetailsFragment.TAG, "CartId : ${result.response} ")
+                                        val cartId = result.response
+                                        // viewModel.writeCartId(cartId!!)
+                                        sharedPreferences.writeStringToSharedPreferences(
+                                            CART_ID,
+                                            cartId!!
+                                        )
+                                        Log.i(ProductDetailsFragment.TAG, "customerCart Success: $cartId")
+
+
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
     }
 }
 

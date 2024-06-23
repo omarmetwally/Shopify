@@ -2,7 +2,7 @@ package com.omarinc.shopify.models
 
 data class CartProduct(
     val id: String,
-    val quantity: Int,
+    var quantity: Int,
     val productId: String,
     val productTitle: String,
     val productImageUrl: String,
