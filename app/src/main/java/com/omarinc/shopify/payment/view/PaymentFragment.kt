@@ -60,9 +60,16 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
 
         setupViewModel()
-        getCustomerAddresses()
+//        getCustomerAddresses()
         checkoutId = arguments?.getString("checkoutId") ?: ""
         totalPrice = arguments?.getString("totalPrice")?.toDouble() ?: 0.0
+        val selectedAddress = arguments?.getSerializable("selectedAddress") as? CustomerAddress
+        if (selectedAddress != null) {
+            defaultAddress = selectedAddress
+            updateDefaultAddressUI()
+        } else {
+            getCustomerAddresses()
+        }
         Log.i(TAG, "onViewCreated: ${totalPrice}")
         setListeners()
         setDefaultRadioButton()
@@ -116,7 +123,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
 
         binding.addressCard.setOnClickListener {
-            val action = PaymentFragmentDirections.actionPaymentFragmentToDefaultAddressFragment()
+            val action = PaymentFragmentDirections.actionPaymentFragmentToDefaultAddressFragment(checkoutId,totalPrice.toString())
             findNavController().navigate(action)
         }
 

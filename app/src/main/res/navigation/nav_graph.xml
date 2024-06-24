@@ -191,6 +191,10 @@
         <argument
             android:name="totalPrice"
             app:argType="string" />
+        <argument
+            android:name="selectedAddress"
+            app:argType="com.omarinc.shopify.models.CustomerAddress"
+            app:nullable="true" />
     </dialog>
     <fragment
         android:id="@+id/paymentWebViewFragment"
@@ -204,5 +208,15 @@
         android:id="@+id/defaultAddressFragment"
         android:name="com.omarinc.shopify.payment.view.DefaultAddressFragment"
         android:label="fragment_default_address"
-        tools:layout="@layout/fragment_default_address" />
+        tools:layout="@layout/fragment_default_address">
+        <action
+            android:id="@+id/action_defaultAddressFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+        <argument
+            android:name="checkoutId"
+            app:argType="string" />
+        <argument
+            android:name="totalPrice"
+            app:argType="string" />
+    </dialog>
 </navigation>

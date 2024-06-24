@@ -166,7 +166,7 @@ class ShoppingCartFragment : Fragment() {
 
     private fun navigateToPaymentFragment(checkoutId: String) {
         Log.i(TAG, "navigateToPaymentFragment: $totalPrice")
-        val action = ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(checkoutId,totalPrice.toString())
+        val action = ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(checkoutId,totalPrice.toString(),null)
         findNavController().navigate(action)
     }
 
