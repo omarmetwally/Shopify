@@ -409,6 +409,14 @@ class PaymentFragment : BottomSheetDialogFragment() {
         binding.detailsAddress.text = "${defaultAddress.city}, ${defaultAddress.address1}"
     }
 
+
+    override fun onStop() {
+        super.onStop()
+
+        dismiss()
+
+    }
+
 }
 
 
