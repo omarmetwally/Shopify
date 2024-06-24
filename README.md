@@ -86,5 +86,30 @@ Coming Soon (Currently under review)
 - **AndroidX WebKit**: For web view support.
 - **Subsampling Scale Image View**: For large image handling.
 
-## App Demo
+## App video Demo
+- uploading it....
 
+## App Screenshots 
+
+![Screenshot_20240623_185945_EZstore](https://github.com/omarmetwally/Shopify/assets/20462286/7b53e4c0-ad18-429d-bccd-6517d1a347c8)
+
+
+
+![Screenshot_20240624_171852_EZstore](https://github.com/omarmetwally/Shopify/assets/20462286/c69d2cf5-3469-4f46-8c67-8c8881a536b8)
+
+![Screenshot_20240624_171916_EZstore](https://github.com/omarmetwally/Shopify/assets/20462286/d91cc3c9-7c29-4109-90ba-36928645a614)
+
+
+![Screenshot_20240624_171909_EZstore](https://github.com/omarmetwally/Shopify/assets/20462286/5b278dcc-31e4-426c-8c63-c69c7b88005b)
+
+
+![Screenshot_20240624_171902_EZstore](https://github.com/omarmetwally/Shopify/assets/20462286/d2872e66-9851-43d1-9384-5a5cbee949bc)
+
+![Screenshot_20240623_185958_EZstore](https://github.com/omarmetwally/Shopify/assets/20462286/f7f8604a-d113-455c-ad13-dffa25604a70)
+
+![Screenshot_20240623_190032_EZstore](https://github.com/omarmetwally/Shopify/assets/20462286/c7d9339d-2210-4578-a723-3bc0d0dce305)
+
+![Screenshot_20240623_195458_EZstore](https://github.com/omarmetwally/Shopify/assets/20462286/01f6c9ec-47a8-47bd-9b03-f3f6a1ce33f7)
+
+
+![Screenshot_20240623_195436_EZstore](https://github.com/omarmetwally/Shopify/assets/20462286/2e1402ae-274d-4c49-bb75-7a487754507b)
