@@ -176,6 +176,21 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <TextView
+                android:id="@+id/tv_reviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/reviews"
+                android:layout_gravity="right"
+                android:textColor="@color/primary_color"
+                android:textStyle="bold"
+                android:gravity="right"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:layout_marginRight="16dp"
+
+
+                />
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
