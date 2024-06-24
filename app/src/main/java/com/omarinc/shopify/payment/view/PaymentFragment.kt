@@ -43,7 +43,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
     private lateinit var viewModel: PaymentViewModel
     private lateinit var checkoutId: String
     private lateinit var defaultAddress: CustomerAddress
-
+    private var totalPrice: Double = 0.0
 
     companion object {
         private const val TAG = "PaymentFragment"
@@ -66,8 +66,10 @@ class PaymentFragment : BottomSheetDialogFragment() {
         setupViewModel()
         getCustomerAddresses()
         checkoutId = arguments?.getString("checkoutId") ?: ""
-        Log.i(TAG, "onViewCreated: ${checkoutId}")
+        totalPrice = arguments?.getString("totalPrice")?.toDouble() ?: 0.0
+        Log.i(TAG, "onViewCreated: ${totalPrice.toString()}")
         setListeners()
+        setDefaultRadioButton()
 
     }
 
@@ -83,43 +85,43 @@ class PaymentFragment : BottomSheetDialogFragment() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(PaymentViewModel::class.java)
     }
 
+    private fun setDefaultRadioButton() {
+
+        binding.paymentMethodRadioGroup.check(R.id.cash_on_delivery_radio_button)
+
+        binding.voucherLayout.visibility = View.VISIBLE
+    }
+
     private fun setListeners() {
-
-
-        binding.payNow.setOnClickListener {
-
-            binding.paymentMethodRadioGroup.setOnCheckedChangeListener { group, checkedId ->
-                when (checkedId) {
-                    R.id.cash_on_delivery_radio_button -> {
-                        createCashOnDeliveryOrder()
-
-                    }
-
-                    R.id.card_radio_button -> {
-                        payWithCard()
-                    }
-                }
-            }
-
-        }
-
-        binding.addressCard.setOnClickListener {
-
-            val action = PaymentFragmentDirections.actionPaymentFragmentToDefaultAddressFragment()
-            findNavController().navigate(action)
-        }
-
         binding.paymentMethodRadioGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.cash_on_delivery_radio_button -> {
                     binding.voucherLayout.visibility = View.VISIBLE
-
                 }
 
                 R.id.card_radio_button -> {
                     binding.voucherLayout.visibility = View.GONE
                 }
             }
+        }
+
+
+        binding.payNow.setOnClickListener {
+            when (binding.paymentMethodRadioGroup.checkedRadioButtonId) {
+                R.id.cash_on_delivery_radio_button -> {
+                    createCashOnDeliveryOrder()
+                }
+
+                R.id.card_radio_button -> {
+                    payWithCard()
+                }
+            }
+        }
+
+
+        binding.addressCard.setOnClickListener {
+            val action = PaymentFragmentDirections.actionPaymentFragmentToDefaultAddressFragment()
+            findNavController().navigate(action)
         }
 
 
@@ -135,22 +137,45 @@ class PaymentFragment : BottomSheetDialogFragment() {
     }
 
     private fun applyVoucher(voucherCode: String) {
-        // TODO: Add logic to apply the voucher code
-        // Example: Check the voucher code and apply discount
-        if (isValidVoucher(voucherCode)) {
-            Toast.makeText(requireContext(), "Voucher applied successfully", Toast.LENGTH_SHORT)
-                .show()
-            // Apply discount logic here
+        val discountPercentage = getVoucherDiscount(voucherCode)
+        if (discountPercentage > 0) {
+            Toast.makeText(
+                requireContext(),
+                "Voucher applied successfully: $discountPercentage% off",
+                Toast.LENGTH_SHORT
+            ).show()
+            applyDiscount(discountPercentage)
         } else {
             Toast.makeText(requireContext(), "Invalid voucher code", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun isValidVoucher(voucherCode: String): Boolean {
-        // TODO: Replace this with your actual voucher validation logic
-        // For example, check against a list of valid voucher codes
-        val validVouchers = listOf("DISCOUNT10", "SALE20", "SAVE30")
-        return voucherCode in validVouchers
+    private fun getVoucherDiscount(voucherCode: String): Int {
+        return when (voucherCode) {
+            "MADAND-SV#10" -> 10
+            "MADAND-SV#20" -> 20
+            else -> 0
+        }
+    }
+
+    private fun applyDiscount(discountPercentage: Int) {
+        // TODO: Add logic to apply the discount to the total order amount
+        // Example logic (you'll need to implement based on your specific requirements):
+        val originalAmount =
+            getOriginalOrderAmount() // Replace with actual logic to get original amount
+        val discountedAmount = originalAmount * (1 - discountPercentage / 100.0)
+        updateOrderAmount(discountedAmount)
+    }
+
+    // Placeholder methods for demonstration
+    private fun getOriginalOrderAmount(): Double {
+
+        return totalPrice
+    }
+
+    private fun updateOrderAmount(amount: Double) {
+        // TODO: Replace with actual logic to update the order amount in your UI or data model
+        binding.orderAmountTextView.text = String.format("%.2f", amount)
     }
 
     private fun payWithCard() {

@@ -194,6 +194,9 @@
         <action
             android:id="@+id/action_paymentFragment_to_defaultAddressFragment"
             app:destination="@id/defaultAddressFragment" />
+        <argument
+            android:name="totalPrice"
+            app:argType="string" />
     </dialog>
     <fragment
         android:id="@+id/paymentWebViewFragment"
