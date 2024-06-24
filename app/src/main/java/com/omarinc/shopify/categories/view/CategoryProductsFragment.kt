@@ -28,6 +28,7 @@ import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.productdetails.view.ProductDetailsFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -120,7 +121,10 @@ class CategoryProductsFragment : Fragment() {
                             binding.productsCategoryShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response)
                             Log.i(TAG, "collectProductsBySubCategories: ")
-                            getCurrentCurrency()
+                            val currencyUnit = SharedPreferencesImpl.getInstance(requireContext())
+                            if (!currencyUnit.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT).equals("EGP")){
+                                getCurrentCurrency()
+                            }
                         }
 
                         is ApiState.Failure -> {
@@ -145,8 +149,10 @@ class CategoryProductsFragment : Fragment() {
                             binding.productsCategoryShimmer.stopShimmer()
                             binding.productsCategoryShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response.products)
-                            getCurrentCurrency()
-                        }
+                            val currencyUnit = SharedPreferencesImpl.getInstance(requireContext())
+                            if (!currencyUnit.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT).equals("EGP")){
+                                getCurrentCurrency()
+                            }                        }
 
                         is ApiState.Failure -> {
                             Log.i("TAG", "onViewCreated: error " + result.msg)

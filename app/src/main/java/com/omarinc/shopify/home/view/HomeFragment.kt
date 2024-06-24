@@ -312,7 +312,10 @@ class HomeFragment : Fragment() {
                             binding.homeShimmer.stopShimmer()
                             binding.homeShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response)
-                            getCurrentCurrency()
+                            if (!sharedPreferences.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT).equals("EGP")){
+                                getCurrentCurrency()
+                            }
+
                         }
 
                         is ApiState.Failure -> {
