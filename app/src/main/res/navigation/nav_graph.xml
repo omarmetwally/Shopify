@@ -191,12 +191,24 @@
         <action
             android:id="@+id/action_paymentFragment_to_paymentWebViewFragment"
             app:destination="@id/paymentWebViewFragment" />
+        <action
+            android:id="@+id/action_paymentFragment_to_defaultAddressFragment"
+            app:destination="@id/defaultAddressFragment" />
+        <argument
+            android:name="totalPrice"
+            app:argType="string" />
     </dialog>
     <fragment
         android:id="@+id/paymentWebViewFragment"
         android:name="com.omarinc.shopify.payment.view.PaymentWebViewFragment"
         android:label="fragment_payment_web_view"
         tools:layout="@layout/fragment_payment_web_view" >
-        <argument android:name="webUrl" />
+        <argument android:name="webUrl"
+            app:argType="string" />
     </fragment>
+    <dialog
+        android:id="@+id/defaultAddressFragment"
+        android:name="com.omarinc.shopify.payment.view.DefaultAddressFragment"
+        android:label="fragment_default_address"
+        tools:layout="@layout/fragment_default_address" />
 </navigation>

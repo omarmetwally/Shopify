@@ -25,6 +25,7 @@ interface AdminApiService {
     @GET("price_rules.json")
     suspend fun getCoupons(): Response<PriceRulesResponse>
 
+
     @Headers(
         "Content-Type: application/json",
         "X-Shopify-Access-Token: ${Constants.ADMIN_ACCESS_TOKEN}"
@@ -32,29 +33,35 @@ interface AdminApiService {
     @GET("price_rules/{couponId}/discount_codes.json")
     suspend fun getCouponDetails(@Path("couponId") couponId: String): Response<DiscountCodesResponse>
 
+
     @Headers(
         "Content-Type: application/json",
         "X-Shopify-Access-Token: ${Constants.ADMIN_ACCESS_TOKEN}"
     )
     @POST("draft_orders.json")
-    suspend fun createDraftOrder(@Body request: DraftOrderRequest): Response<DraftOrderResponse>
+    suspend fun createDraftOrder(
+        @Body request: DraftOrderRequest
+    ): Response<DraftOrderResponse>
+
+
 
     @Headers(
         "Content-Type: application/json",
-        "X-Shopify-Access-Token: {your-access-token}"
+        "X-Shopify-Access-Token: ${Constants.ADMIN_ACCESS_TOKEN}"
     )
     @PUT("draft_orders/{draftOrderId}/complete.json")
     suspend fun completeDraftOrder(
         @Path("draftOrderId") draftOrderId: Long,
-        //@Body body: CompleteDraftOrderRequest
     ): Response<DraftOrderResponse>
+
 
     @Headers(
         "Content-Type: application/json",
-        "X-Shopify-Access-Token: {your-access-token}"
+        "X-Shopify-Access-Token: ${Constants.ADMIN_ACCESS_TOKEN}"
     )
     @POST("draft_orders/{draftOrderId}/send_invoice.json")
     suspend fun sendInvoice(
         @Path("draftOrderId") draftOrderId: Long
     ): Response<DraftOrderResponse>
+
 }

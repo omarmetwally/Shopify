@@ -31,7 +31,8 @@ class ShoppingCartFragment : Fragment() {
     private lateinit var binding: FragmentShoppingCartBinding
     private lateinit var viewModel: ShoppingCartViewModel
     private var productsLine = listOf<CheckoutLineItemInput>()
-    private lateinit var  shoppingCartAdapter: ShoppingCartAdapter
+    private lateinit var shoppingCartAdapter: ShoppingCartAdapter
+    private var totalPrice: Double = 0.0
 
     companion object {
         private const val TAG = "ShoppingCartFragment"
@@ -104,9 +105,10 @@ class ShoppingCartFragment : Fragment() {
                     ApiState.Loading -> {
                         binding.cartShimmer.startShimmer()
                     }
+
                     is ApiState.Success -> {
                         Log.i(TAG, "Successfully fetched items: ${result.response.size}")
-                       setupEmptyCart(result.response)
+                        setupEmptyCart(result.response)
                         binding.cartShimmer.stopShimmer()
                         binding.cartShimmer.visibility = View.GONE
                         setupRecyclerView(result.response)
@@ -119,19 +121,20 @@ class ShoppingCartFragment : Fragment() {
         }
     }
 
-    private fun setupEmptyCart(items:List<CartProduct>) {
-        if (items.isEmpty()){
+    private fun setupEmptyCart(items: List<CartProduct>) {
+        if (items.isEmpty()) {
             binding.emptyCart.visibility = View.VISIBLE
             binding.checkoutButton.visibility = View.GONE
         }
     }
 
     private fun setupRecyclerView(items: List<CartProduct>) {
-        shoppingCartAdapter = ShoppingCartAdapter(requireContext(), items.toMutableList()) { itemId ->
-            val cartId = viewModel.readCartId()
-            Log.i(TAG, "Removing item $itemId from cart $cartId")
-            removeItemFromCart(cartId, itemId)
-        }
+        shoppingCartAdapter =
+            ShoppingCartAdapter(requireContext(), items.toMutableList()) { itemId ->
+                val cartId = viewModel.readCartId()
+                Log.i(TAG, "Removing item $itemId from cart $cartId")
+                removeItemFromCart(cartId, itemId)
+            }
 
         binding.shoppingCartRecyclerView.apply {
             layoutManager = LinearLayoutManager(requireActivity()).apply {
@@ -162,14 +165,15 @@ class ShoppingCartFragment : Fragment() {
         }
 
 
-
     }
 
 
     private fun navigateToPaymentFragment(webUrl: String) {
 
+
+        Log.i(TAG, "navigateToPaymentFragment: ${totalPrice}")
         val action =
-            ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl)
+            ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl,totalPrice.toString())
         findNavController().navigate(action)
 
     }
@@ -210,8 +214,9 @@ class ShoppingCartFragment : Fragment() {
 
     private fun updateTotalPrice(currency: Currency) {
 
-        val totalPrice = productsLine.sumOf {it.quantity * currency.value}
-        binding.totalPriceTextView.text = String.format("Total price : %.2f %s", totalPrice, currency.code)
+        totalPrice = productsLine.sumOf { it.quantity * currency.value }
+        binding.totalPriceTextView.text =
+            String.format("Total price : %.2f %s", totalPrice, currency.code)
 
 
     }

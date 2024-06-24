@@ -1,12 +1,10 @@
 package com.omarinc.shopify.payment.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.CustomerAddress
-import com.omarinc.shopify.models.DraftOrder
 import com.omarinc.shopify.models.DraftOrderRequest
 import com.omarinc.shopify.models.DraftOrderResponse
 import com.omarinc.shopify.network.ApiState
@@ -16,7 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class PaymentViewModel(private val repository: ShopifyRepository):ViewModel() {
+class PaymentViewModel(private val repository: ShopifyRepository) : ViewModel() {
 
     companion object {
         private const val TAG = "PaymentViewModel"
@@ -35,7 +33,13 @@ class PaymentViewModel(private val repository: ShopifyRepository):ViewModel() {
     val webUrl: StateFlow<ApiState<String>> = _webUrl
 
     private val _addressList = MutableStateFlow<ApiState<List<CustomerAddress>?>>(ApiState.Loading)
-    val addressList: MutableStateFlow<ApiState<List<CustomerAddress>?>> = _addressList
+    val addressList: StateFlow<ApiState<List<CustomerAddress>?>> = _addressList
+
+    private val _completeOrder = MutableStateFlow<ApiState<DraftOrderResponse>>(ApiState.Loading)
+    val completeOrder: StateFlow<ApiState<DraftOrderResponse>> = _completeOrder
+
+    private val _emailInvoice = MutableStateFlow<ApiState<DraftOrderResponse>>(ApiState.Loading)
+    val emailInvoice: StateFlow<ApiState<DraftOrderResponse>> = _emailInvoice
 
     fun getShoppingCartItems(cartId: String) {
 
@@ -61,15 +65,14 @@ class PaymentViewModel(private val repository: ShopifyRepository):ViewModel() {
     }
 
 
-    fun createCashOnDeliveryOrder(draftOrder: DraftOrderRequest){
+    fun createCashOnDeliveryOrder(draftOrder: DraftOrderRequest) {
         viewModelScope.launch {
-            Log.i(TAG, "createCashOnDeliveryOrder: ")
-            repository.createDraftOrder(draftOrder).collect{
+
+            repository.createDraftOrder(draftOrder).collect {
                 _draftOrder.value = it
             }
         }
     }
-
 
 
     suspend fun readCustomerEmail(): String {
@@ -98,6 +101,24 @@ class PaymentViewModel(private val repository: ShopifyRepository):ViewModel() {
 
         }
 
+    }
+
+    fun completeCashOnDeliveryOrder(orderId: Long) {
+
+        viewModelScope.launch {
+            repository.completeDraftOrder(orderId).collect {
+                _completeOrder.value = it
+            }
+        }
+    }
+
+    fun sendInvoice(orderId: Long) {
+
+        viewModelScope.launch {
+            repository.sendInvoice(orderId).collect {
+                _emailInvoice.value = it
+            }
+        }
     }
 
 }
