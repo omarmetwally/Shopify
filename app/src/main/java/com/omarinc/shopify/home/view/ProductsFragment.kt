@@ -95,8 +95,10 @@ class ProductsFragment : Fragment() {
                             binding.productsShimmer.stopShimmer()
                             binding.productsShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response)
-                            getCurrentCurrency()
-
+                            val currencyUnit = SharedPreferencesImpl.getInstance(requireContext())
+                            if (!currencyUnit.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT).equals("EGP")){
+                                getCurrentCurrency()
+                            }
                         }
 
                         is ApiState.Failure -> {
@@ -172,7 +174,10 @@ class ProductsFragment : Fragment() {
                             binding.productsShimmer.stopShimmer()
                             binding.productsShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response)
-                            getCurrentCurrency()
+                            val currencyUnit = SharedPreferencesImpl.getInstance(requireContext())
+                            if (!currencyUnit.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT).equals("EGP")){
+                                getCurrentCurrency()
+                            }
                         }
 
                         is ApiState.Failure -> {
