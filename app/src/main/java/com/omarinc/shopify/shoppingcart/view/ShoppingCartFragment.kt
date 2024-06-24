@@ -167,7 +167,6 @@ class ShoppingCartFragment : Fragment() {
 
     }
 
-
     private fun navigateToPaymentFragment(webUrl: String) {
 
 
@@ -210,7 +209,6 @@ class ShoppingCartFragment : Fragment() {
             }
         }
     }
-
 
     private fun updateTotalPrice(currency: Currency) {
 
