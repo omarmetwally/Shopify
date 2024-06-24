@@ -119,6 +119,11 @@
             android:id="@+id/action_productDetailsFragment_to_zoomImageFragment"
             app:destination="@id/zoomImageFragment"
             app:enterAnim="@anim/fade_in"/>
+        <action
+            android:id="@+id/action_productDetailsFragment_to_commentsBottomSheetFragment"
+            app:destination="@id/commentsBottomSheetFragment"
+            app:enterAnim="@anim/fade_in"
+            />
     </fragment>
     <fragment
         android:id="@+id/favoritesFragment"
@@ -258,4 +263,9 @@
             android:name="imageUrl"
             app:argType="string" />
     </fragment>
+    <dialog
+        android:id="@+id/commentsBottomSheetFragment"
+        android:name="com.omarinc.shopify.productdetails.view.commentsbottomsheet.CommentsBottomSheetFragment"
+        android:label="fragment_comments_bottom_sheet"
+        tools:layout="@layout/fragment_comments_bottom_sheet" />
 </navigation>

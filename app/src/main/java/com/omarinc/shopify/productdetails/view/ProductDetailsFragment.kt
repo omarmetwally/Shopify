@@ -76,6 +76,10 @@ class ProductDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.tvReviews.setOnClickListener {
+            val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToCommentsBottomSheetFragment()
+            findNavController().navigate(action)
+        }
 
         setUpViewModel()
         checkGuestMode()

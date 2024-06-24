@@ -140,6 +140,7 @@
     <string name="added_favorites">Added to favorites</string>
     <string name="added_cart">Added to cart</string>
     <string name="choose_variant">Please select  size &amp; color first.</string>
+    <string name="reviews">more reviews</string>
 
 
 </resources>
