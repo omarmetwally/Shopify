@@ -19,6 +19,7 @@ import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
+import com.omarinc.shopify.payment.view.PaymentFragment
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModel
 import com.omarinc.shopify.shoppingcart.viewModel.ShoppingCartViewModelFactory
@@ -171,9 +172,8 @@ class ShoppingCartFragment : Fragment() {
 
 
         Log.i(TAG, "navigateToPaymentFragment: ${totalPrice}")
-        val action =
-            ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(webUrl,totalPrice.toString())
-        findNavController().navigate(action)
+        val paymentFragment = PaymentFragment()
+        paymentFragment.show(parentFragmentManager, paymentFragment.tag)
 
     }
 

@@ -32,12 +32,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/testFragment"
-        android:name="com.omarinc.shopify.home.view.TestFragment"
-        android:label="fragment_test"
-        tools:layout="@layout/fragment_test" />
-
-    <fragment
         android:id="@+id/profileFragment"
         android:name="com.omarinc.shopify.profile.view.ProfileFragment"
         android:label="fragment_profile"
@@ -137,11 +131,7 @@
         android:id="@+id/shoppingCartFragment"
         android:name="com.omarinc.shopify.shoppingcart.view.ShoppingCartFragment"
         android:label="fragment_shopping_cart"
-        tools:layout="@layout/fragment_shopping_cart" >
-        <action
-            android:id="@+id/action_shoppingCartFragment_to_paymentFragment"
-            app:destination="@id/paymentFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_shopping_cart" />
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.omarinc.shopify.address.view.MapFragment"

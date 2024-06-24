@@ -13,6 +13,7 @@ data class DraftOrderResponse(
 )
 
 data class DraftOrder(
+    val email: String,
     val id: Long,
     @SerializedName("line_items")
     val lineItems: List<LineItem>,

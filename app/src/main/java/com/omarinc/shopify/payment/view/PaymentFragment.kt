@@ -240,6 +240,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
                         Log.i(TAG, "Email: ${viewModel.readCustomerEmail()}")
                         val draftOrder = DraftOrder(
+                            email = viewModel.readCustomerEmail(),
                             id = 0,
                             lineItems = lineItems,
                             customer = Customer(email = viewModel.readCustomerEmail()),
@@ -406,6 +407,14 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
         binding.addressCustomerName.text = "${defaultAddress.firstName} ${defaultAddress.lastName}"
         binding.detailsAddress.text = "${defaultAddress.city}, ${defaultAddress.address1}"
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+
+        dismiss()
+
     }
 
 }

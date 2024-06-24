@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.omarinc.shopify.databinding.FragmentAddressDetailsBinding
@@ -119,7 +120,7 @@ class AddressDetailsFragment : Fragment() {
     }
 
     private fun popFragment() {
-        parentFragmentManager.popBackStack()
-        parentFragmentManager.popBackStack()
+        findNavController().navigateUp()
+        findNavController().navigateUp()
     }
 }
