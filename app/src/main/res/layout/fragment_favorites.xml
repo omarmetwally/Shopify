@@ -30,21 +30,29 @@
             android:text="@string/favorites"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
     </LinearLayout>
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/favorite_shimmer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <include layout="@layout/fragment_favorite_shimmer" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvFavorites"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="16dp"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <LinearLayout
         android:id="@+id/no_favorites"
-        android:layout_width="409dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="108dp"
         android:orientation="vertical"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -52,9 +60,9 @@
         <ImageView
             android:id="@+id/imageView11"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="350dp"
             android:layout_marginBottom="12dp"
-            android:src="@drawable/no_data" />
+            android:src="@drawable/no_favorite" />
 
         <TextView
             android:id="@+id/textView4"
@@ -65,7 +73,7 @@
             android:text="@string/no_favorites"
             android:textAlignment="center"
             android:textColor="@color/gray_text"
-            android:textSize="12sp" />
+            android:textSize="15sp" />
     </LinearLayout>
 
 </LinearLayout>

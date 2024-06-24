@@ -2,11 +2,14 @@ package com.omarinc.shopify.favorites.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.omarinc.shopify.favorites.model.FavoriteItem
+import com.omarinc.shopify.favorites.model.FavoriteItemFirebase
 import com.omarinc.shopify.mocks.FakeFirebaseRepository
+import com.omarinc.shopify.network.ApiState
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Before
@@ -85,13 +88,20 @@ class FavoriteViewModelTest {
     @Test
     fun getFavorites_WithValidUserToken_ShouldReturnFavoritesList() = runTest {
         val userToken = "fake_token"
-        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url","")
+        val favoriteItem = FavoriteItem("fake_id", "product_name", 10.0, "image_url","EGP")
 
-        viewModel.addToFavorites(userToken, favoriteItem)
+        fakeFirebaseRepository.addFavorite(userToken, favoriteItem)
+
         viewModel.getFavorites(userToken)
 
-        val favorites = viewModel.favorites.value
-        assertTrue(favorites.isNotEmpty())
-        assertTrue(favorites.any { it.productId == favoriteItem.productId })
+        val state = viewModel.favorites.first()
+
+        if (state is ApiState.Success) {
+            val favorites = state.response
+            assertTrue(favorites.isNotEmpty())
+            assertTrue(favorites.any { it.productId == favoriteItem.productId })
+        } else {
+            assertFalse("Expected ApiState.Success but found $state", true)
+        }
     }
 }

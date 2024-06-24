@@ -186,7 +186,17 @@
         android:label="fragment_payment"
         tools:layout="@layout/fragment_payment" >
         <argument
-            android:name="webURL"
+            android:name="checkoutId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_paymentFragment_to_paymentWebViewFragment"
+            app:destination="@id/paymentWebViewFragment" />
     </dialog>
+    <fragment
+        android:id="@+id/paymentWebViewFragment"
+        android:name="com.omarinc.shopify.payment.view.PaymentWebViewFragment"
+        android:label="fragment_payment_web_view"
+        tools:layout="@layout/fragment_payment_web_view" >
+        <argument android:name="webUrl" />
+    </fragment>
 </navigation>

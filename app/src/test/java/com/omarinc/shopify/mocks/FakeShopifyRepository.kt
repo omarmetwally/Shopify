@@ -97,9 +97,11 @@ class FakeShopifyRepository : ShopifyRepository {
     override fun getCollectionByHandle(handle: String): Flow<ApiState<Collection>> {
         return shopifyRemoteDataSource.getCollectionByHandle(handle)
     }
-    override suspend fun createCart(token: String): Flow<ApiState<String?>> {
+
+    override suspend fun createCart(email: String, token: String): Flow<ApiState<String?>> {
         TODO("Not yet implemented")
     }
+
 
     override suspend fun readEmailFromSharedPreferences(key: String): String {
         TODO("Not yet implemented")

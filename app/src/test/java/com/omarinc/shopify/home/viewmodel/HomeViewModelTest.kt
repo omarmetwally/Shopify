@@ -1,5 +1,7 @@
 package com.omarinc.shopify.home.viewmodel
 
+import com.omarinc.shopify.favorites.model.FirebaseRepository
+import com.omarinc.shopify.mocks.FakeFirebaseRepository
 import com.omarinc.shopify.mocks.FakeShopifyRepository
 import com.omarinc.shopify.models.Brands
 import com.omarinc.shopify.models.Product
@@ -20,7 +22,7 @@ class HomeViewModelTest {
 
     @Before
     fun setUp(){
-        viewModel = HomeViewModel(FakeShopifyRepository())
+        viewModel = HomeViewModel(FakeShopifyRepository(), FirebaseRepository.getInstance())
     }
     @Test
     fun getBrands_ShouldReturnListOfBrands() = runTest{

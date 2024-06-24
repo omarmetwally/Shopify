@@ -30,6 +30,7 @@ import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -94,8 +95,10 @@ class ProductsFragment : Fragment() {
                             binding.productsShimmer.stopShimmer()
                             binding.productsShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response)
-                            getCurrentCurrency()
-
+                            val currencyUnit = SharedPreferencesImpl.getInstance(requireContext())
+                            if (!currencyUnit.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT).equals("EGP")){
+                                getCurrentCurrency()
+                            }
                         }
 
                         is ApiState.Failure -> {
@@ -133,11 +136,13 @@ class ProductsFragment : Fragment() {
         }
     }
     private fun setupSeekBar() {
+        val currencyUnit = SharedPreferencesImpl.getInstance(requireContext())
         binding.priceSeekBar.max = 10000
         binding.priceSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 viewModel.maxPrice.value = progress
-                binding.seekBarValueText.text = "Max Price: $progress"
+                binding.seekBarValueText.text = "Max Price: $progress ${currencyUnit.readCurrencyUnitFromSharedPreferences(
+                    Constants.CURRENCY_UNIT)}"
                 lifecycleScope.launch {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         launch {
@@ -169,7 +174,10 @@ class ProductsFragment : Fragment() {
                             binding.productsShimmer.stopShimmer()
                             binding.productsShimmer.visibility = View.GONE
                             productsAdapter.submitList(result.response)
-                            getCurrentCurrency()
+                            val currencyUnit = SharedPreferencesImpl.getInstance(requireContext())
+                            if (!currencyUnit.readCurrencyUnitFromSharedPreferences(Constants.CURRENCY_UNIT).equals("EGP")){
+                                getCurrentCurrency()
+                            }
                         }
 
                         is ApiState.Failure -> {

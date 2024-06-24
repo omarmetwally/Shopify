@@ -42,8 +42,8 @@ class CategoriesViewModel(private val repository: ShopifyRepository) : ViewModel
 
     fun filterProducts(products: List<Product>) {
         val filteredResults = products.filter {
-            val price =
-                (it.price as? String)?.toDoubleOrNull() ?: Double.MAX_VALUE
+            Log.i(HomeViewModel.TAG, "filterProducts: " + it)
+            val price = it.convertedPrice ?: 0.0
             price <= maxPrice.value
         }
         _apiState.value = ApiState.Success(filteredResults)

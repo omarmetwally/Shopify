@@ -7,6 +7,7 @@ import com.apollographql.apollo3.api.ApolloResponse
 import com.apollographql.apollo3.api.Optional
 import com.apollographql.apollo3.exception.ApolloException
 import com.omarinc.shopify.AddProductToCartMutation
+import com.omarinc.shopify.ApplyShippingAddressMutation
 import com.omarinc.shopify.CreateAddressMutation
 import com.omarinc.shopify.CreateCartMutation
 import com.omarinc.shopify.CreateCheckoutMutation
@@ -49,6 +50,8 @@ import com.omarinc.shopify.type.CheckoutLineItemInput
 import com.omarinc.shopify.type.CountryCode
 import com.omarinc.shopify.type.CurrencyCode
 import com.omarinc.shopify.type.CustomerCreateInput
+import com.omarinc.shopify.type.MailingAddress
+import com.omarinc.shopify.type.MailingAddressInput
 import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -799,6 +802,35 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
             } catch (e: ApolloException) {
                 emit(ApiState.Failure(e))
             }
+        }
+
+    override fun applyShippingAddress(
+        checkoutId: String,
+        shippingAddress: MailingAddressInput
+    ): Flow<ApiState<String?>> =
+        flow {
+            emit(ApiState.Loading)
+
+            val mutation = ApplyShippingAddressMutation(checkoutId, shippingAddress)
+            try {
+
+                val response = apolloClient.mutation(mutation).execute()
+
+                if (response.hasErrors()) {
+                    val errorMessages =
+                        response.errors?.joinToString { it.message } ?: "Unknown error"
+                    emit(ApiState.Failure(Throwable(errorMessages)))
+                } else {
+
+                    val webUrl = response.data?.checkoutShippingAddressUpdateV2?.checkout?.webUrl
+                    emit(ApiState.Success(webUrl.toString()))
+
+                }
+            } catch (e: ApolloException) {
+                emit(ApiState.Failure(e))
+            }
+
+
         }
 
 
