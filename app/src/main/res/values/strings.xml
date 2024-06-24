@@ -130,5 +130,6 @@
     <string name="no_favorites">It looks like you have not added anything to your favorites yet ! start exploring and add products .</string>
     <string name="no_orders">It looks like you have not made any orders yet ! start shopping and make orders.</string>
     <string name="app_slogon">Find it Fast, Buy it Easy!</string>
+    <string name="address_details">Address Details</string>
 
 </resources>
