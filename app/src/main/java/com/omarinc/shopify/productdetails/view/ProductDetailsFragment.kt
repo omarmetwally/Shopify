@@ -222,8 +222,12 @@ class ProductDetailsFragment : Fragment() {
 
 
                         val imageUrls = productDetails.images.map { it.src }
-                        val adapter = ImagesPagerAdapter(requireContext(), imageUrls)
+                        val adapter = ImagesPagerAdapter(requireContext(), imageUrls) { imageUrl ->
+                            val action = ProductDetailsFragmentDirections.actionProductDetailsFragmentToZoomImageFragment(imageUrl.toString())
+                            findNavController().navigate(action)
+                        }
                         binding.viewPagerImages.adapter = adapter
+
 
                         // TabLayoutMediator(binding.tabDots, binding.viewPagerImages) { _, _ -> }.attach()
                         val dotsIndicator = binding.dotsIndicator

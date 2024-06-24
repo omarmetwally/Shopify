@@ -13,22 +13,28 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_productsFragment"
-            app:destination="@id/productsFragment" />
+            app:destination="@id/productsFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_homeFragment_to_favoritesFragment"
-            app:destination="@id/favoritesFragment" />
+            app:destination="@id/favoritesFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_homeFragment_to_shoppingCartFragment"
-            app:destination="@id/shoppingCartFragment" />
+            app:destination="@id/shoppingCartFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_homeFragment_to_productDetailsFragment"
-            app:destination="@id/productDetailsFragment" />
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
+            app:destination="@id/searchFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_homeFragment_to_favoritesFragment2"
-            app:destination="@id/favoritesFragment" />
+            app:destination="@id/favoritesFragment"
+            app:enterAnim="@anim/fade_in" />
     </fragment>
 
     <fragment
@@ -38,16 +44,20 @@
         tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profileFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_profileFragment_to_favoritesFragment"
-            app:destination="@id/favoritesFragment" />
+            app:destination="@id/favoritesFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_profileFragment_to_ordersFragment"
-            app:destination="@id/ordersFragment" />
+            app:destination="@id/ordersFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_profileFragment_to_addressesFragment"
-            app:destination="@id/addressesFragment" />
+            app:destination="@id/addressesFragment"
+            app:enterAnim="@anim/fade_in" />
     </fragment>
 
     <fragment
@@ -64,7 +74,8 @@
         tools:layout="@layout/fragment_products">
         <action
             android:id="@+id/action_productsFragment_to_productDetailsFragment"
-            app:destination="@id/productDetailsFragment" />
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
         <argument
             android:name="id"
             app:argType="string" />
@@ -77,16 +88,20 @@
         tools:layout="@layout/fragment_categories">
         <action
             android:id="@+id/action_categoriesFragment_to_favoritesFragment"
-            app:destination="@id/favoritesFragment" />
+            app:destination="@id/favoritesFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_categoriesFragment_to_shoppingCartFragment"
-            app:destination="@id/shoppingCartFragment" />
+            app:destination="@id/shoppingCartFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_categoriesFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
+            app:destination="@id/searchFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_categoriesFragment_to_productDetailsFragment"
-            app:destination="@id/productDetailsFragment" />
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
     </fragment>
     <fragment
         android:id="@+id/productDetailsFragment"
@@ -95,10 +110,15 @@
         tools:layout="@layout/fragment_product_details">
         <action
             android:id="@+id/action_productDetailsFragment_to_productsFragment"
-            app:destination="@id/productsFragment" />
+            app:destination="@id/productsFragment"
+            app:enterAnim="@anim/fade_in" />
         <argument
             android:name="productId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_productDetailsFragment_to_zoomImageFragment"
+            app:destination="@id/zoomImageFragment"
+            app:enterAnim="@anim/fade_in"/>
     </fragment>
     <fragment
         android:id="@+id/favoritesFragment"
@@ -107,7 +127,8 @@
         tools:layout="@layout/fragment_favorites">
         <action
             android:id="@+id/action_favoritesFragment_to_productDetailsFragment"
-            app:destination="@id/productDetailsFragment" />
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -116,7 +137,8 @@
         tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_searchFragment_to_productDetailsFragment"
-            app:destination="@id/productDetailsFragment" />
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
     </fragment>
     <fragment
         android:id="@+id/ordersFragment"
@@ -125,7 +147,8 @@
         tools:layout="@layout/fragment_orders">
         <action
             android:id="@+id/action_ordersFragment_to_orderDetailsFragment"
-            app:destination="@id/orderDetailsFragment" />
+            app:destination="@id/orderDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
     </fragment>
     <fragment
         android:id="@+id/shoppingCartFragment"
@@ -134,7 +157,8 @@
         tools:layout="@layout/fragment_shopping_cart" >
         <action
             android:id="@+id/action_shoppingCartFragment_to_paymentFragment"
-            app:destination="@id/paymentFragment" />
+            app:destination="@id/paymentFragment"
+            app:enterAnim="@anim/fade_in" />
     </fragment>
     <fragment
         android:id="@+id/mapFragment"
@@ -142,7 +166,8 @@
         android:label="MapFragment">
         <action
             android:id="@+id/action_mapFragment_to_addressDetailsFragment"
-            app:destination="@id/addressDetailsFragment" />
+            app:destination="@id/addressDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
     </fragment>
     <fragment
         android:id="@+id/orderDetailsFragment"
@@ -154,7 +179,8 @@
             app:argType="integer" />
         <action
             android:id="@+id/action_orderDetailsFragment_to_productDetailsFragment"
-            app:destination="@id/productDetailsFragment" />
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
     </fragment>
     <fragment
         android:id="@+id/addressDetailsFragment"
@@ -172,7 +198,8 @@
         tools:layout="@layout/fragment_addresses" >
         <action
             android:id="@+id/action_addressesFragment_to_mapFragment"
-            app:destination="@id/mapFragment" />
+            app:destination="@id/mapFragment"
+            app:enterAnim="@anim/fade_in" />
     </fragment>
     <dialog
         android:id="@+id/paymentFragment"
@@ -184,10 +211,12 @@
             app:argType="string" />
         <action
             android:id="@+id/action_paymentFragment_to_paymentWebViewFragment"
-            app:destination="@id/paymentWebViewFragment" />
+            app:destination="@id/paymentWebViewFragment"
+            app:enterAnim="@anim/fade_in" />
         <action
             android:id="@+id/action_paymentFragment_to_defaultAddressFragment"
-            app:destination="@id/defaultAddressFragment" />
+            app:destination="@id/defaultAddressFragment"
+            app:enterAnim="@anim/fade_in" />
         <argument
             android:name="totalPrice"
             app:argType="string" />
@@ -211,7 +240,8 @@
         tools:layout="@layout/fragment_default_address">
         <action
             android:id="@+id/action_defaultAddressFragment_to_paymentFragment"
-            app:destination="@id/paymentFragment" />
+            app:destination="@id/paymentFragment"
+            app:enterAnim="@anim/fade_in" />
         <argument
             android:name="checkoutId"
             app:argType="string" />
@@ -219,4 +249,13 @@
             android:name="totalPrice"
             app:argType="string" />
     </dialog>
+    <fragment
+        android:id="@+id/zoomImageFragment"
+        android:name="com.omarinc.shopify.productdetails.view.zoomimagefragment.ZoomImageFragment"
+        android:label="fragment_zoom_image"
+        tools:layout="@layout/fragment_zoom_image" >
+        <argument
+            android:name="imageUrl"
+            app:argType="string" />
+    </fragment>
 </navigation>

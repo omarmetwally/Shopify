@@ -187,6 +187,7 @@ dependencies {
 
     implementation("androidx.webkit:webkit:1.8.0")
 
+    implementation ("com.davemorrissey.labs:subsampling-scale-image-view:3.10.0")
 
 
 }
