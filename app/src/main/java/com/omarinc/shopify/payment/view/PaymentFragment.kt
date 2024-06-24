@@ -47,25 +47,6 @@ class PaymentFragment : BottomSheetDialogFragment() {
         private const val TAG = "PaymentFragment"
     }
 
-    private val checkoutEventProcessor by lazy {
-        object : DefaultCheckoutEventProcessor(requireContext()) {
-            override fun onCheckoutCompleted(checkoutCompletedEvent: CheckoutCompletedEvent) {
-                Log.i(TAG, "Checkout completed successfully.")
-                clearShoppingCartItems()
-
-            }
-
-            override fun onCheckoutCanceled() {
-                Log.i(TAG, "Checkout canceled by user.")
-            }
-
-            override fun onCheckoutFailed(error: CheckoutException) {
-                Log.e(TAG, "Checkout failed with error: ${error.message}")
-            }
-
-        }
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -139,13 +120,6 @@ class PaymentFragment : BottomSheetDialogFragment() {
         }
 
     }
-
-
-    private fun presentCheckout(checkoutUrl: String) {
-        Log.i(TAG, "presentCheckout: ${checkoutUrl}")
-        ShopifyCheckoutSheetKit.present(checkoutUrl, requireActivity(), checkoutEventProcessor)
-    }
-
 
     private fun setupViewModel() {
 
@@ -233,18 +207,18 @@ class PaymentFragment : BottomSheetDialogFragment() {
                             lineItems = lineItems,
                             customer = Customer(email = viewModel.readCustomerEmail()),
                             billingAddress = Address(
-                                address1 = "123 Billing St",
-                                city = "Billing City",
-                                province = "Billing Province",
-                                zip = "12345",
-                                country = "Billing Country"
+                                address1 = defaultAddress.address1,
+                                city = defaultAddress.city,
+                                province = defaultAddress.city,
+                                zip = "123",
+                                country = "Egypt"
                             ),
                             shippingAddress = Address(
-                                address1 = "456 Shipping Ave",
-                                city = "Shipping City",
-                                province = "Shipping Province",
-                                zip = "67890",
-                                country = "Shipping Country"
+                                address1 = defaultAddress.address1,
+                                city = defaultAddress.city,
+                                province = defaultAddress.city,
+                                zip = "123",
+                                country = "Egypt"
                             )
                         )
 
@@ -294,6 +268,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
         }
 
     }
+
 
     private fun updateDefaultAddressUI() {
 

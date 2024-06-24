@@ -69,7 +69,7 @@ class PaymentViewModel(private val repository: ShopifyRepository) : ViewModel() 
 
     fun createCashOnDeliveryOrder(draftOrder: DraftOrderRequest) {
         viewModelScope.launch {
-            
+
             repository.createDraftOrder(draftOrder).collect {
                 _draftOrder.value = it
             }
