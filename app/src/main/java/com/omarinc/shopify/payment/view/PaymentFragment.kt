@@ -5,11 +5,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.apollographql.apollo3.api.Optional
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentPaymentBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.Address
@@ -69,58 +71,6 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
     }
 
-    private fun setListeners() {
-
-        binding.payWithCardButton.setOnClickListener {
-
-
-            lifecycleScope.launch {
-                viewModel.applyShippingAddress(
-                    checkoutId,
-                    MailingAddressInput(
-                        address1 = Optional.present(defaultAddress?.address1),
-                        city = Optional.present(defaultAddress?.city),
-                        country = Optional.present("Egypt"),
-                        lastName = Optional.present(defaultAddress?.lastName),
-                        phone = Optional.present("01555774530"),
-                        province = Optional.present("Cairo"),
-                        zip = Optional.present("123")
-                    )
-                )
-
-                viewModel.webUrl.collect { result ->
-
-                    when (result) {
-                        is ApiState.Failure -> Log.i(TAG, "setListeners: Failure ${result.msg}")
-                        ApiState.Loading -> Log.i(TAG, "setListeners: Loading")
-                        is ApiState.Success -> {
-                            Log.i(TAG, "setListeners: ${result.response}")
-                            val action =
-                                PaymentFragmentDirections.actionPaymentFragmentToPaymentWebViewFragment(
-                                    result.response
-                                )
-                            findNavController().navigate(action)
-                        }
-                    }
-
-                }
-            }
-        }
-
-        binding.cashOnDeliveryButton.setOnClickListener {
-
-            createCashOnDeliveryOrder()
-
-        }
-
-        binding.addressCard.setOnClickListener {
-
-            val action = PaymentFragmentDirections.actionPaymentFragmentToDefaultAddressFragment()
-            findNavController().navigate(action)
-        }
-
-    }
-
     private fun setupViewModel() {
 
         val repository = ShopifyRepositoryImpl.getInstance(
@@ -131,6 +81,254 @@ class PaymentFragment : BottomSheetDialogFragment() {
         )
         val viewModelFactory = PaymentViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(PaymentViewModel::class.java)
+    }
+
+    private fun setListeners() {
+
+
+        binding.payNow.setOnClickListener {
+
+            binding.paymentMethodRadioGroup.setOnCheckedChangeListener { group, checkedId ->
+                when (checkedId) {
+                    R.id.cash_on_delivery_radio_button -> {
+                        createCashOnDeliveryOrder()
+
+                    }
+
+                    R.id.card_radio_button -> {
+                        payWithCard()
+                    }
+                }
+            }
+
+        }
+
+        binding.addressCard.setOnClickListener {
+
+            val action = PaymentFragmentDirections.actionPaymentFragmentToDefaultAddressFragment()
+            findNavController().navigate(action)
+        }
+
+        binding.paymentMethodRadioGroup.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.cash_on_delivery_radio_button -> {
+                    binding.voucherLayout.visibility = View.VISIBLE
+
+                }
+
+                R.id.card_radio_button -> {
+                    binding.voucherLayout.visibility = View.GONE
+                }
+            }
+        }
+
+
+        binding.applyVoucherButton.setOnClickListener {
+            val voucherCode = binding.voucherEditText.text.toString().trim()
+            if (voucherCode.isNotEmpty()) {
+                applyVoucher(voucherCode)
+            } else {
+                Toast.makeText(requireContext(), "Please enter a voucher code", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
+
+    private fun applyVoucher(voucherCode: String) {
+        // TODO: Add logic to apply the voucher code
+        // Example: Check the voucher code and apply discount
+        if (isValidVoucher(voucherCode)) {
+            Toast.makeText(requireContext(), "Voucher applied successfully", Toast.LENGTH_SHORT)
+                .show()
+            // Apply discount logic here
+        } else {
+            Toast.makeText(requireContext(), "Invalid voucher code", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun isValidVoucher(voucherCode: String): Boolean {
+        // TODO: Replace this with your actual voucher validation logic
+        // For example, check against a list of valid voucher codes
+        val validVouchers = listOf("DISCOUNT10", "SALE20", "SAVE30")
+        return voucherCode in validVouchers
+    }
+
+    private fun payWithCard() {
+        lifecycleScope.launch {
+            viewModel.applyShippingAddress(
+                checkoutId,
+                MailingAddressInput(
+                    address1 = Optional.present(defaultAddress?.address1),
+                    city = Optional.present(defaultAddress?.city),
+                    country = Optional.present("Egypt"),
+                    lastName = Optional.present(defaultAddress?.lastName),
+                    phone = Optional.present("01555774530"),
+                    province = Optional.present("Cairo"),
+                    zip = Optional.present("123")
+                )
+            )
+
+            viewModel.webUrl.collect { result ->
+
+                when (result) {
+                    is ApiState.Failure -> Log.i(TAG, "setListeners: Failure ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "setListeners: Loading")
+                    is ApiState.Success -> {
+                        Log.i(TAG, "setListeners: ${result.response}")
+                        val action =
+                            PaymentFragmentDirections.actionPaymentFragmentToPaymentWebViewFragment(
+                                result.response
+                            )
+                        findNavController().navigate(action)
+                    }
+                }
+
+            }
+        }
+    }
+
+    private fun createCashOnDeliveryOrder() {
+
+        lifecycleScope.launch {
+
+            viewModel.getShoppingCartItems(viewModel.readCartId())
+
+            viewModel.cartItems.collect { result ->
+                when (result) {
+                    is ApiState.Failure -> Log.e(TAG, "Failed to get items: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "Loading ShoppingCart Items")
+                    is ApiState.Success -> {
+                        val cartProducts = result.response
+
+
+                        val lineItems = cartProducts.map { cartProduct ->
+                            val variantIdLong = extractProductVariantId(cartProduct.variantId) ?: 0L
+                            LineItem(
+                                title = cartProduct.productTitle,
+                                variantId = variantIdLong,
+                                quantity = cartProduct.quantity,
+                                price = cartProduct.variantPrice
+                            )
+                        }
+
+
+
+                        Log.i(TAG, "Email: ${viewModel.readCustomerEmail()}")
+                        val draftOrder = DraftOrder(
+                            id = 0,
+                            lineItems = lineItems,
+                            customer = Customer(email = viewModel.readCustomerEmail()),
+                            billingAddress = Address(
+                                address1 = defaultAddress.address1,
+                                city = defaultAddress.city,
+                                province = defaultAddress.city,
+                                zip = "123",
+                                country = "Egypt"
+                            ),
+                            shippingAddress = Address(
+                                address1 = defaultAddress.address1,
+                                city = defaultAddress.city,
+                                province = defaultAddress.city,
+                                zip = "123",
+                                country = "Egypt"
+                            )
+                        )
+
+                        val draftOrderRequest = DraftOrderRequest(draftOrder = draftOrder)
+
+                        viewModel.createCashOnDeliveryOrder(draftOrderRequest)
+
+
+                        viewModel.draftOrder.collect { draftOrderResult ->
+                            when (draftOrderResult) {
+                                is ApiState.Failure -> Log.e(
+                                    TAG,
+                                    "createCashOnDeliveryOrder: ${draftOrderResult.msg}"
+                                )
+
+                                ApiState.Loading -> Log.i(TAG, "createCashOnDeliveryOrder: Loading")
+                                is ApiState.Success -> {
+                                    Log.i(TAG, "createCashOnDeliveryOrder: Success")
+                                    completeCashOnDeliveryOrder(draftOrderResult.response.draftOrder.id)
+                                    clearShoppingCartItems()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun completeCashOnDeliveryOrder(orderId: Long) {
+
+        viewModel.completeCashOnDeliveryOrder(orderId)
+
+        lifecycleScope.launch {
+
+
+            viewModel.completeOrder.collect { result ->
+
+                when (result) {
+                    is ApiState.Failure -> Log.i(TAG, "completeCashOnDeliveryOrder: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "completeCashOnDeliveryOrder: Loading")
+                    is ApiState.Success -> {
+                        Log.i(TAG, "completeCashOnDeliveryOrder: Sucess")
+                        sendInvoice(result.response.draftOrder.id)
+                    }
+                }
+
+
+            }
+
+
+        }
+
+    }
+
+    private fun sendInvoice(orderId: Long) {
+
+        viewModel.sendInvoice(orderId)
+
+        lifecycleScope.launch {
+
+            viewModel.emailInvoice.collect { result ->
+
+                when (result) {
+                    is ApiState.Failure -> Log.i(TAG, "sendInvoice: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "sendInvoice: Loading")
+                    is ApiState.Success -> {
+
+                        Log.i(TAG, "sendInvoice:  Success ${result.response}")
+
+                    }
+                }
+
+            }
+
+        }
+    }
+
+
+    private fun getCustomerAddresses() {
+
+        viewModel.getCustomersAddresses()
+
+        lifecycleScope.launch {
+            viewModel.addressList.collect { result ->
+
+                when (result) {
+                    is ApiState.Failure -> Log.i(TAG, "getCustomerAddresses: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "getCustomerAddresses: loading")
+                    is ApiState.Success -> {
+                        defaultAddress = result.response?.get(0)!!
+                        updateDefaultAddressUI()
+                    }
+                }
+
+            }
+        }
+
     }
 
     private fun clearShoppingCartItems() {
@@ -171,102 +369,11 @@ class PaymentFragment : BottomSheetDialogFragment() {
         }
     }
 
-
     private fun extractProductVariantId(variantId: String): Long? {
         // Regex pattern to extract the numeric part
         val regex = Regex("""\d+""")
         val matchResult = regex.find(variantId)
         return matchResult?.value?.toLongOrNull()
-    }
-
-
-    private fun createCashOnDeliveryOrder() {
-        lifecycleScope.launch {
-            viewModel.getShoppingCartItems(viewModel.readCartId())
-
-            viewModel.cartItems.collect { result ->
-                when (result) {
-                    is ApiState.Failure -> Log.e(TAG, "Failed to get items: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "Loading ShoppingCart Items")
-                    is ApiState.Success -> {
-                        val cartProducts = result.response
-
-
-                        val lineItems = cartProducts.map { cartProduct ->
-                            val variantIdLong = extractProductVariantId(cartProduct.variantId) ?: 0L
-                            LineItem(
-                                title = cartProduct.productTitle,
-                                variantId = variantIdLong,
-                                quantity = cartProduct.quantity,
-                                price = cartProduct.variantPrice
-                            )
-                        }
-
-
-                        val draftOrder = DraftOrder(
-                            lineItems = lineItems,
-                            customer = Customer(email = viewModel.readCustomerEmail()),
-                            billingAddress = Address(
-                                address1 = defaultAddress.address1,
-                                city = defaultAddress.city,
-                                province = defaultAddress.city,
-                                zip = "123",
-                                country = "Egypt"
-                            ),
-                            shippingAddress = Address(
-                                address1 = defaultAddress.address1,
-                                city = defaultAddress.city,
-                                province = defaultAddress.city,
-                                zip = "123",
-                                country = "Egypt"
-                            )
-                        )
-
-                        val draftOrderRequest = DraftOrderRequest(draftOrder = draftOrder)
-
-                        viewModel.createCashOnDeliveryOrder(draftOrderRequest)
-
-
-                        viewModel.draftOrder.collect { draftOrderResult ->
-                            when (draftOrderResult) {
-                                is ApiState.Failure -> Log.e(
-                                    TAG,
-                                    "createCashOnDeliveryOrder: ${draftOrderResult.msg}"
-                                )
-
-                                ApiState.Loading -> Log.i(TAG, "createCashOnDeliveryOrder: Loading")
-                                is ApiState.Success -> {
-                                    Log.i(TAG, "createCashOnDeliveryOrder: Success")
-                                    clearShoppingCartItems()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-    private fun getCustomerAddresses() {
-
-        viewModel.getCustomersAddresses()
-
-        lifecycleScope.launch {
-            viewModel.addressList.collect { result ->
-
-                when (result) {
-                    is ApiState.Failure -> Log.i(TAG, "getCustomerAddresses: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "getCustomerAddresses: loading")
-                    is ApiState.Success -> {
-                        defaultAddress = result.response?.get(0)!!
-                        updateDefaultAddressUI()
-                    }
-                }
-
-            }
-        }
-
     }
 
 

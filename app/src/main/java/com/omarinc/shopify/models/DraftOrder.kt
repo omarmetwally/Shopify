@@ -13,11 +13,14 @@ data class DraftOrderResponse(
 )
 
 data class DraftOrder(
+    val id: Long,
     @SerializedName("line_items")
     val lineItems: List<LineItem>,
     val customer: Customer,
+
     @SerializedName("billing_address")
     val billingAddress: Address,
+
     @SerializedName("shipping_address")
     val shippingAddress: Address
 )

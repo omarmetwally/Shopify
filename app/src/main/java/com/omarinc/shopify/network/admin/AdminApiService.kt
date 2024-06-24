@@ -63,4 +63,5 @@ interface AdminApiService {
     suspend fun sendInvoice(
         @Path("draftOrderId") draftOrderId: Long
     ): Response<DraftOrderResponse>
+
 }

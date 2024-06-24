@@ -130,5 +130,10 @@
     <string name="no_favorites">It looks like you have not added anything to your favorites yet ! start exploring and add products .</string>
     <string name="no_orders">It looks like you have not made any orders yet ! start shopping and make orders.</string>
     <string name="app_slogon">Find it Fast, Buy it Easy!</string>
+    <string name="cash_on_delivery_text_view">Cash on delivery</string>
+    <string name="pay_with_card_text">Pay with card</string>
+    <string name="enter_voucher_code_hint">Enter Voucher Code</string>
+    <string name="apply_voucher_text">Apply Voucher</string>
+    <string name="pay_now">Pay Now</string>
 
 </resources>

@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -14,14 +13,12 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentPaymentWebViewBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
-import com.omarinc.shopify.payment.view.PaymentFragment.Companion
 import com.omarinc.shopify.payment.viewModel.PaymentViewModel
 import com.omarinc.shopify.payment.viewModel.PaymentViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl

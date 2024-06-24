@@ -1,12 +1,10 @@
 package com.omarinc.shopify.payment.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omarinc.shopify.model.ShopifyRepository
 import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.CustomerAddress
-import com.omarinc.shopify.models.DraftOrder
 import com.omarinc.shopify.models.DraftOrderRequest
 import com.omarinc.shopify.models.DraftOrderResponse
 import com.omarinc.shopify.network.ApiState
@@ -105,7 +103,7 @@ class PaymentViewModel(private val repository: ShopifyRepository) : ViewModel() 
 
     }
 
-    fun completeDraftOrder(orderId: Long) {
+    fun completeCashOnDeliveryOrder(orderId: Long) {
 
         viewModelScope.launch {
             repository.completeDraftOrder(orderId).collect {
