@@ -137,5 +137,9 @@
     <string name="pay_now">Pay Now</string>
 
     <string name="address_details">Address Details</string>
+    <string name="added_favorites">Added to favorites</string>
+    <string name="added_cart">Added to cart</string>
+    <string name="choose_variant">Please select  size &amp; color first.</string>
+
 
 </resources>

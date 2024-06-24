@@ -17,6 +17,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.apollographql.apollo3.api.Optional
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.google.android.material.snackbar.Snackbar
 import com.omarinc.shopify.R
 import com.omarinc.shopify.productdetails.viewModel.ProductDetailsViewModel
 import com.omarinc.shopify.databinding.FragmentProductDetailsBinding
@@ -155,6 +157,7 @@ class ProductDetailsFragment : Fragment() {
                         )
                     )
                     favoriteViewModel.addToFavorites(userToken, favoriteItem)
+                    showSnackBar(getString(R.string.added_favorites))
                 }
             }
         }
@@ -256,6 +259,12 @@ class ProductDetailsFragment : Fragment() {
     private fun setListeners() {
         binding.btnAddToCart.setOnClickListener {
 
+
+            if (!isChipSelected(binding.chipGroupSizes)) {
+                showSnackBar(getString(R.string.choose_variant))
+                return@setOnClickListener
+            }
+
             val email: Deferred<String> = lifecycleScope.async {
                 viewModel.readCustomerEmail()
             }
@@ -291,6 +300,7 @@ class ProductDetailsFragment : Fragment() {
                                         1, variantId
                                     )
 
+                                    showSnackBar(getString(R.string.added_cart))
                                 } else {
                                     Log.e(TAG, "Variant ID not found for product.")
                                 }
@@ -322,6 +332,7 @@ class ProductDetailsFragment : Fragment() {
                                                     cartId ?: "",
                                                     1, variantId
                                                 )
+                                                showSnackBar(getString(R.string.added_cart))
                                             } else {
                                                 Log.e(TAG, "Variant ID not found for product.")
                                             }
@@ -377,7 +388,7 @@ class ProductDetailsFragment : Fragment() {
                 isCheckable = true
                 setOnCheckedChangeListener { buttonView, isChecked ->
                     (buttonView as Chip).chipBackgroundColor = if (isChecked) {
-                        ColorStateList.valueOf(getResources().getColor(R.color.secondary_color))
+                        ColorStateList.valueOf(getResources().getColor(R.color.primary_color))
                     } else {
                         ColorStateList.valueOf(Color.WHITE)
                     }
@@ -390,7 +401,9 @@ class ProductDetailsFragment : Fragment() {
         colorSet.forEach { color ->
             val chipView = LayoutInflater.from(context)
                 .inflate(R.layout.layout_color_chip, binding.chipGroupColors, false)
-            val chip = chipView.findViewById<Chip>(R.id.chip_color)
+            val chip = chipView.findViewById<Chip>(R.id.chip_color).apply {
+                isCheckable=true
+            }
             val colorName = chipView.findViewById<TextView>(R.id.tv_color_name)
 
             chip.chipBackgroundColor = ColorStateList.valueOf(Helper.getColorFromName(color))
@@ -481,6 +494,15 @@ class ProductDetailsFragment : Fragment() {
     }
     private fun checkUserTokenExist(): String {
         return sharedPreferences.readStringFromSharedPreferences(Constants.USER_TOKEN)
+    }
+
+
+    private fun isChipSelected(chipGroup: ChipGroup): Boolean {
+        return chipGroup.checkedChipId != View.NO_ID
+    }
+
+    private fun showSnackBar(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
 
 
