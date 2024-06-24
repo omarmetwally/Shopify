@@ -67,7 +67,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
         getCustomerAddresses()
         checkoutId = arguments?.getString("checkoutId") ?: ""
         totalPrice = arguments?.getString("totalPrice")?.toDouble() ?: 0.0
-        Log.i(TAG, "onViewCreated: ${totalPrice.toString()}")
+        Log.i(TAG, "onViewCreated: ${totalPrice}")
         setListeners()
         setDefaultRadioButton()
 
@@ -167,7 +167,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
         updateOrderAmount(discountedAmount)
     }
 
-    // Placeholder methods for demonstration
+
     private fun getOriginalOrderAmount(): Double {
 
         return totalPrice
@@ -404,8 +404,8 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
     private fun updateDefaultAddressUI() {
 
-        binding.cityAddress.text = defaultAddress?.city
-        binding.detailsAddress.text = defaultAddress?.address1
+        binding.addressCustomerName.text = "${defaultAddress.firstName} ${defaultAddress.lastName}"
+        binding.detailsAddress.text = "${defaultAddress.city}, ${defaultAddress.address1}"
     }
 
 }

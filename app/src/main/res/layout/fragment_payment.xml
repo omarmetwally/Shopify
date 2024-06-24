@@ -24,7 +24,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/address_card"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="80dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
@@ -39,23 +39,25 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/city_address"
+                android:id="@+id/address_customer_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="City" />
+                tools:text="Name" />
 
             <TextView
                 android:id="@+id/details_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="@+id/city_address"
-                app:layout_constraintTop_toBottomOf="@+id/city_address"
+                app:layout_constraintStart_toStartOf="@+id/address_customer_name"
+                app:layout_constraintTop_toBottomOf="@+id/address_customer_name"
                 tools:text="details details details" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
@@ -113,14 +115,15 @@
             android:textColor="@color/primary_color" />
 
         >
+
         <TextView
             android:id="@+id/order_amount_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="10000 EGP"
             android:textColor="@color/black"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            tools:text="10000 EGP" />
 
     </LinearLayout>
 

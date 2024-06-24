@@ -31,7 +31,7 @@ class AddressesAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = addresses[position]
         holder.customerName.text = "${item?.firstName} ${item?.lastName}"
-        holder.customerAddress.text = item?.address1
+        holder.customerAddress.text = "${item?.city}, ${item?.address1}"
         holder.deleteIcon.setOnClickListener {
             Helper.showAlertDialog(
                 context = context,
