@@ -240,6 +240,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
                         Log.i(TAG, "Email: ${viewModel.readCustomerEmail()}")
                         val draftOrder = DraftOrder(
+                            email = viewModel.readCustomerEmail(),
                             id = 0,
                             lineItems = lineItems,
                             customer = Customer(email = viewModel.readCustomerEmail()),
