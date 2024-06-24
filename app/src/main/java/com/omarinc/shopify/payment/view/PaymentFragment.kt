@@ -28,10 +28,6 @@ import com.omarinc.shopify.payment.viewModel.PaymentViewModel
 import com.omarinc.shopify.payment.viewModel.PaymentViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.type.MailingAddressInput
-import com.shopify.checkoutsheetkit.CheckoutException
-import com.shopify.checkoutsheetkit.DefaultCheckoutEventProcessor
-import com.shopify.checkoutsheetkit.ShopifyCheckoutSheetKit
-import com.shopify.checkoutsheetkit.lifecycleevents.CheckoutCompletedEvent
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 

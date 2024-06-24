@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentShoppingCartBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.CartProduct
@@ -54,34 +55,29 @@ class ShoppingCartFragment : Fragment() {
         setupViewModel()
         getShoppingCartItems()
         setListeners()
+        collectCheckoutResponse()
     }
 
     private fun setListeners() {
-
         binding.checkoutButton.setOnClickListener {
-
-
             Log.i(TAG, "setListeners: ${productsLine}")
-
             viewModel.createCheckout(productsLine)
+        }
+    }
 
-            lifecycleScope.launch {
-                viewModel.checkoutResponse.collect { result ->
-                    when (result) {
-                        is ApiState.Failure -> Log.e(TAG, "Checkout Failed: ${result.msg}")
-                        ApiState.Loading -> Log.i(TAG, "Checkout Loading")
-                        is ApiState.Success -> {
-                            Log.i(TAG, "Checkout Success url: ${result.response?.checkout?.webUrl}")
-
-                            navigateToPaymentFragment(result.response?.checkout?.id ?: "")
-
-                        }
+    private fun collectCheckoutResponse() {
+        lifecycleScope.launch {
+            viewModel.checkoutResponse.collect { result ->
+                when (result) {
+                    is ApiState.Failure -> Log.e(TAG, "Checkout Failed: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "Checkout Loading")
+                    is ApiState.Success -> {
+                        Log.i(TAG, "Checkout Success url: ${result.response?.checkout?.webUrl}")
+                        navigateToPaymentFragment(result.response?.checkout?.id ?: "")
                     }
                 }
             }
         }
-
-
     }
 
 
@@ -168,13 +164,10 @@ class ShoppingCartFragment : Fragment() {
 
     }
 
-    private fun navigateToPaymentFragment(webUrl: String) {
-
-
-        Log.i(TAG, "navigateToPaymentFragment: ${totalPrice}")
-        val paymentFragment = PaymentFragment()
-        paymentFragment.show(parentFragmentManager, paymentFragment.tag)
-
+    private fun navigateToPaymentFragment(checkoutId: String) {
+        Log.i(TAG, "navigateToPaymentFragment: $totalPrice")
+        val action = ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(checkoutId,totalPrice.toString())
+        findNavController().navigate(action)
     }
 
     private fun getCurrentCurrency() {
