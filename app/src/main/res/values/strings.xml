@@ -136,4 +136,6 @@
     <string name="apply_voucher_text">Apply Voucher</string>
     <string name="pay_now">Pay Now</string>
 
+    <string name="address_details">Address Details</string>
+
 </resources>
