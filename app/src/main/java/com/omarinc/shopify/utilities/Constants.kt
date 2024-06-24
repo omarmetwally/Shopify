@@ -18,6 +18,10 @@ object Constants {
     const val CURRENCY_API_KEY = "cur_live_21jFomgC3oGd1esQ3zieUKyyZvxz7TqcbA4CpmV7"
     const val CURRENCY_RATE = "rate"
     const val CURRENCY_UNIT = "unit"
+    const val app_language= "lang"
+    const val VALUE_ENGLISH= "en"
+    const val VALUE_ARABIC= "ar"
+
     const val CUSTOMER_CART_ROOT = "Customer Cart"
     const val ADMIN_ACCESS_TOKEN = "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"
     const val ADMIN_BASE_URL = "https://mad44-sv-and.myshopify.com/admin/api/2024-04/"

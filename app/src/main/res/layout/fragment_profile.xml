@@ -43,7 +43,10 @@
         android:layout_margin="16dp"
         android:gravity="center"
         tools:text="@string/customer_name"
-        android:textColor="@color/black"
+        android:textColor="@color/primary_color"
+        android:fontFamily="@font/bentham"
+
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textSize="22sp"
         android:textStyle="bold|italic" />
 

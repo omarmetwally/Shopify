@@ -1,5 +1,9 @@
 package com.omarinc.shopify.settings.view
 
+import android.app.Activity
+import android.content.res.Configuration
+import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,6 +15,7 @@ import android.widget.ArrayAdapter
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentSettingsBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.Currencies
@@ -20,7 +25,10 @@ import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.settings.viewModel.SettingsViewModel
 import com.omarinc.shopify.settings.viewModel.SettingsViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.launch
+import java.util.Locale
+
 class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
@@ -54,7 +62,22 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
         setUpListeners()
         observeCurrency()
         fetchCurrentCurrencyUnit()
+        setUpLanguage()
+        setUpAboutUS()
+
     }
+
+    private fun setUpLanguage() {
+
+    }
+    private fun setUpAboutUS() {
+        binding.aboutUsTextView.setOnClickListener {
+            Log.d("SettingsFragment", "About Us TextView clicked")
+            val action = SettingsFragmentDirections.actionSettingsFragmentToAboutUsBottomSheetFragment()
+            findNavController().navigate(action)
+        }
+    }
+
 
     private fun setUpListeners() {
 
@@ -121,5 +144,20 @@ class SettingsFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onNothingSelected(parent: AdapterView<*>?) {}
+
+
+
+
+
+
+    private fun getSavedLanguage(): String {
+        val sharedPrefs = SharedPreferencesImpl.getInstance(requireContext())
+        return sharedPrefs.readStringFromSharedPreferences(Constants.app_language) ?: "en"
+    }
+
+    private fun saveLanguage(languageCode: String) {
+        val sharedPrefs = SharedPreferencesImpl.getInstance(requireContext())
+        sharedPrefs.writeStringToSharedPreferences(Constants.app_language,languageCode)
+    }
 
 }

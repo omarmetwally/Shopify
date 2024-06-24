@@ -61,7 +61,7 @@
     <string name="register_password_hint">Password</string>
     <string name="login_password_hint">Password</string>
     <string name="register_confirm_password_hint">Confirm Password *</string>
-    <string name="full_name_hint">Full Name</string>
+    <string name="full_name_hint">Name</string>
     <string name="skip">Skip</string>
     <string name="have_account">Already \nhave an \nAccount?\n</string>
     <string name="another_method">Another Methods</string>
@@ -141,6 +141,15 @@
     <string name="added_cart">Added to cart</string>
     <string name="choose_variant">Please select  size &amp; color first.</string>
     <string name="reviews">more reviews</string>
+    <string name="team_members">Team Members</string>
+    <string name="team_members_names">Hadi Abdelwhab Mohammed\nOmar Ayman Mohamed\nWalaa Shaaban Salman</string>
+    <string name="supervised">Supervised By</string>
+    <string name="supervisor_name">Heba Ismail</string>
+    <string name="project" >Project code</string>
+    <string name="project_code" >INT44-SV-JETS-MAD-AND-03</string>
+    <string name="en" >English</string>
+    <string name="ar" >Arabic</string>
+
 
 
 </resources>
