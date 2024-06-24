@@ -1,5 +1,7 @@
 package com.omarinc.shopify.models
 
+import java.io.Serializable
+
 data class CustomerAddress(
     val id: String,
     var address1: String,
@@ -9,4 +11,4 @@ data class CustomerAddress(
     var phone: String,
     var firstName: String,
     var lastName: String
-)
+) : Serializable
