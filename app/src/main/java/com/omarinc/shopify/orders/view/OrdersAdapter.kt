@@ -12,6 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.OrderLayoutBinding
 import com.omarinc.shopify.models.Order
+import com.omarinc.shopify.utilities.Helper
 
 class OrdersAdapter(
     val context: Context,
@@ -37,7 +38,7 @@ class OrdersAdapter(
         val convertedSubTotalPrice = convertedPrices["subTotalPrice${current.id}"] ?: current.subTotalPriceAmount.toDouble()
 
         binding.totalPrice.text = String.format("%.2f %s - %d items", convertedTotalPrice, currencyUnit, current.products.size)
-        binding.dateCreated.text = current.processedAt
+        binding.dateCreated.text = Helper.formatToYearMonthDayHourMinuteAmPm(current.processedAt)
 
         Glide.with(context).load(current.products[0].imageUrl)
             .apply(
