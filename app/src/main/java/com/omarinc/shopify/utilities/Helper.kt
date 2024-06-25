@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.omarinc.shopify.R
 import com.omarinc.shopify.productdetails.model.Comment
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
@@ -174,7 +175,9 @@ object Helper {
 
     fun formatToYearMonthDayHourMinuteAmPm(dateString: String): String {
         val zonedDateTime = ZonedDateTime.parse(dateString)
+        val cairoTime = zonedDateTime.withZoneSameInstant(ZoneId.of("Africa/Cairo"))
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a")
-        return zonedDateTime.format(formatter)
+        return cairoTime.format(formatter)
     }
+
 }

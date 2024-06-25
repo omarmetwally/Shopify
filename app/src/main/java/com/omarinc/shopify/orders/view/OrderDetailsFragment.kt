@@ -6,12 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.omarinc.shopify.home.view.adapters.ProductsAdapter
 import com.omarinc.shopify.databinding.FragmentOrderDetailsBinding
 import com.omarinc.shopify.home.view.HomeFragmentDirections
@@ -29,7 +31,7 @@ import kotlinx.coroutines.launch
 class OrderDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentOrderDetailsBinding
-    private lateinit var productsManager: GridLayoutManager
+    private lateinit var productsManager: LinearLayoutManager
     private lateinit var productsAdapter: ProductsAdapter
     private lateinit var viewModel: OrdersViewModel
 
@@ -79,11 +81,10 @@ class OrderDetailsFragment : Fragment() {
         productsAdapter = ProductsAdapter(requireContext()) { productId ->
 
         }
-        productsManager = GridLayoutManager(requireContext(), 2)
-        productsManager.orientation = GridLayoutManager.VERTICAL
+        productsManager = LinearLayoutManager(requireContext())
+        productsManager.orientation = LinearLayoutManager.HORIZONTAL
         binding.orderProductsRv.layoutManager = productsManager
         binding.orderProductsRv.adapter = productsAdapter
-
 
     }
 
@@ -99,6 +100,9 @@ class OrderDetailsFragment : Fragment() {
 
                         is ApiState.Success -> {
 
+                            binding.totalPrice.text = result.response[index].totalPriceAmount+"EGP"
+                            binding.subTotal.text = result.response[index].subTotalPriceAmount+"EGP"
+                            binding.tax.text = result.response[index].totalTaxAmount+"EGP"
                             binding.orderId.text = result.response[index].name
                             binding.address.text =
                                 result.response[index].address ?: "October,Giza,Egypt"
