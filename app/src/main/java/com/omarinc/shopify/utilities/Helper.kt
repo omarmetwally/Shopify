@@ -12,6 +12,8 @@ import android.widget.Button
 import android.widget.TextView
 import com.omarinc.shopify.R
 import com.omarinc.shopify.productdetails.model.Comment
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.regex.Pattern
 
 object Helper {
@@ -168,5 +170,11 @@ object Helper {
             val activeNetworkInfo = connectivityManager.activeNetworkInfo
             return activeNetworkInfo != null && activeNetworkInfo.isConnected
         }
+    }
+
+    fun formatToYearMonthDayHourMinuteAmPm(dateString: String): String {
+        val zonedDateTime = ZonedDateTime.parse(dateString)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a")
+        return zonedDateTime.format(formatter)
     }
 }
