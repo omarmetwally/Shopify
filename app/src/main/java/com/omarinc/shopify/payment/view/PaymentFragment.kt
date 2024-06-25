@@ -15,6 +15,7 @@ import com.omarinc.shopify.R
 import com.omarinc.shopify.databinding.FragmentPaymentBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
 import com.omarinc.shopify.models.Address
+import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.models.Customer
 import com.omarinc.shopify.models.CustomerAddress
 import com.omarinc.shopify.models.DraftOrder
@@ -28,7 +29,9 @@ import com.omarinc.shopify.payment.viewModel.PaymentViewModel
 import com.omarinc.shopify.payment.viewModel.PaymentViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.type.MailingAddressInput
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlin.math.log
 import kotlin.properties.Delegates
 
 
@@ -314,8 +317,9 @@ class PaymentFragment : BottomSheetDialogFragment() {
                     ApiState.Loading -> Log.i(TAG, "completeCashOnDeliveryOrder: Loading")
                     is ApiState.Success -> {
                         Log.i(TAG, "completeCashOnDeliveryOrder: Sucess")
+                        Toast.makeText(requireContext(), "Order Completed", Toast.LENGTH_LONG)
                         clearShoppingCartItems()
-
+                        Log.i(TAG, "completeCashOnDeliveryOrder: HiIIIIIIII")
                     }
                 }
 
@@ -327,27 +331,55 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
     }
 
-    private fun sendInvoice(orderId: Long) {
-
-        viewModel.sendInvoice(orderId)
+    private fun clearShoppingCartItems() {
+        viewModel.getShoppingCartItems(viewModel.readCartId())
 
         lifecycleScope.launch {
-
-            viewModel.emailInvoice.collect { result ->
-
+            viewModel.cartItems.collect { result ->
                 when (result) {
-                    is ApiState.Failure -> Log.i(TAG, "sendInvoice: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "sendInvoice: Loading")
+                    is ApiState.Failure -> Log.e(TAG, "Failed to get items: ${result.msg}")
+                    ApiState.Loading -> Log.i(TAG, "Loading ShoppingCart Items")
                     is ApiState.Success -> {
-
-                        Log.i(TAG, "sendInvoice:  Success ${result.response}")
-
+                        val items = result.response
+                        clearItemsSequentially(items)
                     }
                 }
-
             }
-
         }
+    }
+
+    private suspend fun clearItemsSequentially(items: List<CartProduct>) {
+        for (item in items) {
+            removeItemCompletely(item.id, item.quantity)
+        }
+    }
+
+    private suspend fun removeItemCompletely(itemId: String, quantity: Int) {
+        for (i in 1..quantity) {
+            val removeJob = lifecycleScope.launch {
+                viewModel.removeProductFromCart(viewModel.readCartId(), itemId)
+            }
+            removeJob.join()
+
+            viewModel.cartItemRemove.first { removeResult ->
+                when (removeResult) {
+                    is ApiState.Failure -> {
+                        Log.e(TAG, "Failed to remove item: ${removeResult.msg}")
+                        false
+                    }
+                    ApiState.Loading -> {
+                        Log.i(TAG, "Removing item from cart...")
+                        false
+                    }
+                    is ApiState.Success -> {
+                        Log.i(TAG, "Successfully removed item: $itemId")
+                        true
+                    }
+                }
+            }
+        }
+        dismiss()
+        Toast.makeText(requireContext(), "Order Completed", Toast.LENGTH_LONG)
     }
 
     private fun getCustomerAddresses() {
@@ -371,47 +403,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
     }
 
-    private fun clearShoppingCartItems() {
-        viewModel.getShoppingCartItems(viewModel.readCartId())
-
-        lifecycleScope.launch {
-            viewModel.cartItems.collect { result ->
-                when (result) {
-                    is ApiState.Failure -> Log.e(TAG, "Failed to get items: ${result.msg}")
-                    ApiState.Loading -> Log.i(TAG, "Loading ShoppingCart Items")
-                    is ApiState.Success -> {
-                        val items = result.response
-                        for (item in items) {
-                            removeItemCompletely(item.id, item.quantity)
-                        }
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-
-    private fun removeItemCompletely(itemId: String, quantity: Int) {
-        lifecycleScope.launch {
-            repeat(quantity) {
-                viewModel.removeProductFromCart(viewModel.readCartId(), itemId)
-                viewModel.cartItemRemove.collect { removeResult ->
-                    when (removeResult) {
-                        is ApiState.Failure -> Log.e(
-                            TAG,
-                            "Failed to remove item: ${removeResult.msg}"
-                        )
-
-                        ApiState.Loading -> Log.i(TAG, "Removing item from cart...")
-                        is ApiState.Success -> Log.i(TAG, "Successfully removed item: $itemId")
-                    }
-                }
-            }
-        }
-    }
-
     private fun extractProductVariantId(variantId: String): Long? {
-        // Regex pattern to extract the numeric part
         val regex = Regex("""\d+""")
         val matchResult = regex.find(variantId)
         return matchResult?.value?.toLongOrNull()

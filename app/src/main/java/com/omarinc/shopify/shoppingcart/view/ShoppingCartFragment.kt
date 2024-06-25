@@ -110,6 +110,10 @@ class ShoppingCartFragment : Fragment() {
                         binding.cartShimmer.visibility = View.GONE
                         setupRecyclerView(result.response)
                         updateProductsLine(result.response)
+                        totalPrice = result.response.sumOf {
+                            it.variantPrice.toDouble() * it.quantity.toDouble()
+                        }
+                        updateTotalPrice(Currency(code = "EGP", value = 1.0))
                         getCurrentCurrency()
 
                     }
@@ -209,13 +213,12 @@ class ShoppingCartFragment : Fragment() {
 
     private fun updateTotalPrice(currency: Currency) {
 
-        totalPrice = productsLine.sumOf { it.quantity * currency.value }
+
         binding.totalPriceTextView.text =
             String.format("Total price : %.2f %s", totalPrice, currency.code)
 
 
     }
 
-    
 
 }

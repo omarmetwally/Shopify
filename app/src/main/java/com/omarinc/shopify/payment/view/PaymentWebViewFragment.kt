@@ -15,13 +15,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.omarinc.shopify.databinding.FragmentPaymentWebViewBinding
 import com.omarinc.shopify.model.ShopifyRepositoryImpl
+import com.omarinc.shopify.models.CartProduct
 import com.omarinc.shopify.network.ApiState
 import com.omarinc.shopify.network.admin.AdminRemoteDataSourceImpl
 import com.omarinc.shopify.network.currency.CurrencyRemoteDataSourceImpl
 import com.omarinc.shopify.network.shopify.ShopifyRemoteDataSourceImpl
+import com.omarinc.shopify.payment.view.PaymentFragment.Companion
 import com.omarinc.shopify.payment.viewModel.PaymentViewModel
 import com.omarinc.shopify.payment.viewModel.PaymentViewModelFactory
 import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class PaymentWebViewFragment : Fragment() {
@@ -116,37 +119,54 @@ class PaymentWebViewFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.cartItems.collect { result ->
                 when (result) {
-                    is ApiState.Failure -> Log.e(TAG, "Failed to get items: ${result.msg}")
+                    is ApiState.Failure -> Log.e(
+                        TAG,
+                        "Failed to get items: ${result.msg}"
+                    )
+
                     ApiState.Loading -> Log.i(TAG, "Loading ShoppingCart Items")
                     is ApiState.Success -> {
                         val items = result.response
-                        for (item in items) {
-                            removeItemCompletely(item.id, item.quantity)
-                        }
+                        clearItemsSequentially(items)
                     }
                 }
             }
         }
     }
 
-    private fun removeItemCompletely(itemId: String, quantity: Int) {
-        lifecycleScope.launch {
-            repeat(quantity) {
+    private suspend fun clearItemsSequentially(items: List<CartProduct>) {
+        for (item in items) {
+            removeItemCompletely(item.id, item.quantity)
+        }
+    }
+
+    private suspend fun removeItemCompletely(itemId: String, quantity: Int) {
+        for (i in 1..quantity) {
+            val removeJob = lifecycleScope.launch {
                 viewModel.removeProductFromCart(viewModel.readCartId(), itemId)
-                viewModel.cartItemRemove.collect { removeResult ->
-                    when (removeResult) {
-                        is ApiState.Failure -> Log.e(
-                            TAG,
-                            "Failed to remove item: ${removeResult.msg}"
-                        )
+            }
+            removeJob.join()
 
-                        ApiState.Loading -> Log.i(TAG, "Removing item from cart...")
-                        is ApiState.Success -> Log.i(TAG, "Successfully removed item: $itemId")
+            viewModel.cartItemRemove.first { removeResult ->
+                when (removeResult) {
+                    is ApiState.Failure -> {
+                        Log.e(TAG, "Failed to remove item: ${removeResult.msg}")
+                        false
+                    }
+
+                    ApiState.Loading -> {
+                        Log.i(TAG, "Removing item from cart...")
+                        false
+                    }
+
+                    is ApiState.Success -> {
+                        Log.i(TAG, "Successfully removed item: $itemId")
+                        true
                     }
                 }
             }
         }
-    }
 
+    }
 }
 
