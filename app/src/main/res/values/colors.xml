@@ -7,6 +7,8 @@
     <color name="gray_color">#FAFAFA</color>
     <color name="gray_text">#929EAE</color>
     <color name="shimmer_bg_color">#DDDDDD</color>
+    <color name="red">#DB0909</color>
+    <color name="green">#1CF604</color>
 
     <!--colors for light mode-->
 

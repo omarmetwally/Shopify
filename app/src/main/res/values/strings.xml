@@ -149,7 +149,8 @@
     <string name="project_code" >INT44-SV-JETS-MAD-AND-03</string>
     <string name="en" >English</string>
     <string name="ar" >Arabic</string>
-
+    <string name="voucher_applied_successfully_text_view">Voucher applied successfully</string>
+    <string name="voucher_invalid_text_view">Invalid Voucher\n</string>
 
 
 </resources>

@@ -78,9 +78,9 @@ class PaymentWebViewFragment : Fragment() {
             ): Boolean {
                 val url = request?.url.toString()
                 Log.i(TAG, "Loading URL: $url")
+                onPaymentSuccess()
 
-
-                if (url.contains("payment_success") || url.contains("success=true")) {
+                if (url.endsWith("thank-you")) {
                     onPaymentSuccess()
                 } else if (url.contains("payment_failed") || url.contains("success=false")) {
                     onPaymentFailure()

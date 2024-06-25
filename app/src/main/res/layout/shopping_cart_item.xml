@@ -29,7 +29,8 @@
 
         <TextView
             android:id="@+id/shopping_cart_product_name_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
+            android:lines="1"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
