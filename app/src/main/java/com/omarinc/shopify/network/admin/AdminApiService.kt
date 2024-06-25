@@ -1,6 +1,5 @@
 package com.omarinc.shopify.network.admin
 
-import com.omarinc.shopify.model.RegisterUserResponse
 import com.omarinc.shopify.models.DiscountCodesResponse
 import com.omarinc.shopify.models.DraftOrderRequest
 import com.omarinc.shopify.models.DraftOrderResponse

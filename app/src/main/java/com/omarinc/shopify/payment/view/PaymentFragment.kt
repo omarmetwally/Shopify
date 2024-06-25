@@ -95,6 +95,8 @@ class PaymentFragment : BottomSheetDialogFragment() {
     }
 
     private fun setListeners() {
+
+
         binding.paymentMethodRadioGroup.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.cash_on_delivery_radio_button -> {
@@ -111,9 +113,9 @@ class PaymentFragment : BottomSheetDialogFragment() {
         binding.payNow.setOnClickListener {
             when (binding.paymentMethodRadioGroup.checkedRadioButtonId) {
                 R.id.cash_on_delivery_radio_button -> {
+
                     createCashOnDeliveryOrder()
-                    clearShoppingCartItems()
-                    dismiss()
+
                 }
 
                 R.id.card_radio_button -> {
@@ -287,7 +289,8 @@ class PaymentFragment : BottomSheetDialogFragment() {
                                 is ApiState.Success -> {
                                     Log.i(TAG, "createCashOnDeliveryOrder: Success")
                                     completeCashOnDeliveryOrder(draftOrderResult.response.draftOrder.id)
-                                    clearShoppingCartItems()
+
+
                                 }
                             }
                         }
@@ -311,7 +314,8 @@ class PaymentFragment : BottomSheetDialogFragment() {
                     ApiState.Loading -> Log.i(TAG, "completeCashOnDeliveryOrder: Loading")
                     is ApiState.Success -> {
                         Log.i(TAG, "completeCashOnDeliveryOrder: Sucess")
-                        sendInvoice(result.response.draftOrder.id)
+                        clearShoppingCartItems()
+
                     }
                 }
 
@@ -345,7 +349,6 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
         }
     }
-
 
     private fun getCustomerAddresses() {
 
@@ -381,6 +384,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
                         for (item in items) {
                             removeItemCompletely(item.id, item.quantity)
                         }
+                        dismiss()
                     }
                 }
             }
@@ -412,7 +416,6 @@ class PaymentFragment : BottomSheetDialogFragment() {
         val matchResult = regex.find(variantId)
         return matchResult?.value?.toLongOrNull()
     }
-
 
     private fun updateDefaultAddressUI() {
 
