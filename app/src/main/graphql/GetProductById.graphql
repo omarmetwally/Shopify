@@ -10,6 +10,7 @@ query GetProductById($id: ID!) {
             edges {
                 node {
                     id
+                    quantityAvailable
                     priceV2 {
                         amount
                         currencyCode

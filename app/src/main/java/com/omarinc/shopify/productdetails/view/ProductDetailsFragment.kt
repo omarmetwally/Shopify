@@ -396,9 +396,14 @@ class ProductDetailsFragment : Fragment() {
                 isCheckable = true
                 setOnCheckedChangeListener { buttonView, isChecked ->
                     (buttonView as Chip).chipBackgroundColor = if (isChecked) {
+                        binding.tvProductStock.text = "In Stock: ${productDetails.totalInventory}"
                         ColorStateList.valueOf(getResources().getColor(R.color.primary_color))
+
                     } else {
                         ColorStateList.valueOf(Color.WHITE)
+                    }
+                    if (isChecked) {
+                        updateStockForSelectedSize(size)
                     }
                 }
             }
@@ -421,6 +426,35 @@ class ProductDetailsFragment : Fragment() {
             colorName.text = color
 
             binding.chipGroupColors.addView(chipView)
+        }
+    }
+    private fun updateStockForSelectedSize(size: String) {
+        val selectedVariant = viewModel.apiState.value.let {
+            if (it is ApiState.Success) {
+                it.response.variants.firstOrNull { variant ->
+                    variant.selectedOptions.any { option -> option.name == "Size" && option.value == size }
+                }
+            } else {
+                null
+            }
+        }
+
+        selectedVariant?.let { variant ->
+            val stock = variant.quantityAvailable
+            binding.tvProductStock.text = "In Stock: $stock"
+            variantId = variant.id
+
+            if (stock != null) {
+                if (stock > 0) {
+                    binding.tvProductStock.setTextColor(resources.getColor(android.R.color.holo_green_dark))
+                    binding.btnAddToCart.isEnabled = true
+                    binding.btnAddToCart.setBackgroundColor(resources.getColor(R.color.primary_color))
+                } else {
+                    binding.tvProductStock.setTextColor(Color.RED)
+                    binding.btnAddToCart.isEnabled = false
+                    binding.btnAddToCart.setBackgroundColor(Color.GRAY)
+                }
+            }
         }
     }
 
