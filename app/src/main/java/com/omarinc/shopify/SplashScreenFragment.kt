@@ -20,6 +20,7 @@ import com.omarinc.shopify.sharedPreferences.SharedPreferencesImpl
 import com.omarinc.shopify.splashscreen.viewmodel.SplashNavigationState
 import com.omarinc.shopify.splashscreen.viewmodel.SplashScreenViewModel
 import com.omarinc.shopify.splashscreen.viewmodel.SplashScreenViewModelFactory
+import com.omarinc.shopify.utilities.Constants
 import kotlinx.coroutines.launch
 
 private const val ARG_PARAM1 = "param1"
@@ -59,6 +60,10 @@ class SplashScreenFragment : Fragment() {
         val factory = SplashScreenViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory).get(SplashScreenViewModel::class.java)
 
+        sharedPreferences.writeStringToSharedPreferences(
+            Constants.CURRENCY_UNIT,
+            "EGP"
+        )
         lifecycleScope.launch {
             viewModel.navigationState.collect { state ->
                 when (state) {
