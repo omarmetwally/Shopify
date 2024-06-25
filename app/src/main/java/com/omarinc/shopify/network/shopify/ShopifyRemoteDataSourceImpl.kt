@@ -277,9 +277,10 @@ class ShopifyRemoteDataSourceImpl private constructor(private val context: Conte
                         selectedOptions = edge.node.selectedOptions.map { option ->
                             SelectedOption(
                                 name = option.name,
-                                value = option.value
+                                value = option.value,
                             )
-                        }
+                        },
+                        quantityAvailable = edge.node.quantityAvailable
                     )
                 }
                 val productDetails = ProductDetails(
