@@ -118,8 +118,25 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/apply_voucher_text"
-                android:textColor="@color/primary_color" />
+                android:textColor="@color/primary_color"
+                android:textSize="12sp" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/voucher_success_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/voucher_applied_successfully_text_view"
+            android:textColor="@color/green"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/voucher_fail_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/voucher_invalid_text_view"
+            android:textColor="@color/red"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/order_amount_text_view"

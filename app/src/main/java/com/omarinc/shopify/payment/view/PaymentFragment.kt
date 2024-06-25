@@ -60,7 +60,6 @@ class PaymentFragment : BottomSheetDialogFragment() {
 
 
         setupViewModel()
-//        getCustomerAddresses()
         checkoutId = arguments?.getString("checkoutId") ?: ""
         totalPrice = arguments?.getString("totalPrice")?.toDouble() ?: 0.0
         val selectedAddress = arguments?.getSerializable("selectedAddress") as? CustomerAddress
@@ -113,17 +112,23 @@ class PaymentFragment : BottomSheetDialogFragment() {
             when (binding.paymentMethodRadioGroup.checkedRadioButtonId) {
                 R.id.cash_on_delivery_radio_button -> {
                     createCashOnDeliveryOrder()
+                    clearShoppingCartItems()
+                    dismiss()
                 }
 
                 R.id.card_radio_button -> {
                     payWithCard()
+
                 }
             }
         }
 
 
         binding.addressCard.setOnClickListener {
-            val action = PaymentFragmentDirections.actionPaymentFragmentToDefaultAddressFragment(checkoutId,totalPrice.toString())
+            val action = PaymentFragmentDirections.actionPaymentFragmentToDefaultAddressFragment(
+                checkoutId,
+                totalPrice.toString()
+            )
             findNavController().navigate(action)
         }
 
@@ -147,8 +152,12 @@ class PaymentFragment : BottomSheetDialogFragment() {
                 "Voucher applied successfully: $discountPercentage% off",
                 Toast.LENGTH_SHORT
             ).show()
+            binding.voucherSuccessTextView.visibility = View.VISIBLE
+            binding.voucherFailTextView.visibility = View.GONE
             applyDiscount(discountPercentage)
         } else {
+            binding.voucherSuccessTextView.visibility = View.GONE
+            binding.voucherFailTextView.visibility = View.VISIBLE
             Toast.makeText(requireContext(), "Invalid voucher code", Toast.LENGTH_SHORT).show()
         }
     }
@@ -162,10 +171,8 @@ class PaymentFragment : BottomSheetDialogFragment() {
     }
 
     private fun applyDiscount(discountPercentage: Int) {
-        // TODO: Add logic to apply the discount to the total order amount
-        // Example logic (you'll need to implement based on your specific requirements):
         val originalAmount =
-            getOriginalOrderAmount() // Replace with actual logic to get original amount
+            getOriginalOrderAmount()
         val discountedAmount = originalAmount * (1 - discountPercentage / 100.0)
         updateOrderAmount(discountedAmount)
     }
@@ -177,7 +184,6 @@ class PaymentFragment : BottomSheetDialogFragment() {
     }
 
     private fun updateOrderAmount(amount: Double) {
-        // TODO: Replace with actual logic to update the order amount in your UI or data model
         binding.orderAmountTextView.text = String.format("%.2f", amount)
     }
 
@@ -189,6 +195,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
                     address1 = Optional.present(defaultAddress?.address1),
                     city = Optional.present(defaultAddress?.city),
                     country = Optional.present("Egypt"),
+                    firstName = Optional.present(defaultAddress?.firstName),
                     lastName = Optional.present(defaultAddress?.lastName),
                     phone = Optional.present("01555774530"),
                     province = Optional.present("Cairo"),
@@ -207,6 +214,7 @@ class PaymentFragment : BottomSheetDialogFragment() {
                             PaymentFragmentDirections.actionPaymentFragmentToPaymentWebViewFragment(
                                 result.response
                             )
+                        dismiss()
                         findNavController().navigate(action)
                     }
                 }

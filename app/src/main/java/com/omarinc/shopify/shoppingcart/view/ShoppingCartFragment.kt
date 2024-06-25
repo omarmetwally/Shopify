@@ -166,7 +166,11 @@ class ShoppingCartFragment : Fragment() {
 
     private fun navigateToPaymentFragment(checkoutId: String) {
         Log.i(TAG, "navigateToPaymentFragment: $totalPrice")
-        val action = ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(checkoutId,totalPrice.toString(),null)
+        val action = ShoppingCartFragmentDirections.actionShoppingCartFragmentToPaymentFragment(
+            checkoutId,
+            totalPrice.toString(),
+            null
+        )
         findNavController().navigate(action)
     }
 
@@ -183,7 +187,7 @@ class ShoppingCartFragment : Fragment() {
             }.collect { (currencyUnit, requiredCurrency) ->
                 Log.i(TAG, "getCurrentCurrency 000: $currencyUnit")
                 when (requiredCurrency) {
-                    is ApiState.Failure -> Log.i(TAG, "getCurrentCurrency: ${requiredCurrency.msg}")
+                    is ApiState.Failure -> updateTotalPrice(Currency("EGP", 1.0))
                     ApiState.Loading -> Log.i(TAG, "getCurrentCurrency: Loading")
                     is ApiState.Success -> {
                         Log.i(
