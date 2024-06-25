@@ -21,7 +21,8 @@ data class Price(
 data class ProductVariant(
     val id: String,
     val priceV2: Price,
-    val selectedOptions: List<SelectedOption>
+    val selectedOptions: List<SelectedOption>,
+    val quantityAvailable: Int?
 )
 
 data class SelectedOption(
