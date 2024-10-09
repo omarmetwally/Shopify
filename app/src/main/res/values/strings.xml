@@ -1,3 +1,101 @@
 <resources>
     <string name="app_name">Shopify</string>
+    <string name="home">Home</string>
+    <string name="categories">Categories</string>
+    <string name="cart">Cart</string>
+    <string name="favourites">Favourites</string>
+    <string name="me">Me</string>
+    <string name="search">Search</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="brands">Brands</string>
+    <string name="settings_text_view">Settings</string>
+    <string name="language_text_view">Language</string>
+    <string name="about_us_text_view">About us</string>
+    <string name="privacy_policy"><![CDATA[Privacy & Policy]]></string>
+
+    <string name="checkout_button">Checkout</string>
+    <string name="address">Adress</string>
+    <string name="payment_text_view">Payment</string>
+    <string name="shipping_to_text_view">Shipping to</string>
+    <string name="add_address_text_view">Add Address</string>
+    <string name="hello">Hello, </string>
+
+
+    <!--strings for authentication screens-->
+    <string name="register">Register</string>
+    <string name="registration_alert_Header">Registration</string>
+    <string name="registration_successful">Registration Successful</string>
+    <string name="registration_failed">Registration Failed: : %1$s</string>
+    <string name="ok">OK</string>
+    <string name="loading">Loading</string>
+    <string name="name_is_required">Name is required</string>
+    <string name="phone_number_is_required">Phone Number is required</string>
+    <string name="phone_invalid">Enter a valid phone number with country code (e.g., +1234567890)</string>
+    <string name="email_is_required">Email is required</string>
+    <string name="password_is_required">Password is required</string>
+    <string name="confirm_password_is_required">Confirm Password is required</string>
+    <string name="password_validation">Password must be at least 6 characters, not be \"12345", and contain letters and numbers</string>
+    <string name="password_not_matching">Passwords do not match</string>
+    <string name="email_invalid">Email is invalid</string>
+    <string name="login_alert_Header">Login</string>
+    <string name="login_successful">Login Successful</string>
+    <string name="login_failed">Login Failed: %1$s</string>
+    <string name="unfavorite_product">Favorite Product</string>
+    <string name="are_you_sure_to_unfavorite">Are you sure you want to remove this product from your favorites?</string>
+    <string name="skip_alert_title">Skip Login</string>
+    <string name="skip_alert_message">You will miss out many features. Are you sure you want to continue?</string>
+     <string name="logout_pressed">Logout</string>
+    <string name="logout_pressed_message">Are you sure you want to logout?</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="login">Login</string>
+    <string name="register_now">New user? Register Now</string>
+    <string name="first_time">Here\'s\nyour first\nstep with\nus!</string>
+    <string name="register_name_hint">Name</string>
+    <string name="register_phone_hint">Phone Number</string>
+    <string name="register_email_hint">Email</string>
+    <string name="login_email_hint">Email</string>
+    <string name="register_password_hint">Password</string>
+    <string name="login_password_hint">Password</string>
+    <string name="register_confirm_password_hint">Confirm Password *</string>
+    <string name="full_name_hint">Full Name</string>
+    <string name="skip">Skip</string>
+    <string name="have_account">Already \nhave an \nAccount?\n</string>
+    <string name="another_method">Another Methods</string>
+    <string name="forget_password">Forget Password</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="my_orders">My Orders</string>
+    <string name="my_wishlist">My Wishlist</string>
+    <string name="my_delivery_address">Delivery Address</string>
+    <string name="logout">Log Out</string>
+    <string name="favorites">Favorites</string>
+    <string name="search_">Search...</string>
+    <string name="products">Products</string>
+    <string name="totalPrice">"Total Price : "</string>
+    <string name="createdAt">"Created At : "</string>
+    <string name="addressOrder">"Address : "</string>
+    <string name="choose_a_address_button">Choose an adrress</string>
+    <string name="address_text_view">Address\n</string>
+    <string name="for_you">For You</string>
+    <string name="shopping">Shopping</string>
+    <string name="header">Save Shop and View Orders</string>
+    <string name="order_details">Order Details</string>
+    <string name="order_id">"Order ID : "</string>
+    <string name="order_items">Order Items</string>
+    <string name="home_address">Home Address</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="total_tax">"Total Tax : "</string>
+    <string name="total_cost">Total Cost</string>
+    <string name="orders">Orders</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name\n</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="street_name">Street</string>
+    <string name="submit_address">Submit Address</string>
+
+
 </resources>

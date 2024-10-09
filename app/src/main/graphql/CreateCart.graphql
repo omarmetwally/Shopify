@@ -1,0 +1,22 @@
+mutation CreateCartMutation($email: String!){
+    cartCreate(input: {
+        buyerIdentity: {
+            email: $email
+        }
+    }) {
+        cart {
+            id
+            lines(first: 10) {
+                edges {
+                    node {
+                        id
+                        quantity
+                        merchandise{
+                            __typename
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
