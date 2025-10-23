@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <!--<item
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/cart"
+        android:title="@string/cart" />
+    <item
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/favourites"
+        android:title="@string/favourites" />-->
+    <item
+        android:id="@+id/profileFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/edit_profile"
+        android:title="@string/edit_profile" />
+    <item
+        android:id="@+id/ordersFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/orders"
+        android:title="@string/my_orders" />
+    <item
+        android:id="@+id/favoritesFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/favourites"
+        android:title="@string/my_wishlist" />
+    <item
+        android:id="@+id/addressesFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/pin"
+        android:title="@string/my_delivery_address" />
+    <item
+        android:id="@+id/settingsFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/setting"
+        android:title="@string/settings_text_view" />
+    <item
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/logout"
+        android:title="@string/logout" />
+</menu>

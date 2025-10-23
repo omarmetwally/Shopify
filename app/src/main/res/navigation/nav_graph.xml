@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.omarinc.shopify.home.view.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_productsFragment"
+            app:destination="@id/productsFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_homeFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_homeFragment_to_shoppingCartFragment"
+            app:destination="@id/shoppingCartFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_homeFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_homeFragment_to_favoritesFragment2"
+            app:destination="@id/favoritesFragment"
+            app:enterAnim="@anim/fade_in" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.omarinc.shopify.profile.view.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_profileFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_profileFragment_to_ordersFragment"
+            app:destination="@id/ordersFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_profileFragment_to_addressesFragment"
+            app:destination="@id/addressesFragment"
+            app:enterAnim="@anim/fade_in" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.omarinc.shopify.settings.view.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="fragment_settings">
+        <action
+            android:id="@+id/action_settingsFragment_to_aboutUsBottomSheetFragment"
+            app:destination="@id/aboutUsBottomSheetFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/productsFragment"
+        android:name="com.omarinc.shopify.home.view.ProductsFragment"
+        android:label="fragment_products"
+        tools:layout="@layout/fragment_products">
+        <action
+            android:id="@+id/action_productsFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
+        <argument
+            android:name="id"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/categoriesFragment"
+        android:name="com.omarinc.shopify.home.view.CategoriesFragment"
+        android:label="fragment_categories"
+        tools:layout="@layout/fragment_categories">
+        <action
+            android:id="@+id/action_categoriesFragment_to_favoritesFragment"
+            app:destination="@id/favoritesFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_categoriesFragment_to_shoppingCartFragment"
+            app:destination="@id/shoppingCartFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_categoriesFragment_to_searchFragment"
+            app:destination="@id/searchFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_categoriesFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
+    </fragment>
+    <fragment
+        android:id="@+id/productDetailsFragment"
+        android:name="com.omarinc.shopify.productdetails.view.ProductDetailsFragment"
+        android:label="fragment_product_details"
+        tools:layout="@layout/fragment_product_details">
+        <action
+            android:id="@+id/action_productDetailsFragment_to_productsFragment"
+            app:destination="@id/productsFragment"
+            app:enterAnim="@anim/fade_in" />
+        <argument
+            android:name="productId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_productDetailsFragment_to_zoomImageFragment"
+            app:destination="@id/zoomImageFragment"
+            app:enterAnim="@anim/fade_in"/>
+        <action
+            android:id="@+id/action_productDetailsFragment_to_commentsBottomSheetFragment"
+            app:destination="@id/commentsBottomSheetFragment"
+            app:enterAnim="@anim/fade_in"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.omarinc.shopify.favorites.view.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_favoritesFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.omarinc.shopify.search.view.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search">
+        <action
+            android:id="@+id/action_searchFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
+    </fragment>
+    <fragment
+        android:id="@+id/ordersFragment"
+        android:name="com.omarinc.shopify.orders.view.OrdersFragment"
+        android:label="fragment_orders"
+        tools:layout="@layout/fragment_orders">
+        <action
+            android:id="@+id/action_ordersFragment_to_orderDetailsFragment"
+            app:destination="@id/orderDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
+    </fragment>
+    <fragment
+        android:id="@+id/shoppingCartFragment"
+        android:name="com.omarinc.shopify.shoppingcart.view.ShoppingCartFragment"
+        android:label="fragment_shopping_cart"
+        tools:layout="@layout/fragment_shopping_cart" >
+        <action
+            android:id="@+id/action_shoppingCartFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment"
+            app:enterAnim="@anim/fade_in" />
+    </fragment>
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.omarinc.shopify.address.view.MapFragment"
+        android:label="MapFragment">
+        <action
+            android:id="@+id/action_mapFragment_to_addressDetailsFragment"
+            app:destination="@id/addressDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderDetailsFragment"
+        android:name="com.omarinc.shopify.orders.view.OrderDetailsFragment"
+        android:label="fragment_order_details"
+        tools:layout="@layout/fragment_order_details">
+        <argument
+            android:name="index"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_orderDetailsFragment_to_productDetailsFragment"
+            app:destination="@id/productDetailsFragment"
+            app:enterAnim="@anim/fade_in" />
+    </fragment>
+    <fragment
+        android:id="@+id/addressDetailsFragment"
+        android:name="com.omarinc.shopify.address.view.AddressDetailsFragment"
+        android:label="fragment_address_details"
+        tools:layout="@layout/fragment_address_details">
+        <argument
+            android:name="city"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/addressesFragment"
+        android:name="com.omarinc.shopify.address.view.AddressesFragment"
+        android:label="fragment_addresses"
+        tools:layout="@layout/fragment_addresses" >
+        <action
+            android:id="@+id/action_addressesFragment_to_mapFragment"
+            app:destination="@id/mapFragment"
+            app:enterAnim="@anim/fade_in" />
+    </fragment>
+    <dialog
+        android:id="@+id/paymentFragment"
+        android:name="com.omarinc.shopify.payment.view.PaymentFragment"
+        android:label="fragment_payment"
+        tools:layout="@layout/fragment_payment" >
+        <argument
+            android:name="checkoutId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_paymentFragment_to_paymentWebViewFragment"
+            app:destination="@id/paymentWebViewFragment"
+            app:enterAnim="@anim/fade_in" />
+        <action
+            android:id="@+id/action_paymentFragment_to_defaultAddressFragment"
+            app:destination="@id/defaultAddressFragment"
+            app:enterAnim="@anim/fade_in" />
+        <argument
+            android:name="totalPrice"
+            app:argType="string" />
+        <argument
+            android:name="selectedAddress"
+            app:argType="com.omarinc.shopify.models.CustomerAddress"
+            app:nullable="true" />
+    </dialog>
+    <fragment
+        android:id="@+id/paymentWebViewFragment"
+        android:name="com.omarinc.shopify.payment.view.PaymentWebViewFragment"
+        android:label="fragment_payment_web_view"
+        tools:layout="@layout/fragment_payment_web_view" >
+        <argument android:name="webUrl"
+            app:argType="string" />
+    </fragment>
+    <dialog
+        android:id="@+id/defaultAddressFragment"
+        android:name="com.omarinc.shopify.payment.view.DefaultAddressFragment"
+        android:label="fragment_default_address"
+        tools:layout="@layout/fragment_default_address">
+        <action
+            android:id="@+id/action_defaultAddressFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment"
+            app:enterAnim="@anim/fade_in" />
+        <argument
+            android:name="checkoutId"
+            app:argType="string" />
+        <argument
+            android:name="totalPrice"
+            app:argType="string" />
+    </dialog>
+    <fragment
+        android:id="@+id/zoomImageFragment"
+        android:name="com.omarinc.shopify.productdetails.view.zoomimagefragment.ZoomImageFragment"
+        android:label="fragment_zoom_image"
+        tools:layout="@layout/fragment_zoom_image" >
+        <argument
+            android:name="imageUrl"
+            app:argType="string" />
+    </fragment>
+    <dialog
+        android:id="@+id/commentsBottomSheetFragment"
+        android:name="com.omarinc.shopify.productdetails.view.commentsbottomsheet.CommentsBottomSheetFragment"
+        android:label="fragment_comments_bottom_sheet"
+        tools:layout="@layout/fragment_comments_bottom_sheet" />
+    <dialog
+        android:id="@+id/aboutUsBottomSheetFragment"
+        android:name="com.omarinc.shopify.settings.view.AboutUsBottomSheetFragment"
+        android:label="fragment_about_us_bottom_sheet"
+        tools:layout="@layout/fragment_about_us_bottom_sheet" />
+</navigation>

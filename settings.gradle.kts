@@ -3,6 +3,7 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+
     }
 }
 dependencyResolutionManagement {
@@ -10,8 +11,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
     }
 }
+
 
 rootProject.name = "Shopify"
 include(":app")

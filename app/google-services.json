@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "522404392723",
+    "firebase_url": "https://flutter-test-b5db8-default-rtdb.firebaseio.com",
+    "project_id": "flutter-test-b5db8",
+    "storage_bucket": "flutter-test-b5db8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:522404392723:android:0e059a3912210aa71674e6",
+        "android_client_info": {
+          "package_name": "com.omarinc.shopify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "522404392723-ad85o6q61dalknlbj65hoc139j8c57nl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTWlNGLCN6aqRqFA9cX34q1Br1DnuX_EU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "522404392723-ad85o6q61dalknlbj65hoc139j8c57nl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
